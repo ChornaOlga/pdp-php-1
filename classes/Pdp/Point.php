@@ -1,6 +1,6 @@
 <?php
 
-class PdpPoint
+class Pdp_Point
 {
     const TYPE_PICKUP   = 'pickup';
     const TYPE_DELIVERY = 'delivery';

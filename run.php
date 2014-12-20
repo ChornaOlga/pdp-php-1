@@ -1,57 +1,17 @@
 <?php
-function __autoload($class)
-{
-    require_once('classes/' . $class .'.php');
-}
+require_once 'autoload.php';
 
+const SOLUTION_METHOD_BRANCH_AND_BOUND = 'branch_and_bound';
+const SOLUTION_METHOD_CUSTOM           = 'custom';
 
-class PdpInput
-{
-    public static function read($filename)
-    {
-        $result = [];
-        if (file_exists($filename))
-        {
-            $data = explode("\r\n", file_get_contents($filename));
-            $result['count'] = (int) $data[0];
-            unset($data[0]);
+$pdpInfoFile        = 'pdp_points.txt';
+$checkLoading       = true;
+$loadingCheckerFile = 'pdphelper.exe';
+$solutionMethod     = SOLUTION_METHOD_BRANCH_AND_BOUND;
 
-            foreach ($data as $row)
-            {
-                try
-                {
-                    $pointInfo = explode(' ', $row);
+$pdpInfo = Pdp_IO::read($pdpInfoFile);
+// var_dump($pdpInfo);
 
-                    $x  = $pointInfo[1];
-                    $y  = $pointInfo[2];
-                    $q  = isset($pointInfo[3]) ? (float) str_replace(',', '.', $pointInfo[3]) : null;
-                    $id = ($pointInfo[0] == 'depot') ? PdpPoint::DEPOT_ID : $pointInfo[0];
-
-                    if ($id == PdpPoint::DEPOT_ID)
-                    {
-                        $pointType       = PdpPoint::TYPE_DEPOT;
-                        $result['depot'] = new PdpPoint($id, $x, $y, $pointType, $q);
-                    }
-                    else
-                    {
-                        $pointType             = ($id <= $result['count']) ? PdpPoint::TYPE_PICKUP : PdpPoint::TYPE_DELIVERY;
-                        $result['points'][$id] = new PdpPoint($id, $x, $y, $pointType, $q);
-                    }
-                }
-                catch (Exception $e)
-                {
-                    throw new Exception("Can't read row " . key($data) . ": ". $e->getMessage());
-                }
-            }
-        }
-        else
-        {
-            throw new Exception("File {$filename} does not exist!");
-        }
-        return $result;
-    }
-
-}
-
-$pdpInfo = PdpInput::read('pdp_points.txt');
-var_dump($pdpInfo);
+$solverClass = ($solutionMethod == SOLUTION_METHOD_BRANCH_AND_BOUND) ? 'Pdp_Solver_BranchBound' : 'CustomSolver';
+$solver      = new $solverClass($pdpInfo->depot, $pdpInfo->points, $checkLoading, $loadingCheckerFile);
+var_dump($solver);
