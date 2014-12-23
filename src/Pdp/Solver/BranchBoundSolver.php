@@ -1,55 +1,40 @@
 <?php
-// use Tree\Node\Node;
-// namespace BranchBound;
-
-// class Node extends Node
-// {
-//     protected $bound;
-
-//     function setBound()
-//     {
-//         $this->bound = $bound;
-//         return $this;
-//     }
-
-//     function getBound()
-//     {
-//         return $this->bound;
-//     }
-// }
-
-
-// class BranchBound_Tree
-// {
-
-// }
 
 namespace Pdp\Solver;
-
-class BranchBoundSolver extends AbstractSolver
+// !!! Move this class to general solvers. PDP solver should extend it
+class BranchBoundSolver extends \BranchBound\AbstractSolver
 {
-    protected $tree;
-
-    protected function _init()
+    public function __construct()
     {
-        // $this->tree = new BranchBoundTree;
-        // $this->tree->
+        $this->_initialNodeValue            = new \Pdp\Path;
+        $this->_initialNodeOptimisticBound  = ($this->maximizeCost) ? 0 : PHP_INT_MAX;
+        $this->_initialNodePessimisticBound = $this->_initialNodeOptimisticBound;
     }
 
-    public function getSolution()
+    // PDP - specific methods
+
+    protected function _compareNodes($firstNode, $secondNode)
     {
-        $this->_init();
-        // while (/* there is vertex with better cost  */)
-        // {
-        //     // get bounds for all active leaves
-        //     // 
-        //     // $subsets = $this->getPartition(/*$this->tree*/);
-        // }
+        // for now, just compare optimistic bounds
+        return ($this->_compareCosts($firstNode->getOptimisticBound(), $secondNode->getOptimisticBound()));
     }
 
-
-    protected function solve()
+    protected function _generateChildrenOf($node)
     {
-
+        foreach (range(1, 3) as $i)
+        {
+            $initialNode = new Node([
+                'active'            => true,
+                'value'             => new \Pdp\Path($node->getValue(), rand(1,10))
+                'optimistic_bound'  => rand(1, 10)
+                'pessimistic_bound' => rand(1, 10)
+            ]);
+        }
     }
+
+    protected function _nodeIsCompleteSolution()
+    {
+        return (count($node->getValue()) == count($this->points));
+    }
+
 }

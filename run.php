@@ -11,8 +11,11 @@ $loadingCheckerFile = 'pdphelper.exe';
 $solutionMethod     = SOLUTION_METHOD_BRANCH_AND_BOUND;
 
 $pdpInfo = \Pdp\IO::read($pdpInfoFile);
-var_dump($pdpInfo);
+// var_dump($pdpInfo);
 
 $solverClass = ($solutionMethod == SOLUTION_METHOD_BRANCH_AND_BOUND) ? '\Pdp\Solver\BranchBoundSolver' : '\Pdp\Solver\CustomSolver';
-$solver      = new $solverClass($pdpInfo->depot, $pdpInfo->points, $checkLoading, $loadingCheckerFile);
+$solver      = new $solverClass($pdpInfo->depot, $pdpInfo->points, false , $checkLoading, $loadingCheckerFile);
 var_dump($solver);
+
+// $n = new \BranchBound\Node;
+// $n->a();
