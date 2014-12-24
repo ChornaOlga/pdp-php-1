@@ -7,6 +7,7 @@
             "phpunit/phpunit": "4.3.*"
         },
         "autoload": {
-            "psr-4": {"": "src/"}
+            "psr-4": {"": "src/"},
+            "files": ["src/Lib/Varien_Object.php"]
         }
 }

@@ -10,7 +10,7 @@ class Node extends \Tree\Node\Node
      * @method BranchBound\Node setOptimisticBound(float $optimisticBound)
      */
 
-    protected $dataObject;
+    public $dataObject;
 
     /**
      * Set/Get attribute wrapper. Calls Varien_Object
@@ -29,40 +29,7 @@ class Node extends \Tree\Node\Node
      */
     public function __construct($data = null)
     {
-        $this->dataObject = new Varien_Object;
+        $this->dataObject = new \Varien_Object;
         $this->dataObject->setData($data);
     }
-
-   /* function setOptimisticBound()
-    {
-        $this->optimisticBound = $optimisticBound;
-        return $this;
-    }
-
-    function getOptimisticBound()
-    {
-        return $this->optimisticBound;
-    }
-
-    function setPessimisticBound()
-    {
-        $this->pessimisticBound = $pessimisticBound;
-        return $this;
-    }
-
-    function getPessimisticBound()
-    {
-        return $this->pessimisticBound;
-    }
-
-    function setId()
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    function getId()
-    {
-        return $this->id;
-    }*/
 }

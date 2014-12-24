@@ -1,14 +1,15 @@
 <?php
 namespace BranchBound;
 
-class AbstractSolver
+abstract class AbstractSolver extends \Common\AbstractSolver
 {
-    protected $_initialNodeValue;
-    protected $_initialNodeOptimisticBound;
-    protected $_initialNodePessimisticBound;
+    // necessaryData = <as in parent> +
+    //  initial_node_value:             mixed
+    //  initial_node_optimistic_bound:  float
+    //  initial_node_pessimistic_bound: float
 
     abstract protected function _compareNodes($firstNode, $secondNode);
-    abstract protected function _generateLeafsOf($node);
+    abstract protected function _generateChildrenOf($node);
     abstract protected function _nodeIsCompleteSolution($node);
 
     public function getSolution()
@@ -16,9 +17,9 @@ class AbstractSolver
         $rootNode = new Node;
         $initialNode = new Node([
             'active'            => true,
-            'value'             => $this->_initialNodeValue,             // this property must be initialized before (i.g., in constructor)
-            'optimistic_bound'  => $this->_initialNodeOptimisticBound,   // this property must be initialized before (i.g., in constructor)
-            'pessimistic_bound' => $this->_initialNodePessimisticBound,  // this property must be initialized before (i.g., in constructor)
+            'value'             => $this->getInitialNodeValue(),
+            'optimistic_bound'  => $this->getInitialNodeOptimisticBound(),
+            'pessimistic_bound' => $this->getInitialNodePessimisticBound(),
         ]);
 
         $rootNode->addChild($initialNode);
@@ -43,6 +44,8 @@ class AbstractSolver
                 }
             }
         }
+
+        return $currentBestNode;
     }
 
     protected function _getBestNodeFrom($nodes)

@@ -1,7 +1,7 @@
 <?php
 namespace Pdp;
 
-class Point
+class Point extends \Varien_Object
 {
     const TYPE_PICKUP   = 'pickup';
     const TYPE_DELIVERY = 'delivery';
@@ -9,18 +9,14 @@ class Point
     const TYPE_DEPOT = 'depot';
     const DEPOT_ID   = 0;
 
-    protected $type;
-    protected $id;
+    // protected $type;
+    // protected $id;
 
-    public $x, $y;
-    public $q;
+    // public $x, $y;
+    // public $q;
 
-    public function __construct($id, $x, $y, $type, $q = null)
+    public function getDistanceTo($point)
     {
-        $this->id   = $id;
-        $this->x    = (float)$x;
-        $this->y    = (float)$y;
-        $this->type = $type;
-        $this->q    = (float)$q;
+        return sqrt(pow($this->getX() - $point->getX(),2) + pow($this->getY() - $point->getY(),2));
     }
 }

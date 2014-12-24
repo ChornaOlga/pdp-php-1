@@ -1,19 +1,12 @@
 <?php
 namespace Common;
 
-class AbstractSolver
+abstract class AbstractSolver extends \Varien_Object
 {
     abstract public function getSolution();
 
-    protected $maximizeCost;
-    public function __construct($array)
-    {
-        // $this->depot              = $depot;
-        // $this->points             = $points;
-        $this->maximizeCost       = $maximizeCost;
-        // $this->checkLoading       = $checkLoading;
-        // $this->loadingCheckerFile = $loadingCheckerFile;
-    }
+    // necessaryData
+    //  maximize_cost: boolean
 
     /**
      * Compares 2 costs taking into account, whether user we want to maximize or minimize cost
@@ -34,7 +27,7 @@ class AbstractSolver
         }
         else
         {
-            if ($this->maximizeCost)
+            if ($this->getMaximizeCost())
             {
                $result = ($firstCost > $secondCost) ? 1 : -1;
             }

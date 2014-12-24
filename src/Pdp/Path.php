@@ -2,9 +2,28 @@
 
 // use Doctrine\Common\Collections;
 namespace Pdp;
-class Path// extends ArrayCollection
+class Path extends \Varien_Object
 {
     protected $points;
+
+    // necessaryData = <as in parent> +
+    //  points: array
+
+    public function getCost()
+    {
+        $result = 0;
+        $points = $this->getPoints();
+        $keys = array_keys($points);
+
+        // iterate throw points and sum distances (assuming that $points is array with numeric or NON-numeric keys)
+        for ($i = 0; $i < (count($points) - 1); $i++)
+        {
+            $point     = $points[$keys[$i]];
+            $nextPoint = $points[$keys[$i+1]];
+
+            $result   += $point->getDistanceTo($nextPoint);
+        }
+    }
 
     // public function addItem($obj, $key = null) {
     // }

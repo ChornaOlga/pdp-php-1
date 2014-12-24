@@ -1,5 +1,4 @@
 <?php
-// require_once 'autoload.php';
 require_once 'vendor/autoload.php';
 
 const SOLUTION_METHOD_BRANCH_AND_BOUND = 'branch_and_bound';
@@ -14,8 +13,17 @@ $pdpInfo = \Pdp\IO::read($pdpInfoFile);
 // var_dump($pdpInfo);
 
 $solverClass = ($solutionMethod == SOLUTION_METHOD_BRANCH_AND_BOUND) ? '\Pdp\Solver\BranchBoundSolver' : '\Pdp\Solver\CustomSolver';
-$solver      = new $solverClass($pdpInfo->depot, $pdpInfo->points, false , $checkLoading, $loadingCheckerFile);
-var_dump($solver);
+
+$solver = new $solverClass([
+    'depot'                => $pdpInfo->getDepot(),
+    'points'               => $pdpInfo->getPoints(),
+    'maximize_cost'        => false,
+    'check_loading'        => $checkLoading,
+    'loading_checker_file' => $loadingCheckerFile
+]);
+
+var_dump($solver->getSolution()->dataObject->getValue());
+// var_dump($solver);
 
 // $n = new \BranchBound\Node;
 // $n->a();

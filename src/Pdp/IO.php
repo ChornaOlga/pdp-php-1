@@ -5,13 +5,13 @@ class IO
 {
     public static function read($filename)
     {
-        $result         = new \StdClass;
-        $result->points = [];
+        $result = new \Varien_Object;
+        $points = [];
 
         if (file_exists($filename))
         {
             $data = explode("\r\n", file_get_contents($filename));
-            $result->count = (int) $data[0];
+            $count = (int) $data[0];
             unset($data[0]);
 
             foreach ($data as $row)
@@ -20,20 +20,23 @@ class IO
                 {
                     $pointInfo = explode(' ', $row);
 
-                    $x  = $pointInfo[1];
-                    $y  = $pointInfo[2];
-                    $q  = isset($pointInfo[3]) ? (float) str_replace(',', '.', $pointInfo[3]) : null;
-                    $id = ($pointInfo[0] == 'depot') ? Point::DEPOT_ID : $pointInfo[0];
+                    $newPoint = new \Varien_Object([
+                        'x'  => $pointInfo[1],
+                        'y'  => $pointInfo[2],
+                        'q'  => isset($pointInfo[3]) ? (float) str_replace(',', '.', $pointInfo[3]) : null,
+                        'id' => ($pointInfo[0] == 'depot') ? Point::DEPOT_ID : $pointInfo[0]
+                    ]);
 
+                    $id = $newPoint->getId();
                     if ($id == Point::DEPOT_ID)
                     {
-                        $pointType     = Point::TYPE_DEPOT;
-                        $result->depot = new Point($id, $x, $y, $pointType, $q);
+                        $pointType = Point::TYPE_DEPOT;
+                        $depot     = $newPoint;
                     }
                     else
                     {
-                        $pointType           = ($id <= $result->count) ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY;
-                        $result->points[$id] = new Point($id, $x, $y, $pointType, $q);
+                        $pointType   = ($id <= $count) ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY;
+                        $points[$id] = $newPoint;
                     }
                 }
                 catch (Exception $e)
@@ -46,6 +49,10 @@ class IO
         {
             throw new Exception("File {$filename} does not exist!");
         }
-        return $result;
+
+        return $result->setData([
+            'points' => $points,
+            'depot'  => $depot
+        ]);
     }
 }

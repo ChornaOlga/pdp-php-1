@@ -1,17 +1,25 @@
 <?php
 
 namespace Pdp\Solver;
-// !!! Move this class to general solvers. PDP solver should extend it
 class BranchBoundSolver extends \BranchBound\AbstractSolver
 {
+    // Needed data: <as in parent> +
+    //   depot:             \Pdp\Point
+    //   points:             array of \Pdp\Point
+    //   maximizeCost:       boolean
+    //   checkLoading:       boolean
+    //   loadingCheckerFile: string (path to checker file)
+
     public function __construct()
     {
-        $this->_initialNodeValue            = new \Pdp\Path;
-        $this->_initialNodeOptimisticBound  = ($this->maximizeCost) ? 0 : PHP_INT_MAX;
-        $this->_initialNodePessimisticBound = $this->_initialNodeOptimisticBound;
-    }
+        parent::__construct();
 
-    // PDP - specific methods
+        $optimisticBound = ($this->getMaximizeCost()) ? 0 : PHP_INT_MAX;
+
+        $this->setInitialNodeValue(new \Pdp\Path);
+        $this->setInitialNodeOptimisticBound($optimisticBound);
+        $this->setInitialNodePessimisticBound($optimisticBound);
+    }
 
     protected function _compareNodes($firstNode, $secondNode)
     {
@@ -25,16 +33,15 @@ class BranchBoundSolver extends \BranchBound\AbstractSolver
         {
             $initialNode = new Node([
                 'active'            => true,
-                'value'             => new \Pdp\Path($node->getValue(), rand(1,10))
-                'optimistic_bound'  => rand(1, 10)
-                'pessimistic_bound' => rand(1, 10)
+                'value'             => (new \Pdp\Path)->setPoints($node->getValue() + [rand(1,10)]),
+                'optimistic_bound'  => rand(1, 10),
+                'pessimistic_bound' => rand(1, 10),
             ]);
         }
     }
 
-    protected function _nodeIsCompleteSolution()
+    protected function _nodeIsCompleteSolution($node)
     {
         return (count($node->getValue()) == count($this->points));
     }
-
 }
