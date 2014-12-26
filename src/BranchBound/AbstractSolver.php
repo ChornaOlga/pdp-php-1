@@ -25,7 +25,7 @@ abstract class AbstractSolver extends \Common\AbstractSolver
         $rootNode->addChild($initialNode);
         $currentBestNode = $initialNode;
 
-        while ($activeNodes = $rootNode->getActiveNodes())
+        while ($activeNodes = $rootNode->getActiveChildren())
         {
             $branchingNode = $this->_getBestNodeFrom($activeNodes);
             $branchingNode->setActive(false);

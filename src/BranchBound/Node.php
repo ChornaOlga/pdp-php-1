@@ -1,8 +1,6 @@
 <?php
 namespace BranchBound;
 
-// use varien object!!!
-
 class Node extends \Tree\Node\Node
 {
     /**
@@ -31,5 +29,19 @@ class Node extends \Tree\Node\Node
     {
         $this->dataObject = new \Varien_Object;
         $this->dataObject->setData($data);
+    }
+
+    public function getActiveChildren()
+    {
+        $result = [];
+        foreach ($this->getChildren() as $child)
+        {
+            if ($child->getActive())
+            {
+                $result[] = $child;
+            }
+        }
+
+        return $result;
     }
 }
