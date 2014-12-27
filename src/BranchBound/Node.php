@@ -19,7 +19,7 @@ class Node extends \Tree\Node\Node
      */
     public function __call($method, $args)
     {
-        $this->dataObject->__call($method, $args);
+        return $this->dataObject->__call($method, $args);
     }
 
     /**
@@ -31,10 +31,34 @@ class Node extends \Tree\Node\Node
         $this->dataObject->setData($data);
     }
 
-    public function getActiveChildren()
+    protected function _getChildrenRecursiveOf($currentNode)
     {
         $result = [];
-        foreach ($this->getChildren() as $child)
+        foreach ($currentNode->getChildren() as $child)
+        {
+            if ($child->isLeaf())
+            {
+                $result[] = $child;
+            }
+            else
+            {
+                $result += $this->_getChildrenRecursiveOf($child);
+            }
+        }
+
+        return $result;
+    }
+
+    public function getChildrenRecursive()
+    {
+        return $this->_getChildrenRecursiveOf($this);
+    }
+
+
+    public function getActiveChildrenRecursive()
+    {
+        $result = [];
+        foreach ($this->getChildrenRecursive() as $child)
         {
             if ($child->getActive())
             {

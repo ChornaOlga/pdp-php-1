@@ -16,13 +16,13 @@ $solverClass = ($solutionMethod == SOLUTION_METHOD_BRANCH_AND_BOUND) ? '\Pdp\Sol
 
 $solver = new $solverClass([
     'depot'                => $pdpInfo->getDepot(),
-    'points'               => $pdpInfo->getPoints(),
+    'points'           => $pdpInfo->getPoints(),
     'maximize_cost'        => false,
     'check_loading'        => $checkLoading,
     'loading_checker_file' => $loadingCheckerFile
 ]);
 
-var_dump($solver->getSolution()->dataObject->getValue());
+var_dump($solver->getSolution()->dataObject->getContent()->getPoints());
 // var_dump($solver);
 
 // $n = new \BranchBound\Node;

@@ -1,5 +1,6 @@
 <?php
-
+use \BranchBound;
+use \Pdp;
 namespace Pdp\Solver;
 class BranchBoundSolver extends \BranchBound\AbstractSolver
 {
@@ -10,13 +11,13 @@ class BranchBoundSolver extends \BranchBound\AbstractSolver
     //   checkLoading:       boolean
     //   loadingCheckerFile: string (path to checker file)
 
-    public function __construct()
+    public function __construct($data)
     {
-        parent::__construct();
+        parent::__construct($data);
 
         $optimisticBound = ($this->getMaximizeCost()) ? 0 : PHP_INT_MAX;
 
-        $this->setInitialNodeValue(new \Pdp\Path);
+        $this->setInitialNodeContent(new \Pdp\Path);
         $this->setInitialNodeOptimisticBound($optimisticBound);
         $this->setInitialNodePessimisticBound($optimisticBound);
     }
@@ -29,19 +30,28 @@ class BranchBoundSolver extends \BranchBound\AbstractSolver
 
     protected function _generateChildrenOf($node)
     {
-        foreach (range(1, 3) as $i)
+        $result = [];
+        if (!$this->_nodeIsCompleteSolution($node))
         {
-            $initialNode = new Node([
-                'active'            => true,
-                'value'             => (new \Pdp\Path)->setPoints($node->getValue() + [rand(1,10)]),
-                'optimistic_bound'  => rand(1, 10),
-                'pessimistic_bound' => rand(1, 10),
-            ]);
+            $unusedPointsCount = count($this->getPoints()) - $node->getContent()->getPointsCount();
+            for ($i = 1; $i <= $unusedPointsCount; $i++)
+            {
+                $newPath  = new \Pdp\Path;
+                $points   = $node->getContent()->getPoints();
+                $points[] = $this->getPoints()[$i];
+
+                $result[] = new \BranchBound\Node([
+                    'content'           => $newPath->setPoints($points),
+                    'optimistic_bound'  => ($node->getOptimisticBound() == PHP_INT_MAX) ? rand(1, 10) : $node->getOptimisticBound() + rand(1, 10)
+                    // 'pessimistic_bound' => rand(1, 10),
+                ]);
+            }
         }
+        return $result;
     }
 
     protected function _nodeIsCompleteSolution($node)
     {
-        return (count($node->getValue()) == count($this->points));
+        return ($node->getContent()->getPointsCount() == count($this->getPoints()));
     }
 }

@@ -4,7 +4,7 @@ namespace BranchBound;
 abstract class AbstractSolver extends \Common\AbstractSolver
 {
     // necessaryData = <as in parent> +
-    //  initial_node_value:             mixed
+    //  initial_node_content:             mixed
     //  initial_node_optimistic_bound:  float
     //  initial_node_pessimistic_bound: float
 
@@ -14,10 +14,10 @@ abstract class AbstractSolver extends \Common\AbstractSolver
 
     public function getSolution()
     {
-        $rootNode = new Node;
-        $initialNode = new Node([
+        $rootNode = new \BranchBound\Node;
+        $initialNode = new \BranchBound\Node([
             'active'            => true,
-            'value'             => $this->getInitialNodeValue(),
+            'content'           => $this->getInitialNodeContent(),
             'optimistic_bound'  => $this->getInitialNodeOptimisticBound(),
             'pessimistic_bound' => $this->getInitialNodePessimisticBound(),
         ]);
@@ -25,7 +25,7 @@ abstract class AbstractSolver extends \Common\AbstractSolver
         $rootNode->addChild($initialNode);
         $currentBestNode = $initialNode;
 
-        while ($activeNodes = $rootNode->getActiveChildren())
+        while ($activeNodes = $rootNode->getActiveChildrenRecursive())
         {
             $branchingNode = $this->_getBestNodeFrom($activeNodes);
             $branchingNode->setActive(false);
@@ -34,9 +34,9 @@ abstract class AbstractSolver extends \Common\AbstractSolver
             foreach ($branchingNode->getChildren() as $newNode)
             {
                 // if new node is better (or has better evaluation) than current best node
-                if ($this->_compareNodes($newNode, $currentBestNode()) > -1)
+                if ($this->_compareNodes($newNode, $currentBestNode) > -1)
                 {
-                    ($this->_nodeIsCompleteSolution($node)) ? $currentBestNode = $newNode : $newNode->setActive(true);
+                    ($this->_nodeIsCompleteSolution($newNode)) ? ($currentBestNode = $newNode) : $newNode->setActive(true);
                 }
                 else
                 {

@@ -4,10 +4,13 @@
 namespace Pdp;
 class Path extends \Varien_Object
 {
-    protected $points;
-
     // necessaryData = <as in parent> +
     //  points: array
+
+    function __construct()
+    {
+        $this->setPoints([]);
+    }
 
     public function getCost()
     {
@@ -23,6 +26,12 @@ class Path extends \Varien_Object
 
             $result   += $point->getDistanceTo($nextPoint);
         }
+    }
+
+    public function getPointsCount()
+    {
+        $points = $this->getPoints();
+        return (is_array($points)) ? count($points) : 0;
     }
 
     // public function addItem($obj, $key = null) {
