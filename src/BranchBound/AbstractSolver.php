@@ -1,6 +1,6 @@
 <?php
 namespace BranchBound;
-
+use \BranchBound\Node;
 abstract class AbstractSolver extends \Common\AbstractSolver
 {
     // necessaryData = <as in parent> +
@@ -14,8 +14,8 @@ abstract class AbstractSolver extends \Common\AbstractSolver
 
     public function getSolution()
     {
-        $rootNode = new \BranchBound\Node;
-        $initialNode = new \BranchBound\Node([
+        $rootNode = new Node;
+        $initialNode = new Node([
             'active'            => true,
             'content'           => $this->getInitialNodeContent(),
             'optimistic_bound'  => $this->getInitialNodeOptimisticBound(),

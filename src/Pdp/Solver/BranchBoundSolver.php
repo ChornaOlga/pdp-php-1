@@ -1,7 +1,9 @@
 <?php
-use \BranchBound;
-use \Pdp;
 namespace Pdp\Solver;
+
+use BranchBound\Node;
+use Pdp\Path;
+
 class BranchBoundSolver extends \BranchBound\AbstractSolver
 {
     // Needed data: <as in parent> +
@@ -17,7 +19,7 @@ class BranchBoundSolver extends \BranchBound\AbstractSolver
 
         $optimisticBound = ($this->getMaximizeCost()) ? 0 : PHP_INT_MAX;
 
-        $this->setInitialNodeContent(new \Pdp\Path);
+        $this->setInitialNodeContent(new Path);
         $this->setInitialNodeOptimisticBound($optimisticBound);
         $this->setInitialNodePessimisticBound($optimisticBound);
     }
@@ -36,11 +38,11 @@ class BranchBoundSolver extends \BranchBound\AbstractSolver
             $unusedPointsCount = count($this->getPoints()) - $node->getContent()->getPointsCount();
             for ($i = 1; $i <= $unusedPointsCount; $i++)
             {
-                $newPath  = new \Pdp\Path;
+                $newPath  = new Path;
                 $points   = $node->getContent()->getPoints();
                 $points[] = $this->getPoints()[$i];
 
-                $result[] = new \BranchBound\Node([
+                $result[] = new Node([
                     'content'           => $newPath->setPoints($points),
                     'optimistic_bound'  => ($node->getOptimisticBound() == PHP_INT_MAX) ? rand(1, 10) : $node->getOptimisticBound() + rand(1, 10)
                     // 'pessimistic_bound' => rand(1, 10),
