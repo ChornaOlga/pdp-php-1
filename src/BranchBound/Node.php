@@ -1,5 +1,5 @@
 <?php
-namespace BranchBound;
+namespace Litvinenko\Combinatorics\BranchBound;
 
 class Node extends \Tree\Node\Node
 {

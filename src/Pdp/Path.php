@@ -1,7 +1,6 @@
 <?php
 
-// use Doctrine\Common\Collections;
-namespace Pdp;
+namespace Litvinenko\Combinatorics\Pdp;
 class Path extends \Varien_Object
 {
     // necessaryData = <as in parent> +

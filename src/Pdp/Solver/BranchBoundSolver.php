@@ -1,10 +1,10 @@
 <?php
-namespace Pdp\Solver;
+namespace Litvinenko\Combinatorics\Pdp\Solver;
 
-use BranchBound\Node;
-use Pdp\Path;
+use Litvinenko\Combinatorics\BranchBound\Node;
+use Litvinenko\Combinatorics\Pdp\Path;
 
-class BranchBoundSolver extends \BranchBound\AbstractSolver
+class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
 {
     // Needed data: <as in parent> +
     //   depot:             \Pdp\Point

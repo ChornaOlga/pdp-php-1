@@ -1,5 +1,5 @@
 <?php
-namespace Pdp;
+namespace Litvinenko\Combinatorics\Pdp;
 
 class IO
 {

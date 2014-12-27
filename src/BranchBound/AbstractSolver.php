@@ -1,7 +1,7 @@
 <?php
-namespace BranchBound;
-use \BranchBound\Node;
-abstract class AbstractSolver extends \Common\AbstractSolver
+namespace Litvinenko\Combinatorics\BranchBound;
+use Litvinenko\Combinatorics\BranchBound\Node;
+abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\AbstractSolver
 {
     // necessaryData = <as in parent> +
     //  initial_node_content:             mixed

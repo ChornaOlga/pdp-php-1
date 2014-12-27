@@ -1,5 +1,5 @@
 <?php
-namespace Common;
+namespace Litvinenko\Combinatorics\Common;
 
 abstract class AbstractSolver extends \Varien_Object
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Pdp;
+namespace Litvinenko\Combinatorics\Pdp;
 
 class Point extends \Varien_Object
 {
