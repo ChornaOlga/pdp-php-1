@@ -20,7 +20,7 @@ class IO
                 {
                     $pointInfo = explode(' ', $row);
 
-                    $newPoint = new \Varien_Object([
+                    $newPoint = new Point([
                         'x'  => $pointInfo[1],
                         'y'  => $pointInfo[2],
                         'q'  => isset($pointInfo[3]) ? (float) str_replace(',', '.', $pointInfo[3]) : null,

@@ -2,8 +2,10 @@
 
 namespace Litvinenko\Combinatorics\Common\Generators\Recursive;
 
-abstract class PermutationWithRepetitions extends RegularSet
+class PermutationWithRepetitionsGenerator extends RegularSetGenerator
 {
+    // necessary data: <parent data>
+
     protected function _getSuccessiveElements($tuple)
     {
         return $this->getGeneratingElements();

@@ -8,6 +8,6 @@
         },
         "autoload": {
             "psr-4": {"Litvinenko\\Combinatorics\\": "src"},
-            "files": ["src/Lib/Varien_Object.php"]
+            "files": ["src/Lib/Varien_Object.php", "src/Lib/functions.php"]
         }
 }

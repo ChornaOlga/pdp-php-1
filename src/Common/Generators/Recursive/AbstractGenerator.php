@@ -2,25 +2,34 @@
 
 namespace Litvinenko\Combinatorics\Common\Generators\Recursive;
 
-abstract class Abstract extends Litvinenko\Combinatorics\Common\Generators\Abstract
+abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Generators\AbstractGenerator
 {
     // necessary data: <parent data> +
     //   initial_object mixed
 
     /**
-     * Generates all possible objects which can be after given object
-     * @param mixed $object
+     * Generates all child objects of given object and returns them
+     *
+     * @param  mixed $object
+     *
      * @return array
      */
-    abstract public function generateNextObject($object);
+    abstract public function generateNextObjects($object);
 
     /**
-     * Returns TRUE if object is complete (i.e., if we need to generate permutation of N objects and current permutation have N elements)
-     * @param type $object
-     * @return type
+     * Returns TRUE if object is full and can't have child objects (i.e., if we need to generate permutation of N objects and current permutation have N elements)
+     *
+     * @param  mixed $object
+     *
+     * @return bool
      */
     abstract public function objectIsComplete($object);
 
+    /**
+     * Returns ALL generated objects
+     *
+     * @return array
+     */
     public function generateAll()
     {
         return $this->_generate($this->getInitialObject());
@@ -35,7 +44,7 @@ abstract class Abstract extends Litvinenko\Combinatorics\Common\Generators\Abstr
         else
         {
             $result = [];
-            foreach ($this->generateNextObject($object) as $nextObject)
+            foreach ($this->generateNextObjects($object) as $nextObject)
             {
                 $result[] = $this->_generate($nextObject);
             }

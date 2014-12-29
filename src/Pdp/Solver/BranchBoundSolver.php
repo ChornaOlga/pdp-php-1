@@ -3,6 +3,8 @@ namespace Litvinenko\Combinatorics\Pdp\Solver;
 
 use Litvinenko\Combinatorics\BranchBound\Node;
 use Litvinenko\Combinatorics\Pdp\Path;
+use Litvinenko\Combinatorics\Pdp\Point;
+use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetitionsGenerator as Generator;
 
 class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
 {
@@ -35,15 +37,18 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         $result = [];
         if (!$this->_nodeIsCompleteSolution($node))
         {
-            $unusedPointsCount = count($this->getPoints()) - $node->getContent()->getPointsCount();
-            for ($i = 1; $i <= $unusedPointsCount; $i++)
-            {
-                $newPath  = new Path;
-                $points   = $node->getContent()->getPoints();
-                $points[] = $this->getPoints()[$i];
+            $generator = new Generator([
+                'tuple_length'        => Point::getPointCount($this->getPoints()),
+                'generating_elements' => $this->_getGeneratorDataFromPoints($this->getPoints())
+            ]);
 
+            $points    = $this->_getGeneratorDataFromPoints($node->getContent()->getPoints());
+            $newPointSequences = $this->_getPointsFromGeneratorData($generator->generateNextObjects($points));
+
+            foreach ($newPointSequences as $newPointSequence)
+            {
                 $result[] = new Node([
-                    'content'           => $newPath->setPoints($points),
+                    'content'           => new Path(['points' => $newPointSequence]),
                     'optimistic_bound'  => ($node->getOptimisticBound() == PHP_INT_MAX) ? rand(1, 10) : $node->getOptimisticBound() + rand(1, 10)
                     // 'pessimistic_bound' => rand(1, 10),
                 ]);
@@ -54,6 +59,38 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
     protected function _nodeIsCompleteSolution($node)
     {
-        return ($node->getContent()->getPointsCount() == count($this->getPoints()));
+        return ($node->getContent()->getPointsCount() == Point::getPointCount($this->getPoints()));
     }
+
+    protected function _getGeneratorDataFromPoints($points)
+    {
+        $result = [];
+        foreach ($points as $point)
+        {
+            $result[] = [
+                'id'                  => $point->getId(),
+                'value'               => $point,
+                'combinatorial_value' => $point->getCombinatorialValue()
+            ];
+        }
+
+        return $result;
+    }
+
+    protected function _getPointsFromGeneratorData($generatorData)
+    {
+        $result = [];
+        foreach ($generatorData as $pointSequence)
+        {
+            $sequence = [];
+            foreach ($pointSequence as $point)
+            {
+                $sequence[] = $point['value'];
+            }
+            $result[] = $sequence;
+        }
+
+        return $result;
+    }
+
 }

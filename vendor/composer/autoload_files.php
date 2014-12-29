@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     $baseDir . '/src/Lib/Varien_Object.php',
+    $baseDir . '/src/Lib/functions.php',
 );
