@@ -1,60 +1,48 @@
 <?php
-require 'vendor/autoload.php';
-
-class Point extends \Varien_Object
+class Father
 {
-    const TYPE_PICKUP   = 'pickup';
-    const TYPE_DELIVERY = 'delivery';
+    public static $necessaryData=['a','b','c'];
+    public function __construct($data)
+    {
+        $this->validateNecessaryData($data, self::$necessaryData);
+    }
 
-    const TYPE_DEPOT = 'depot';
-    const DEPOT_ID   = 0;
+    protected function validateNecessaryData($actualData, $necessaryData)
+    {
+        $absentParams    = [];
+        $actualParams    = array_keys($actualData);
+        $necessaryParams = $necessaryData;
 
+            var_dump($actualParams);
+            var_dump($necessaryParams);
+        foreach ($necessaryParams as $necessaryParam)
+        {
+            if (!in_array( $necessaryParam, $actualParams))
+            {
+                $absentParams[] = $necessaryParam;
+            }
+        }
 
-    // protected $type;
-    // protected $id;
-
-    // public $x, $y;
-    // public $q;
-
-    // public function __construct($id, $x, $y, $type, $q = null)
-    // {
-    //     $this->id   = $id;
-    //     $this->x    = (float)$x;
-    //     $this->y    = (float)$y;
-    //     $this->type = $type;
-    //     $this->q    = (float)$q;
-    // }
-
-    // function __call($method, $params)
-    // {
-    //     $var = strtolower(substr($method, 3));
-
-    //     if (strncasecmp($method, "get", 3))
-    //     {
-    //         return $this->$var;
-    //     }
-    // }
+var_dump($absentParams);
+        throw new Exception ("Class ". get_class($this) . " can't initialize due to missing necessary data: " . implode(', ', $absentParams));
+        exit;
+    }
 }
 
-$a = new Point;
-$a->setData([
-    'x' => 123]);
-var_dump($a->getX());
-var_dump($a->getOlolo());
-// require 'vendor/autoload.php';
-// $c = new Doctrine\Common\Collections\ArrayCollection;
-// $c->add(123);
-// $c->add(456);
+class Son extends Father
+{
+    // public static $necessaryData=['d','e','f'];
+    public function __construct($data)
+    {
+        // $this->validateNecessaryData($data, self::$necessaryData);
+        // $this->necessaryData = array_merge(parent::$necessaryData, $necessaryData);
+        self::$necessaryData = array_merge(parent::$necessaryData, [
+            'd',
+            'e',
+            'f'
+        ]);
+        parent::__construct($data);
+    }
+}
 
-// var_dump($c->getValues());
-// $a=new StdClass;
-// $a->name='a_name';
-
-// $b=new StdClass;
-// $b->name='b_name';
-
-// $ar = [&$a, $b];
-// var_dump($ar);
-
-// unset($ar[0]);
-// var_dump($a);
+new Son(['a' => 1, 'd' => 1, 'e' => 1, 'f' => 1]);
