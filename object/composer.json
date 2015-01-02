@@ -1,0 +1,13 @@
+{
+    "require": {
+        "illuminate/validation": "*",
+        "illuminate/translation": "~4.2",
+        "illuminate/container": "~4.2",
+        "illuminate/database": "~4.2",
+        // "symfony/config": "~2.6",
+        },
+        "autoload": {
+            "psr-4": {"Litvinenko\\Common\\": "src"},
+            "files": ["src/Lib/Varien_Object.php", "src/Lib/functions.php"]
+        }
+}
