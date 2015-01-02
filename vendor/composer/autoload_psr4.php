@@ -6,5 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Litvinenko\\Common\\' => array($vendorDir . '/litvinenko/object/src'),
     'Litvinenko\\Combinatorics\\' => array($baseDir . '/src'),
 );

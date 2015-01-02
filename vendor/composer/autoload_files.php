@@ -7,6 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     $vendorDir . '/illuminate/support/Illuminate/Support/helpers.php',
-    $baseDir . '/src/Lib/Varien_Object.php',
+    $vendorDir . '/litvinenko/object/src/Lib/Varien_Object.php',
     $baseDir . '/src/Lib/functions.php',
 );

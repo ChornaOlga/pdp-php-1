@@ -2,17 +2,13 @@
     "require": {
         "nicmart/tree": "~0.2",
         "doctrine/collections": "1.2",
-        "illuminate/validation": "*",
-        "symfony/config": "~2.6",
-        "illuminate/translation": "~4.2",
-        "illuminate/container": "~4.2",
-        "illuminate/database": "~4.2"
+        "litvinenko/object": "dev-master"
         },
         "require-dev": {
             "phpunit/phpunit": "4.3.*"
         },
         "autoload": {
             "psr-4": {"Litvinenko\\Combinatorics\\": "src"},
-            "files": ["src/Lib/Varien_Object.php", "src/Lib/functions.php"]
+            "files": ["src/Lib/functions.php"]
         }
 }
