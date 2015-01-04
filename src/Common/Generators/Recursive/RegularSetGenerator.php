@@ -4,18 +4,17 @@ namespace Litvinenko\Combinatorics\Common\Generators\Recursive;
 
 abstract class RegularSetGenerator extends AbstractGenerator
 {
-    // necessary data: <parent data> +
-    //   tuple_length        int
-    //   generating_elements array
-    //
-    //   initial_object is initialized in constructor
+    protected $dataRules = array(
+        'generating_elements' => 'required|array',
+        'tuple_length'        => 'required|integer_strict',
+        'initial_object'      => 'required|array'
+    );
 
     abstract protected function _getSuccessiveElements($tuple);
 
-    public function __construct($data)
+    public function _construct()
     {
-        parent::__construct($data);
-
+        parent::_construct();
         $this->setInitialObject([]);
     }
 

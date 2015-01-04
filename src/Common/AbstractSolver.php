@@ -1,12 +1,13 @@
 <?php
 namespace Litvinenko\Combinatorics\Common;
 
-abstract class AbstractSolver extends \Varien_Object
+abstract class AbstractSolver extends \Litvinenko\Common\Object
 {
-    abstract public function getSolution();
+    protected $dataRules = array(
+        'maximize_cost' => 'required|boolean'
+    );
 
-    // necessaryData
-    //  maximize_cost: boolean
+    abstract public function getSolution();
 
     /**
      * Compares 2 costs taking into account, whether user we want to maximize or minimize cost

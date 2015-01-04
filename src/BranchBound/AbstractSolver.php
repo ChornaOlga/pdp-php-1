@@ -3,10 +3,12 @@ namespace Litvinenko\Combinatorics\BranchBound;
 use Litvinenko\Combinatorics\BranchBound\Node;
 abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\AbstractSolver
 {
-    // necessaryData = <as in parent> +
-    //  initial_node_content:             mixed
-    //  initial_node_optimistic_bound:  float
-    //  initial_node_pessimistic_bound: float
+    protected $dataRules = array(
+        'maximize_cost'                  => 'required|boolean',
+        'initial_node_content'           => 'required',
+        'initial_node_optimistic_bound'  => 'required|float_strict',
+        'initial_node_pessimistic_bound' => 'required|float_strict'
+    );
 
     abstract protected function _compareNodes($firstNode, $secondNode);
     abstract protected function _generateChildrenOf($node);

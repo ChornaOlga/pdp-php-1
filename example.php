@@ -1,40 +1,26 @@
 <?php
 require 'vendor/autoload.php';
 
-class RealObject extends Litvinenko\Common\Object
+class User extends Litvinenko\Common\Object
 {
-    public function __construct($data)
-    {
-        self::$dataRules = array_merge(parent::$dataRules, array(
-            'title'   => 'required|integer|between:3,255',
-            'email'   => 'required|email',
-            'user_id' => 'integer',
-            ));
+    const A = 'a';
+    protected $dataRules;
 
-        parent::__construct($data);
+    public function _construct()
+    {
+        $this->dataRules = array(
+            // 'login'   => 'required|in:'.self::A.',b,c',
+            // 'email'   => 'required|email',
+            'user_id' => 'required|integer_strict|less_than:2',
+        );
     }
 }
 
-class ChildObject extends RealObject
-{
-    public function __construct($data)
-    {
-        self::$dataRules = array_merge(parent::$dataRules, array(
-            'text' => 'required',
-            ));
+$user = new User([
+    // 'login'   => 'c',
+    // 'email'   => 'some_email@gmail.com',
+    'user_id' => 3,
+]);
 
-        parent::__construct($data);
-    }
-}
-
-$data = [
-    'title'   => 4,
-    'user_id' => 'not_number',
-    'email'   => 'some_email@gmail.com',
-];
-
-$parent = new RealObject($data);
-$child  = new ChildObject($data);
-
-var_dump($parent->getValidationErrors());
-var_dump($child->getValidationErrors());
+echo ($user->isValid()) ? "User is valid\n" : "User is invalid\n";
+print_r($user->getValidationErrors());

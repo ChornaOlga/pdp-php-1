@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e793a7f4def5cbcfc289317a3d618017",
+    "hash": "dd5677bce149468dd7aa0820bd349fd2",
     "packages": [
         {
             "name": "doctrine/collections",
@@ -304,12 +304,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/absent1706/extended_varien_object.git",
-                "reference": "5a9731a48d83c38d89667eecdbe25261e7647216"
+                "reference": "a56fa557f45668840ea34377674d245dd731d2da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/absent1706/extended_varien_object/zipball/5a9731a48d83c38d89667eecdbe25261e7647216",
-                "reference": "5a9731a48d83c38d89667eecdbe25261e7647216",
+                "url": "https://api.github.com/repos/absent1706/extended_varien_object/zipball/a56fa557f45668840ea34377674d245dd731d2da",
+                "reference": "a56fa557f45668840ea34377674d245dd731d2da",
                 "shasum": ""
             },
             "require": {
@@ -324,12 +324,13 @@
                     "Litvinenko\\Common\\": "src"
                 },
                 "files": [
-                    "src/Lib/Varien_Object.php"
+                    "src/Lib/Varien_Object.php",
+                    "bootstrap.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Litvinenko\\Common\\Object class that powers Varien Object class with data validation rules taken from 'illuminate\\validation' package",
-            "time": "2015-01-02 11:47:19"
+            "time": "2015-01-04 20:27:36"
         },
         {
             "name": "nicmart/tree",

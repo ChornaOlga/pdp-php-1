@@ -4,8 +4,10 @@ namespace Litvinenko\Combinatorics\Common\Generators\Recursive;
 
 abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Generators\AbstractGenerator
 {
-    // necessary data: <parent data> +
-    //   initial_object mixed
+    protected $dataRules = array(
+        'generating_elements' => 'required|array',
+        'initial_object'      => 'required'
+    );
 
     /**
      * Generates all child objects of given object and returns them
@@ -52,5 +54,4 @@ abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Genera
 
         return $result;
     }
-
 }

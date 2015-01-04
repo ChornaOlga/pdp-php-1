@@ -23,10 +23,10 @@ $solver = new $solverClass([
     'loading_checker_file' => $loadingCheckerFile
 ]);
 
-foreach ($solver->getSolution()->dataObject->getContent()->getPoints() as $point)
-{
-    echo $point->getId(). " ";
-}
+// foreach ($solver->getSolution()->dataObject->getContent()->getPoints() as $point)
+// {
+//     echo $point->getId(). " ";
+// }
 // var_dump($solver);
 
 // $n = new \BranchBound\Node;

@@ -54,7 +54,6 @@ class Node extends \Tree\Node\Node
         return $this->_getChildrenRecursiveOf($this);
     }
 
-
     public function getActiveChildrenRecursive()
     {
         $result = [];

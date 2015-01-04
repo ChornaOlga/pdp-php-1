@@ -8,16 +8,23 @@ use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetiti
 
 class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
 {
-    // Needed data: <as in parent> +
-    //   depot:             \Pdp\Point
-    //   points:             array of \Pdp\Point
-    //   maximizeCost:       boolean
-    //   checkLoading:       boolean
-    //   loadingCheckerFile: string (path to checker file)
+    protected $dataRules = array(
+        // rules from abstract solver
+        'maximize_cost'                  => 'required|boolean',
+        'initial_node_content'           => 'required',
+        'initial_node_optimistic_bound'  => 'required|float_strict',
+        'initial_node_pessimistic_bound' => 'required|float_strict',
 
-    public function __construct($data)
+        // specifically data rules for this class
+        'depot'                => 'required|object:\Litvinenko\Combinatorics\Pdp\Point',
+        'points'               => 'required|array',
+        'check_loading'        => 'required|boolean',
+        'loading_checker_file' => 'required'
+    );
+
+    public function _construct()
     {
-        parent::__construct($data);
+        parent::_construct();
 
         $optimisticBound = ($this->getMaximizeCost()) ? 0 : PHP_INT_MAX;
 

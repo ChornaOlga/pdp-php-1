@@ -2,10 +2,11 @@
 
 namespace Litvinenko\Combinatorics\Common\Generators;
 
-abstract class AbstractGenerator extends \Varien_Object
+abstract class AbstractGenerator extends \Litvinenko\Common\Object
 {
-    // necessary data:
-    //  generating_elements array
+    protected $dataRules = array(
+        'generating_elements' => 'required|array'
+    );
 
     abstract public function generateAll();
 }

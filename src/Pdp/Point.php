@@ -1,19 +1,22 @@
 <?php
 namespace Litvinenko\Combinatorics\Pdp;
 
-class Point extends \Varien_Object
+class Point extends \Litvinenko\Common\Object
 {
     const TYPE_PICKUP   = 'pickup';
     const TYPE_DELIVERY = 'delivery';
+    const TYPE_DEPOT    = 'depot';
+    const DEPOT_ID      = 0;
 
-    const TYPE_DEPOT = 'depot';
-    const DEPOT_ID   = 0;
-
-    // protected $type;
-    // protected $id;
-
-    // public $x, $y;
-    // public $q;
+    public function _construct()
+    {
+        $this->dataRules = array(
+            'id'      => 'required',
+            'type'    => 'required|in:' . self::TYPE_PICKUP . ',' . self::TYPE_DELIVERY . ',' . self::TYPE_DEPOT,
+            'x'       => 'required|float_strict',
+            'y'       => 'required|float_strict',
+        );
+    }
 
     public function getDistanceTo($point)
     {

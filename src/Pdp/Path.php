@@ -1,12 +1,13 @@
 <?php
 
 namespace Litvinenko\Combinatorics\Pdp;
-class Path extends \Varien_Object
+class Path extends \Litvinenko\Common\Object
 {
-    // necessaryData = <as in parent> +
-    //  points: array
+    protected $dataRules = array(
+        'points' => 'required|array'
+    );
 
-    function __construct()
+    function _construct()
     {
         $this->setPoints([]);
     }

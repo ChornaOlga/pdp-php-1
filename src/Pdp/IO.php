@@ -21,8 +21,8 @@ class IO
                     $pointInfo = explode(' ', $row);
 
                     $newPoint = new Point([
-                        'x'  => $pointInfo[1],
-                        'y'  => $pointInfo[2],
+                        'x'  => floatval($pointInfo[1]),
+                        'y'  => floatval($pointInfo[2]),
                         'q'  => isset($pointInfo[3]) ? (float) str_replace(',', '.', $pointInfo[3]) : null,
                         'id' => ($pointInfo[0] == 'depot') ? Point::DEPOT_ID : $pointInfo[0]
                     ]);
@@ -30,24 +30,29 @@ class IO
                     $id = $newPoint->getId();
                     if ($id == Point::DEPOT_ID)
                     {
-                        $pointType = Point::TYPE_DEPOT;
-                        $depot     = $newPoint;
+                        $newPoint->setType(Point::TYPE_DEPOT);
+                        $depot = $newPoint;
                     }
                     else
                     {
-                        $pointType   = ($id <= $count) ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY;
+                        $newPoint->setType( ($id <= $count) ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY );
                         $points[$id] = $newPoint;
+                    }
+
+                    if ($newPoint->isInvalid())
+                    {
+                        throw new \Exception ("Point #{$id} is invalid: " . print_r($newPoint->getValidationErrors(), true));
                     }
                 }
                 catch (Exception $e)
                 {
-                    throw new Exception("Can't read row " . key($data) . ": ". $e->getMessage());
+                    throw new \Exception("Can't read row " . key($data) . ": ". $e->getMessage());
                 }
             }
         }
         else
         {
-            throw new Exception("File {$filename} does not exist!");
+            throw new \Exception("File {$filename} does not exist!");
         }
 
         return $result->setData([
