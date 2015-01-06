@@ -2,6 +2,7 @@
 namespace Litvinenko\Combinatorics\Pdp\Solver;
 
 use Litvinenko\Combinatorics\BranchBound\Node;
+use Litvinenko\Combinatorics\Pdp\Helper;
 use Litvinenko\Combinatorics\Pdp\Path;
 use Litvinenko\Combinatorics\Pdp\Point;
 use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetitionsGenerator as Generator;
@@ -31,6 +32,16 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         $this->setInitialNodeContent(new Path);
         $this->setInitialNodeOptimisticBound($optimisticBound);
         $this->setInitialNodePessimisticBound($optimisticBound);
+
+        $this->setHelper(new Helper);
+    }
+
+    public function getSolution()
+    {
+        $this->getHelper()->validate($this);
+        $this->getHelper()->validate($this->getPoints());
+        
+        return parent::getSolution();
     }
 
     protected function _compareNodes($firstNode, $secondNode)
@@ -50,12 +61,13 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
             ]);
 
             $points    = $this->_getGeneratorDataFromPoints($node->getContent()->getPoints());
-            $newPointSequences = $this->_getPointsFromGeneratorData($generator->generateNextObjects($points));
-
+            $newPointSequences = $this->_getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
+            /// TODO: !! завернуть PointSequences в класс, который имеет метод __toString
             foreach ($newPointSequences as $newPointSequence)
             {
+                $path = new Path(['points' => $newPointSequence]);
                 $result[] = new Node([
-                    'content'           => new Path(['points' => $newPointSequence]),
+                    'content'           => $path,
                     'optimistic_bound'  => ($node->getOptimisticBound() == PHP_INT_MAX) ? rand(1, 10) : $node->getOptimisticBound() + rand(1, 10)
                     // 'pessimistic_bound' => rand(1, 10),
                 ]);
@@ -84,7 +96,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         return $result;
     }
 
-    protected function _getPointsFromGeneratorData($generatorData)
+    protected function _getPointSequencesFromGeneratorData($generatorData)
     {
         $result = [];
         foreach ($generatorData as $pointSequence)
@@ -99,5 +111,4 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
         return $result;
     }
-
 }

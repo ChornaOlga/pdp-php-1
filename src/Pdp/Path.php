@@ -9,7 +9,7 @@ class Path extends \Litvinenko\Common\Object
 
     function _construct()
     {
-        $this->setPoints([]);
+        if (!$this->hasPoints()) $this->setPoints([]);
     }
 
     public function getCost()
