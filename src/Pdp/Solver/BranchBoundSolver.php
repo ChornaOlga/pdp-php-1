@@ -7,6 +7,7 @@ use Litvinenko\Combinatorics\Pdp\Path;
 use Litvinenko\Combinatorics\Pdp\Point;
 use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetitionsGenerator as Generator;
 
+use Litvinenko\Common\App;
 class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
 {
     protected $dataRules = array(
@@ -40,7 +41,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
     {
         $this->getHelper()->validate($this);
         $this->getHelper()->validate($this->getPoints());
-        
+
         return parent::getSolution();
     }
 
@@ -110,5 +111,10 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         }
 
         return $result;
+    }
+
+    protected function _logEvent($eventName, $params)
+    {
+        App::dispatchEvent("branch_bound_{$eventName}");
     }
 }

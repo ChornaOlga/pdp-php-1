@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config> <!-- root element. don't care about it-->
+    <events> <!-- element containing all event info -->
+        <branch_bound_step_begin> <!-- event name. first param for App:dispatchEvent method -->
+            <observers> <!-- all observers for current event -->
+                <logger_observer> <!-- unique observer name -->
+                    <class>\StepLogger</class> <!-- observer class -->
+                    <method>logStepBegin</method> <!-- observer method to be called -->
+                    <singleton>1</singleton>
+                </logger_observer>
+            </observers>
+        </branch_bound_step_begin>
+    </events>
+    <developer_mode>0</developer_mode> <!-- this param (0 or 1, true or false) tells app that we are in developer mode-->
+</config>

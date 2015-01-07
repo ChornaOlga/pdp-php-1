@@ -25,14 +25,22 @@ abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\AbstractS
         ]);
 
         $rootNode->addChild($initialNode);
+
         $currentBestNode = $initialNode;
 
         while ($activeNodes = $rootNode->getActiveChildrenRecursive())
         {
+            $this->_logEvent('step_begin', ['root_node' => $rootNode, 'active_nodes' => $activeNodes]);
+
             $branchingNode = $this->_getBestNodeFrom($activeNodes);
             $branchingNode->setActive(false);
 
-            $branchingNode->setChildren($this->_generateChildrenOf($branchingNode));
+            $this->_logEvent('step_branching_begin', ['root_node' => $rootNode, 'branching_node' => $branchingNode]);
+
+            $children = $this->_generateChildrenOf($branchingNode);
+            $branchingNode->setChildren($children);
+
+            $this->_logEvent('step_branching_children_generated', ['root_node' => $rootNode, 'branching_node' => $branchingNode, 'children' => $children]);
             foreach ($branchingNode->getChildren() as $newNode)
             {
                 // if new node is better (or has better evaluation) than current best node
@@ -45,6 +53,8 @@ abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\AbstractS
                     $newNode->setActive(false);
                 }
             }
+
+            $this->_logEvent('step_end', ['root_node' => $rootNode, 'branching_node' => $branchingNode, 'children' => $children, 'current_best_node' => $currentBestNode]);
         }
 
         return $currentBestNode;
@@ -62,5 +72,10 @@ abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\AbstractS
         }
 
         return $bestNode;
+    }
+
+    protected function _logEvent($eventName, $params)
+    {
+        //nop
     }
 }

@@ -3,7 +3,7 @@ namespace Litvinenko\Combinatorics\Pdp;
 
 class IO
 {
-    public static function read($filename)
+    public static function readFromFile($filename)
     {
         $result = new \Varien_Object;
         $points = [];
@@ -59,5 +59,16 @@ class IO
             'points' => $points,
             'depot'  => $depot
         ]);
+    }
+
+    public static function getPathAsText(\Litvinenko\Combinatorics\Pdp\Path $path, $pointDelimiter = '->')
+    {
+        $result = '';
+        foreach ($path->getPoints() as $point)
+        {
+            $result .= $point->getId() . $pointDelimiter;
+        }
+
+        return substr($result, 0, -strlen($pointDelimiter));
     }
 }
