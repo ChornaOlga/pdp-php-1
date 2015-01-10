@@ -11,10 +11,11 @@ class Point extends \Litvinenko\Common\Object
     public function _construct()
     {
         $this->dataRules = array(
-            'id'      => 'required',
-            'type'    => 'required|in:' . self::TYPE_PICKUP . ',' . self::TYPE_DELIVERY . ',' . self::TYPE_DEPOT,
-            'x'       => 'required|float_strict',
-            'y'       => 'required|float_strict',
+            'id'                  => 'required',
+            'type'                => 'required|in:' . self::TYPE_PICKUP . ',' . self::TYPE_DELIVERY . ',' . self::TYPE_DEPOT,
+            'x'                   => 'required|float_strict',
+            'y'                   => 'required|float_strict',
+            'combinatorial_value' => 'required',
         );
     }
 
@@ -52,5 +53,20 @@ class Point extends \Litvinenko\Common\Object
     public function getCombinatorialValue()
     {
         return (int)$this->getId();
+    }
+
+    public function isPickup()
+    {
+        return ($this->getType() == self::TYPE_PICKUP);
+    }
+
+    public function isDelivery()
+    {
+        return ($this->getType() == self::TYPE_DELIVERY);
+    }
+
+    public function isDepot()
+    {
+        return ($this->getType() == self::TYPE_DEPOT);
     }
 }

@@ -24,8 +24,9 @@ class IO
                         'x'  => floatval($pointInfo[1]),
                         'y'  => floatval($pointInfo[2]),
                         'q'  => isset($pointInfo[3]) ? (float) str_replace(',', '.', $pointInfo[3]) : null,
-                        'id' => ($pointInfo[0] == 'depot') ? Point::DEPOT_ID : $pointInfo[0]
+                        'id' => ($pointInfo[0] == 'depot') ? Point::DEPOT_ID : $pointInfo[0],
                     ]);
+                    $newPoint->setCombinatorialValue($newPoint->getId());
 
                     $id = $newPoint->getId();
                     if ($id == Point::DEPOT_ID)
@@ -35,7 +36,7 @@ class IO
                     }
                     else
                     {
-                        $newPoint->setType( ($id <= $count) ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY );
+                        $newPoint->setType( ($id <= $count/2) ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY );
                         $points[$id] = $newPoint;
                     }
 

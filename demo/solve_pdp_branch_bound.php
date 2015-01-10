@@ -2,7 +2,7 @@
 use \Litvinenko\Combinatorics\Pdp\IO;
 use \Litvinenko\Common\App;
 
-require_once 'vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 const SOLUTION_METHOD_BRANCH_AND_BOUND = 'branch_and_bound';
 const SOLUTION_METHOD_CUSTOM           = 'custom';
@@ -11,6 +11,7 @@ $pdpInfoFile        = 'pdp_points.txt';
 $checkLoading       = true;
 $loadingCheckerFile = 'pdphelper.exe';
 $solutionMethod     = SOLUTION_METHOD_BRANCH_AND_BOUND;
+$xmlConfigFile      = 'solve_pdp_branch_bound_config.xml';
 
 class SolutionInfoCollector extends \Litvinenko\Common\Object
 {
@@ -26,9 +27,9 @@ class SolutionInfoCollector extends \Litvinenko\Common\Object
         $this->setCurrentStepNo($this->getCurrentStepNo() + 1);
 
         $this->setCurrentStepInfo([
-            'root_node'                 => $event->getRootNode(),
-            'active_nodes_at_the_begin' => $event->getActiveNodes(),
-            'best_full_node_at_the_begin'    =>  $event->getCurrentBestFullNode()
+            'root_node'                   => $event->getRootNode(),
+            'active_nodes_at_the_begin'   => $event->getActiveNodes(),
+            'best_full_node_at_the_begin' =>  $event->getCurrentBestFullNode()
             ]);
         // echo "\nbegin step " . ++$this->stepCount;
     }
@@ -61,7 +62,7 @@ class SolutionInfoCollector extends \Litvinenko\Common\Object
     }
 }
 
-App::init();
+App::init($xmlConfigFile);
 $pdpInfo = IO::readFromFile($pdpInfoFile);
 // var_dump($pdpInfo);
 
@@ -77,14 +78,15 @@ $solver = new $solverClass([
     'loading_checker_file' => $loadingCheckerFile
 ]);
 
-echo "\n\nfinal path: ".IO::getPathAsText($solver->getSolution()->getContent());
-
+$bestPath = $solver->getSolution()->getContent();
 
 $i = 0;
 foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
 {
     echo IO::getReadableStepInfo($stepInfo, ++$i);
 }
+
+echo "\n\nfinal path: " . IO::getPathAsText($bestPath);
 //var_dump($solver);
 
 // $n = new \BranchBound\Node;

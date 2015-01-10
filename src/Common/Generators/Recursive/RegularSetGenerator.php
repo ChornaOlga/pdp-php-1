@@ -40,10 +40,7 @@ abstract class RegularSetGenerator extends AbstractGenerator
         $result = [];
         foreach ($this->_getSuccessiveElements($tuple) as $newElement)
         {
-            $newTuple   = $tuple;
-            $newTuple[]  =  $newElement;
-
-            $result[]   = $newTuple;
+            $result[] = array_merge($tuple, [$newElement]);
         }
 
         return $result;

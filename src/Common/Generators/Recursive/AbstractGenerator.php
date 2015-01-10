@@ -34,24 +34,24 @@ abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Genera
      */
     public function generateAll()
     {
-        return $this->_generate($this->getInitialObject());
+        $this->_data['generatedObjects'] = [];
+        $this->_generate($this->getInitialObject());
+        
+        return $this->_data['generatedObjects'];
     }
 
     protected function _generate($object)
     {
         if ($this->objectIsComplete($object))
         {
-            $result = $object;
+            $this->_data['generatedObjects'][] = $object;
         }
         else
         {
-            $result = [];
             foreach ($this->generateNextObjects($object) as $nextObject)
             {
-                $result[] = $this->_generate($nextObject);
+                $this->_generate($nextObject);
             }
         }
-
-        return $result;
     }
 }

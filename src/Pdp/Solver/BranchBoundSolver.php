@@ -5,7 +5,8 @@ use Litvinenko\Combinatorics\BranchBound\Node;
 use Litvinenko\Combinatorics\Pdp\Helper;
 use Litvinenko\Combinatorics\Pdp\Path;
 use Litvinenko\Combinatorics\Pdp\Point;
-use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetitionsGenerator as Generator;
+// use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetitionsGenerator as Generator;
+use Litvinenko\Combinatorics\Pdp\Generators\Recursive\PdpPermutationGenerator as Generator;
 use Litvinenko\Combinatorics\Pdp\Evaluator\DummyEvaluator as Evaluator;
 
 use Litvinenko\Common\App;
