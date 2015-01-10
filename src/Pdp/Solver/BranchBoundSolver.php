@@ -6,7 +6,7 @@ use Litvinenko\Combinatorics\Pdp\Helper;
 use Litvinenko\Combinatorics\Pdp\Path;
 use Litvinenko\Combinatorics\Pdp\Point;
 use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetitionsGenerator as Generator;
-use Litvinenko\Combinatorics\BranchBound\Evaluator\DummyEvaluator as Evaluator;
+use Litvinenko\Combinatorics\Pdp\Evaluator\DummyEvaluator as Evaluator;
 
 use Litvinenko\Common\App;
 class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
@@ -70,29 +70,28 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
             {
                 $path = new Path(['points' => $newPointSequence]);
                 $newNode = new Node(['content' => $path]);
-                $newNode->setOptimisticBound(($node->getOptimisticBound() == PHP_INT_MAX) ? $i++ : $this->_getDummyBound($newNode) + $node->getOptimisticBound());
+                $newNode->setOptimisticBound((new Evaluator)->getBound($newNode, Evaluator::BOUND_TYPE_OPTIMISTIC , [
+                    'parent_node'       => $node,
+                    'total_point_count' => Point::getPointCount($this->getPoints())
+                    ]));
                  $result[] = $newNode;
             }
         }
         return $result;
     }
 
-    protected function _getDummyBound($node)
-    {
-        $result = 1;
-        $count = Point::getPointCount($this->getPoints());
-        foreach ($node->getContent()->getPoints() as $point)
-        {
-            $result += pow(($count/2 - (float)$point->getId()), 2);
-        }
-
-        return $result;
-    }
     protected function _nodeIsCompleteSolution($node)
     {
         return ($node->getContent()->getPointsCount() == Point::getPointCount($this->getPoints()));
     }
 
+    /**
+     * Helper function for packing points to data neede for generator
+     *
+     * @param  array $points
+     *
+     * @return array
+     */
     protected function _getGeneratorDataFromPoints($points)
     {
         $result = [];

@@ -68,8 +68,8 @@ class Node extends \Tree\Node\Node
         return $result;
     }
 
-    public function __toString()
-    {
-        return \Litvinenko\Combinatorics\Pdp\IO::getPathAsText($this->getContent());
-    }
+//    public function __toString()
+//    {
+//        return \Litvinenko\Combinatorics\Pdp\IO::getPathAsText($this->getContent());
+//    }
 }
