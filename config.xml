@@ -1,15 +1,42 @@
 <?xml version="1.0"?>
-<config> <!-- root element. don't care about it-->
-    <events> <!-- element containing all event info -->
-        <branch_bound_step_begin> <!-- event name. first param for App:dispatchEvent method -->
-            <observers> <!-- all observers for current event -->
-                <logger_observer> <!-- unique observer name -->
-                    <class>\StepLogger</class> <!-- observer class -->
-                    <method>logStepBegin</method> <!-- observer method to be called -->
+<config>
+    <events>
+        <branch_bound_step_begin>
+            <observers>
+                <solutioninfocollector_branch_bound_step_begin>
+                    <class>\SolutionInfoCollector</class>
+                    <method>stepBegin</method>
                     <singleton>1</singleton>
-                </logger_observer>
+                </solutioninfocollector_branch_bound_step_begin>
             </observers>
         </branch_bound_step_begin>
+        <branch_bound_step_branching_begin>
+            <observers>
+                <solutioninfocollector_branch_bound_step_branching_begin>
+                    <class>\SolutionInfoCollector</class>
+                    <method>stepBranchingBegin</method>
+                    <singleton>1</singleton>
+                </solutioninfocollector_branch_bound_step_branching_begin>
+            </observers>
+        </branch_bound_step_branching_begin>
+        <branch_bound_step_branching_children_generated>
+            <observers>
+                <solutioninfocollector_branch_bound_step_branching_children_generated>
+                    <class>\SolutionInfoCollector</class>
+                    <method>stepBranchingChildrenGenerated</method>
+                    <singleton>1</singleton>
+                </solutioninfocollector_branch_bound_step_branching_children_generated>
+            </observers>
+        </branch_bound_step_branching_children_generated>
+        <branch_bound_step_end>
+            <observers>
+                <solutioninfocollector_branch_bound_step_end>
+                    <class>\SolutionInfoCollector</class>
+                    <method>stepEnd</method>
+                    <singleton>1</singleton>
+                </solutioninfocollector_branch_bound_step_end>
+            </observers>
+        </branch_bound_step_end>
     </events>
-    <developer_mode>0</developer_mode> <!-- this param (0 or 1, true or false) tells app that we are in developer mode-->
+    <developer_mode>1</developer_mode>
 </config>

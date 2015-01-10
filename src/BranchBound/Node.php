@@ -42,7 +42,7 @@ class Node extends \Tree\Node\Node
             }
             else
             {
-                $result += $this->_getChildrenRecursiveOf($child);
+                $result = array_merge($result, $this->_getChildrenRecursiveOf($child));
             }
         }
 
@@ -66,5 +66,10 @@ class Node extends \Tree\Node\Node
         }
 
         return $result;
+    }
+
+    public function __toString()
+    {
+        return \Litvinenko\Combinatorics\Pdp\IO::getPathAsText($this->getContent());
     }
 }

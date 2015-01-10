@@ -61,14 +61,49 @@ class IO
         ]);
     }
 
-    public static function getPathAsText(\Litvinenko\Combinatorics\Pdp\Path $path, $pointDelimiter = '->')
+    public static function getPathAsText(\Litvinenko\Combinatorics\Pdp\Path $path, $pointDelimiter = '-')
+    {
+        if ($path->getPoints())
+        {
+            $result = '<';
+            foreach ($path->getPoints() as $point)
+            {
+                $result .= '' . $point->getId() . $pointDelimiter;
+            }
+
+            return substr($result, 0, -strlen($pointDelimiter)) . '>';
+        }
+        else
+        {
+            return '<empty>';
+        }
+    }
+
+    public static function getReadableStepInfo($stepInfo, $stepNo = '?')
     {
         $result = '';
-        foreach ($path->getPoints() as $point)
+        if ($stepInfo)
         {
-            $result .= $point->getId() . $pointDelimiter;
+            $result .= "\n\n -------------- Step " . $stepNo . "-------------- \n\n";
+            $result .= "\nactive nodes at the begin: \n";
+            foreach ($stepInfo['active_nodes_at_the_begin'] as $node)
+                $result .= IO::getPathAsText($node->getContent()) . ' with bound ' . $node->getOptimisticBound() . "\n";
+
+            $result .= "\nbest full node at the begin: " . IO::getPathAsText($stepInfo['best_full_node_at_the_begin']->getContent()) . ' with bound ' . $stepInfo['best_full_node_at_the_begin']->getOptimisticBound() . "\n";
+            $result .= "\nbranching node: " . IO::getPathAsText($stepInfo['branching_node']->getContent()) . ' with bound ' . $stepInfo['branching_node']->getOptimisticBound() . "\n";
+
+            $result .= "\ngenerated children: \n";
+            foreach ($stepInfo['children_generated'] as $child)
+                $result .= IO::getPathAsText($child->getContent()) . ' with bound ' . $child->getOptimisticBound() . "\n";
+
+            $result .= "\nbest full node at the end: " . IO::getPathAsText($stepInfo['best_full_node_at_the_end']->getContent()) . ' with bound ' . $stepInfo['best_full_node_at_the_end']->getOptimisticBound() . "\n";
+
+            $result .= "\nactive nodes at the end: \n";
+            foreach ($stepInfo['active_nodes_at_the_end'] as $node)
+                $result .= IO::getPathAsText($node->getContent()) . ' with bound ' . $node->getOptimisticBound() . "\n";
+
         }
 
-        return substr($result, 0, -strlen($pointDelimiter));
+        return $result;
     }
 }

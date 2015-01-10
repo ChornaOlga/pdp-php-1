@@ -6,6 +6,7 @@ use Litvinenko\Combinatorics\Pdp\Helper;
 use Litvinenko\Combinatorics\Pdp\Path;
 use Litvinenko\Combinatorics\Pdp\Point;
 use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetitionsGenerator as Generator;
+use Litvinenko\Combinatorics\BranchBound\Evaluator\DummyEvaluator as Evaluator;
 
 use Litvinenko\Common\App;
 class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
@@ -63,20 +64,30 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
             $points    = $this->_getGeneratorDataFromPoints($node->getContent()->getPoints());
             $newPointSequences = $this->_getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
-            /// TODO: !! завернуть PointSequences в класс, который имеет метод __toString
+
+            $i = 1;
             foreach ($newPointSequences as $newPointSequence)
             {
                 $path = new Path(['points' => $newPointSequence]);
-                $result[] = new Node([
-                    'content'           => $path,
-                    'optimistic_bound'  => ($node->getOptimisticBound() == PHP_INT_MAX) ? rand(1, 10) : $node->getOptimisticBound() + rand(1, 10)
-                    // 'pessimistic_bound' => rand(1, 10),
-                ]);
+                $newNode = new Node(['content' => $path]);
+                $newNode->setOptimisticBound(($node->getOptimisticBound() == PHP_INT_MAX) ? $i++ : $this->_getDummyBound($newNode) + $node->getOptimisticBound());
+                 $result[] = $newNode;
             }
         }
         return $result;
     }
 
+    protected function _getDummyBound($node)
+    {
+        $result = 1;
+        $count = Point::getPointCount($this->getPoints());
+        foreach ($node->getContent()->getPoints() as $point)
+        {
+            $result += pow(($count/2 - (float)$point->getId()), 2);
+        }
+
+        return $result;
+    }
     protected function _nodeIsCompleteSolution($node)
     {
         return ($node->getContent()->getPointsCount() == Point::getPointCount($this->getPoints()));
@@ -113,8 +124,8 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         return $result;
     }
 
-    protected function _logEvent($eventName, $params)
+    protected function _logEvent($eventName, $data)
     {
-        App::dispatchEvent("branch_bound_{$eventName}");
+        App::dispatchEvent("branch_bound_{$eventName}", $data);
     }
 }
