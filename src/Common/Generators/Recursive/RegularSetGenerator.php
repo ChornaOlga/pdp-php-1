@@ -22,9 +22,9 @@ abstract class RegularSetGenerator extends AbstractGenerator
      * @var array
      */
     protected $dataRules = array(
-        'generating_elements' => 'required|array',
+        'generating_elements' => 'not_null|array',
         'tuple_length'        => 'required|integer_strict',
-        'initial_object'      => 'required|array'
+        'initial_object'      => 'not_null|array'
     );
 
     abstract protected function _getSuccessiveElements($tuple);
@@ -37,6 +37,8 @@ abstract class RegularSetGenerator extends AbstractGenerator
 
     public function generateNextObjects($tuple)
     {
+        $this->validate();
+
         $result = [];
         foreach ($this->_getSuccessiveElements($tuple) as $newElement)
         {

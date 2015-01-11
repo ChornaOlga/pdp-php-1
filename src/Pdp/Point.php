@@ -11,11 +11,13 @@ class Point extends \Litvinenko\Common\Object
     public function _construct()
     {
         $this->dataRules = array(
-            'id'                  => 'required',
+            'id'                  => 'not_null|integer_strict',
             'type'                => 'required|in:' . self::TYPE_PICKUP . ',' . self::TYPE_DELIVERY . ',' . self::TYPE_DEPOT,
-            'x'                   => 'required|float_strict',
-            'y'                   => 'required|float_strict',
-            'combinatorial_value' => 'required',
+            'x'                   => 'not_null|float_strict',
+            'y'                   => 'not_null|float_strict',
+            'box_weight'          => 'not_null|float_strict',
+            'combinatorial_value' => 'not_null',
+            'pair_poind_id'       => 'not_null|integer_strict'
         );
     }
 

@@ -14,13 +14,15 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 {
     protected $dataRules = array(
         // rules from abstract solver
-        'maximize_cost'                  => 'required|boolean',
-        'initial_node_content'           => 'required',
-        'initial_node_optimistic_bound'  => 'required|float_strict',
+        'maximize_cost'                 => 'required|boolean',
+        'initial_node_content'          => 'required',
+        'initial_node_optimistic_bound' => 'required|float_strict',
 
         // specifically data rules for this class
         'depot'                => 'required|object:\Litvinenko\Combinatorics\Pdp\Point',
         'points'               => 'required|array',
+        'weight_capacity'      => 'required|float_strict',
+        'load_area'            => 'required|array',
         'check_loading'        => 'required|boolean',
         'loading_checker_file' => 'required'
     );
@@ -58,7 +60,9 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         {
             $generator = new Generator([
                 'tuple_length'        => Point::getPointCount($this->getPoints()),
-                'generating_elements' => $this->_getGeneratorDataFromPoints($this->getPoints())
+                'generating_elements' => $this->_getGeneratorDataFromPoints($this->getPoints()),
+                'current_path'        => $node->getContent(),
+                'weight_capacity'     =>  $this->getWeightCapacity()
             ]);
 
             $points    = $this->_getGeneratorDataFromPoints($node->getContent()->getPoints());

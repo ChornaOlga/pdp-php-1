@@ -1,65 +1,107 @@
 <?php
 namespace Litvinenko\Combinatorics\Pdp;
 
+use \Litvinenko\Common\Object;
 class IO
 {
-    public static function readFromFile($filename)
+    public static function readPointsFromFile($filename)
     {
-        $result = new \Varien_Object;
         $points = [];
 
         if (file_exists($filename))
         {
-            $data = explode("\r\n", file_get_contents($filename));
-            $count = (int) $data[0];
-            unset($data[0]);
+            $pointData = explode("\r\n", file_get_contents($filename));
+            $count = (int) $pointData[0];
+            unset($pointData[0]);
 
-            foreach ($data as $row)
+            foreach ($pointData as $row)
             {
                 try
                 {
                     $pointInfo = explode(' ', $row);
 
+                    $id = ($pointInfo[0] == 'depot') ? Point::DEPOT_ID : (int)$pointInfo[0];
                     $newPoint = new Point([
-                        'x'  => floatval($pointInfo[1]),
-                        'y'  => floatval($pointInfo[2]),
-                        'q'  => isset($pointInfo[3]) ? (float) str_replace(',', '.', $pointInfo[3]) : null,
-                        'id' => ($pointInfo[0] == 'depot') ? Point::DEPOT_ID : $pointInfo[0],
+                        'id'                  => $id,
+                        'x'                   => floatval($pointInfo[1]),
+                        'y'                   => floatval($pointInfo[2]),
+                        'box_weight'          => isset($pointInfo[3]) ? floatval($pointInfo[3]) : null,
+                        'combinatorial_value' => $id,
                     ]);
-                    $newPoint->setCombinatorialValue($newPoint->getId());
 
-                    $id = $newPoint->getId();
                     if ($id == Point::DEPOT_ID)
                     {
                         $newPoint->setType(Point::TYPE_DEPOT);
+                        $newPoint->setpairId(Point::DEPOT_ID);
+                        $newPoint->setBoxWeight(0);
                         $depot = $newPoint;
                     }
                     else
                     {
-                        $newPoint->setType( ($id <= $count/2) ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY );
-                        $points[$id] = $newPoint;
-                    }
+                        $isPickup = ($id <= $count/2);
+                        $newPoint->addData([
+                            'type'          => $isPickup ? Point::TYPE_PICKUP                          : Point::TYPE_DELIVERY,
+                            'pair_id' => $isPickup ? ($id + $count/2)                            : ($id - $count/2),
+                            ]);
 
-                    if ($newPoint->isInvalid())
-                    {
-                        throw new \Exception ("Point #{$id} is invalid: " . print_r($newPoint->getValidationErrors(), true));
+                        $points[$id] = $newPoint;
                     }
                 }
                 catch (Exception $e)
                 {
-                    throw new \Exception("Can't read row " . key($data) . ": ". $e->getMessage());
+                    throw new \Exception("Can't read row " . key($pointData) . ": ". $e->getMessage());
                 }
             }
+
+            // assign to each delivery point box weight = -1*<box weight of correspoding pickup>
+            // also validate all points
+            foreach($points as $point)
+            {
+                if ($point->getType() == Point::TYPE_DELIVERY)
+                {
+                    $point->setBoxWeight(- $points[$point->getPairId()]->getBoxWeight());
+                }
+
+                if ($point->isInvalid())
+                {
+                    throw new \Exception ("Point #" . $point->getId() . " is invalid: " . print_r($point->getValidationErrors(), true));
+                }
+            }
+
+            // validate depot
+            if ($depot->isInvalid())
+            {
+                throw new \Exception ("Depot is invalid: " . print_r($depot->getValidationErrors(), true));
+            }
+
+            return [
+                'points' => $points,
+                'depot'  => $depot
+            ];
         }
         else
         {
             throw new \Exception("File {$filename} does not exist!");
         }
 
-        return $result->setData([
-            'points' => $points,
-            'depot'  => $depot
-        ]);
+    }
+
+    public static function readConfigFromIniFile($filename)
+    {
+        $result = null;
+        if (file_exists($filename) && ($config = parse_ini_file($filename, true)))
+        {
+            $result = [
+                'check_loading'        => isset($config['general']['check_loading'])        ? (bool)$config['general']['check_loading']  : null,
+                'loading_checker_file' => isset($config['general']['loading_checker_file']) ? $config['general']['loading_checker_file'] : null,
+                'maximize_cost'        => isset($config['general']['maximize_cost'])        ?(bool)$config['general']['maximize_cost']   : null,
+
+                'weight_capacity'      => isset($config['load']['weight_capacity'])         ? (float)$config['load']['weight_capacity']  : null,
+                'load_area'            => isset($config['load']['load_area'])               ? $config['load']['load_area']               : null
+                ];
+        }
+
+        return $result;
     }
 
     public static function getPathAsText(\Litvinenko\Combinatorics\Pdp\Path $path, $pointDelimiter = '-')
@@ -72,7 +114,7 @@ class IO
                 $result .= '' . $point->getId() . $pointDelimiter;
             }
 
-            return substr($result, 0, -strlen($pointDelimiter)) . '>';
+            return substr($result, 0, -strlen($pointDelimiter)) . '> (load ' . $path->getCurrentWeight() . ')';
         }
         else
         {

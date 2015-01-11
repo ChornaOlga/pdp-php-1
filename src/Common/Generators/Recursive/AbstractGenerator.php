@@ -6,7 +6,7 @@ abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Genera
 {
     protected $dataRules = array(
         'generating_elements' => 'required|array',
-        'initial_object'      => 'required'
+        'initial_object'      => 'not_null'
     );
 
     /**
@@ -32,11 +32,11 @@ abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Genera
      *
      * @return array
      */
-    public function generateAll()
+    protected function _generateAll()
     {
         $this->_data['generatedObjects'] = [];
         $this->_generate($this->getInitialObject());
-        
+
         return $this->_data['generatedObjects'];
     }
 

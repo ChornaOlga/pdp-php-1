@@ -5,8 +5,17 @@ namespace Litvinenko\Combinatorics\Common\Generators;
 abstract class AbstractGenerator extends \Litvinenko\Common\Object
 {
     protected $dataRules = array(
-        'generating_elements' => 'required|array'
+        'generating_elements' => 'not_null|array'
     );
 
-    abstract public function generateAll();
+
+    public function generateAll()
+    {
+        if ($this->validate())
+        {
+            return $this->_generateAll();
+        }
+    }
+
+    abstract protected function _generateAll();
 }

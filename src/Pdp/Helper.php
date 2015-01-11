@@ -43,43 +43,18 @@ class Helper extends \Litvinenko\Common\Object
                 if ($this->getThrowExceptions()) throw new \Exception($message);
                 if ($this->getLogErrors()) self::logError($message);
             }
-            if ($object->isInvalid())
+            else
             {
-                $message = "object " .  get_class($object) . " is not valid: \n" . print_r($object->getValidationErrors(),true) /*. var_export($object, true)*/;
-                if ($this->getThrowExceptions()) throw new \Exception($message);
-                if ($this->getLogErrors()) self::logError($message);
+                try
+                {
+                    $object->validate();
+                }
+                catch (\Litvinenko\Common\Object\Exception $e)
+                {
+                    if ($this->getThrowExceptions()) throw new \Exception($e->getMessage());
+                    if ($this->getLogErrors()) self::logError($e->getMessage());
+                }
             }
         }
-    }
-
-    /**
-     * Returns:
-     * - pickup corresponding to given delivery (if given point is of delivery type)
-     * - delivery corresponding to given pickup (if given point is of pickup type)
-     *
-     * @param  array $allPoints
-     * @param  \Litvinenko\Combinatorics\Pdp\Point $targetPoint
-     *
-     * @return \Litvinenko\Combinatorics\Pdp\Point|null
-     */
-    public static function getComplementaryPdpPoint(array $allPoints, \Litvinenko\Combinatorics\Pdp\Point $targetPoint)
-    {
-        $result = null;
-
-        $halfPointCount = count($allPoints) / 2;
-        foreach ($allPoints as $point)
-        {
-            if (
-                $targetPoint->isPickup() && $point->isDelivery() && ((int)$point->getId() == (int)$targetPoint->getId() + $halfPointCount)
-                ||
-                $targetPoint->isDelivery() && $point->isPickup() && ((int)$point->getId() == (int)$targetPoint->getId() - $halfPointCount)
-               )
-            {
-                $result = $point;
-                break;
-            }
-        }
-
-        return $result;
     }
 }

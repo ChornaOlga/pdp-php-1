@@ -7,9 +7,8 @@ require_once '../vendor/autoload.php';
 const SOLUTION_METHOD_BRANCH_AND_BOUND = 'branch_and_bound';
 const SOLUTION_METHOD_CUSTOM           = 'custom';
 
-$pdpInfoFile        = 'pdp_points.txt';
-$checkLoading       = true;
-$loadingCheckerFile = 'pdphelper.exe';
+$pointInfoFile      = 'pdp_points.txt';
+$pdpConfigFile      = 'pdp_config.ini';
 $solutionMethod     = SOLUTION_METHOD_BRANCH_AND_BOUND;
 $xmlConfigFile      = 'solve_pdp_branch_bound_config.xml';
 
@@ -63,30 +62,31 @@ class SolutionInfoCollector extends \Litvinenko\Common\Object
 }
 
 App::init($xmlConfigFile);
-$pdpInfo = IO::readFromFile($pdpInfoFile);
+$pointInfo = IO::readPointsFromFile($pointInfoFile);
+$pdpConfig = IO::readConfigFromIniFile($pdpConfigFile);
 // var_dump($pdpInfo);
 
-echo "<pre>";
 
 $solverClass = ($solutionMethod == SOLUTION_METHOD_BRANCH_AND_BOUND) ? '\Litvinenko\Combinatorics\Pdp\Solver\BranchBoundSolver' : '\Pdp\Solver\CustomSolver';
 
-$solver = new $solverClass([
-    'depot'                => $pdpInfo->getDepot(),
-    'points'               => $pdpInfo->getPoints(),
-    'maximize_cost'        => false,
-    'check_loading'        => $checkLoading,
-    'loading_checker_file' => $loadingCheckerFile
-]);
-
-$bestPath = $solver->getSolution()->getContent();
-
-$i = 0;
-foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
+$solver = new $solverClass(array_merge($pointInfo, $pdpConfig));
+try
 {
-    echo IO::getReadableStepInfo($stepInfo, ++$i);
-}
+    $bestPath = $solver->getSolution()->getContent();
 
-echo "\n\nfinal path: " . IO::getPathAsText($bestPath);
+    echo "<pre>";
+    $i = 0;
+    foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
+    {
+        echo IO::getReadableStepInfo($stepInfo, ++$i);
+    }
+
+    echo "\n\nfinal path: " . IO::getPathAsText($bestPath);
+}
+catch (\Exception $e)
+{
+    echo "Exception occured: \n" . $e->getMessage();
+}
 //var_dump($solver);
 
 // $n = new \BranchBound\Node;
