@@ -26,6 +26,8 @@ class Path extends \Litvinenko\Common\Object
 
             $result   += $point->getDistanceTo($nextPoint);
         }
+        
+        return $result;
     }
 
     public function getPointsCount()

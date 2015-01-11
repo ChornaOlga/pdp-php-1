@@ -6,6 +6,12 @@ class Helper extends \Litvinenko\Common\Object
     const LOG_FILE       = 'log/system.log';
     const ERROR_LOG_FILE = 'log/error.log';
 
+    protected $dataRules = array(
+        'log_errors'       => 'boolean',
+        'throw_exceptions' => 'boolean'
+    );
+
+
     protected function _construct()
     {
         if (!$this->hasLogErrors()) $this->setLogErrors(true);

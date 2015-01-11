@@ -7,7 +7,7 @@ use Litvinenko\Combinatorics\Pdp\Path;
 use Litvinenko\Combinatorics\Pdp\Point;
 // use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetitionsGenerator as Generator;
 use Litvinenko\Combinatorics\Pdp\Generators\Recursive\PdpPermutationGenerator as Generator;
-use Litvinenko\Combinatorics\Pdp\Evaluator\DummyEvaluator as Evaluator;
+use Litvinenko\Combinatorics\Pdp\Evaluator\PdpEvaluator as Evaluator;
 
 use Litvinenko\Common\App;
 class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
@@ -17,7 +17,6 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         'maximize_cost'                  => 'required|boolean',
         'initial_node_content'           => 'required',
         'initial_node_optimistic_bound'  => 'required|float_strict',
-        'initial_node_pessimistic_bound' => 'required|float_strict',
 
         // specifically data rules for this class
         'depot'                => 'required|object:\Litvinenko\Combinatorics\Pdp\Point',
@@ -32,9 +31,8 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
         $optimisticBound = ($this->getMaximizeCost()) ? 0 : PHP_INT_MAX;
 
-        $this->setInitialNodeContent(new Path);
+        $this->setInitialNodeContent(new Path(['points' => [$this->getDepot()] ]));
         $this->setInitialNodeOptimisticBound($optimisticBound);
-        $this->setInitialNodePessimisticBound($optimisticBound);
 
         $this->setHelper(new Helper);
     }
@@ -66,7 +64,6 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
             $points    = $this->_getGeneratorDataFromPoints($node->getContent()->getPoints());
             $newPointSequences = $this->_getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
 
-            $i = 1;
             foreach ($newPointSequences as $newPointSequence)
             {
                 $path = new Path(['points' => $newPointSequence]);
