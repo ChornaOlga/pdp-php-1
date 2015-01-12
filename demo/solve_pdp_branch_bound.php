@@ -4,8 +4,8 @@ use \Litvinenko\Common\App;
 
 require_once '../vendor/autoload.php';
 
-const SOLUTION_METHOD_BRANCH_AND_BOUND = 'branch_and_bound';
-const SOLUTION_METHOD_CUSTOM           = 'custom';
+const SOLUTION_METHOD_BRANCH_AND_BOUND         = 'branch_and_bound';
+const SOLUTION_METHOD_COMBINATORIAL_GENERATION = 'combinatorial_generation';
 
 $pointInfoFile      = 'pdp_points.txt';
 $pdpConfigFile      = 'pdp_config.ini';
@@ -61,13 +61,14 @@ class SolutionInfoCollector extends \Litvinenko\Common\Object
     }
 }
 
+
 App::init($xmlConfigFile);
 $pointInfo = IO::readPointsFromFile($pointInfoFile);
 $pdpConfig = IO::readConfigFromIniFile($pdpConfigFile);
 // var_dump($pdpInfo);
 
 
-$solverClass = ($solutionMethod == SOLUTION_METHOD_BRANCH_AND_BOUND) ? '\Litvinenko\Combinatorics\Pdp\Solver\BranchBoundSolver' : '\Pdp\Solver\CustomSolver';
+$solverClass = ($solutionMethod == SOLUTION_METHOD_BRANCH_AND_BOUND) ? '\Litvinenko\Combinatorics\Pdp\Solver\BranchBoundSolver' : '\Litvinenko\Combinatorics\Pdp\Solver\CombinatorialGenerationSolver';
 
 $solver = new $solverClass(array_merge($pointInfo, $pdpConfig));
 try
@@ -75,11 +76,11 @@ try
     $bestPath = $solver->getSolution()->getContent();
 
     echo "<pre>";
-    $i = 0;
-    foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
-    {
-        echo IO::getReadableStepInfo($stepInfo, ++$i);
-    }
+    // $i = 0;
+    // foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
+    // {
+    //     echo IO::getReadableStepInfo($stepInfo, ++$i);
+    // }
 
     echo "\n\nfinal path: " . IO::getPathAsText($bestPath);
 }

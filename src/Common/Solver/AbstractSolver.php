@@ -1,5 +1,5 @@
 <?php
-namespace Litvinenko\Combinatorics\Common;
+namespace Litvinenko\Combinatorics\Common\Solver;
 
 abstract class AbstractSolver extends \Litvinenko\Common\Object
 {

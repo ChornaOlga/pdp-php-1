@@ -1,7 +1,7 @@
 <?php
 namespace Litvinenko\Combinatorics\BranchBound;
 use Litvinenko\Combinatorics\BranchBound\Node;
-abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\AbstractSolver
+abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\Solver\AbstractSolver
 {
     protected $dataRules = array(
         'maximize_cost'                  => 'required|boolean',

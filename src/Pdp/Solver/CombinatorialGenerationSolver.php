@@ -10,13 +10,11 @@ use Litvinenko\Combinatorics\Pdp\Generators\Recursive\PdpPermutationGenerator as
 use Litvinenko\Combinatorics\Pdp\Evaluator\PdpEvaluator as Evaluator;
 
 use Litvinenko\Common\App;
-class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
+class CustomSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
 {
     protected $dataRules = array(
         // rules from abstract solver
-        'maximize_cost'                 => 'required|boolean',
-        'initial_node_content'          => 'required',
-        'initial_node_optimistic_bound' => 'required|float_strict',
+        'maximize_cost'        => 'required|boolean',
 
         // specifically data rules for this class
         'depot'                => 'required|object:\Litvinenko\Combinatorics\Pdp\Point',
@@ -24,7 +22,9 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         'weight_capacity'      => 'required|float_strict',
         'load_area'            => 'required|array',
         'check_loading'        => 'required|boolean',
-        'loading_checker_file' => 'required'
+        'loading_checker_file' => 'required',
+
+        'precise'              => 'required|float_strict',
     );
 
     public function _construct()
@@ -84,7 +84,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
     protected function _nodeIsCompleteSolution($node)
     {
-        return (($node->getContent()->getPointsCount() - 1) == Point::getPointCount($this->getPoints())); // -1 because first point is depot
+        return ($node->getContent()->getPointsCount() == Point::getPointCount($this->getPoints()));
     }
 
     /**
