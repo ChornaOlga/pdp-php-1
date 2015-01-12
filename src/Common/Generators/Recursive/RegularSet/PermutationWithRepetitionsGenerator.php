@@ -1,6 +1,6 @@
 <?php
 
-namespace Litvinenko\Combinatorics\Common\Generators\Recursive;
+namespace Litvinenko\Combinatorics\Common\Generators\Recursive\RegularSet;
 
 class PermutationWithRepetitionsGenerator extends RegularSetGenerator
 {

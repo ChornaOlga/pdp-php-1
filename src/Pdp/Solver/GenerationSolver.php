@@ -10,7 +10,7 @@ use Litvinenko\Combinatorics\Pdp\Generators\Recursive\PdpPermutationGenerator as
 use Litvinenko\Combinatorics\Pdp\Evaluator\PdpEvaluator as Evaluator;
 
 use Litvinenko\Common\App;
-class CustomSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
+class GenerationSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSolver
 {
     protected $dataRules = array(
         // rules from abstract solver
