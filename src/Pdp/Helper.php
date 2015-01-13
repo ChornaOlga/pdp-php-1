@@ -28,7 +28,7 @@ class Helper extends \Litvinenko\Common\Object
         file_put_contents(self::ERROR_LOG_FILE, date("Y-m-d H:i:s") . " Error occured:\n$message\n", FILE_APPEND);
     }
 
-    public function validate($objects)
+    public function validateObjects($objects)
     {
         if (!is_array($objects))
         {
@@ -56,5 +56,43 @@ class Helper extends \Litvinenko\Common\Object
                 }
             }
         }
+    }
+
+    /**
+     * Helper function for packing points to data neede for generator
+     *
+     * @param  array $points
+     *
+     * @return array
+     */
+    public static function getGeneratorDataFromPoints($points)
+    {
+        $result = [];
+        foreach ($points as $point)
+        {
+            $result[] = [
+                'id'                  => $point->getId(),
+                'value'               => $point,
+                'combinatorial_value' => $point->getCombinatorialValue()
+            ];
+        }
+
+        return $result;
+    }
+
+    public static function getPointSequencesFromGeneratorData($generatorData)
+    {
+        $result = [];
+        foreach ($generatorData as $pointSequence)
+        {
+            $sequence = [];
+            foreach ($pointSequence as $point)
+            {
+                $sequence[] = $point['value'];
+            }
+            $result[] = $sequence;
+        }
+
+        return $result;
     }
 }

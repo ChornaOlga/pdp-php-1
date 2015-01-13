@@ -24,7 +24,9 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         'weight_capacity'      => 'required|float_strict',
         'load_area'            => 'required|array',
         'check_loading'        => 'required|boolean',
-        'loading_checker_file' => 'required'
+        'loading_checker_file' => 'required',
+
+        'evaluator' => 'required|object:\Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator'
     );
 
     public function _construct()
@@ -42,7 +44,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
     public function getSolution()
     {
         $this->getHelper()->validate($this);
-        $this->getHelper()->validate($this->getPoints());
+        $this->getHelper()->validateObjects($this->getPoints());
 
         return parent::getSolution();
     }
@@ -60,19 +62,20 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         {
             $generator = new Generator([
                 'tuple_length'        => Point::getPointCount($this->getPoints()),
-                'generating_elements' => $this->_getGeneratorDataFromPoints($this->getPoints()),
+                'generating_elements' => Helper::getGeneratorDataFromPoints($this->getPoints()),
                 'current_path'        => $node->getContent(),
-                'weight_capacity'     =>  $this->getWeightCapacity()
+                'weight_capacity'     => $this->getWeightCapacity()
             ]);
 
-            $points    = $this->_getGeneratorDataFromPoints($node->getContent()->getPoints());
-            $newPointSequences = $this->_getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
+            $points            = Helper::getGeneratorDataFromPoints($node->getContent()->getPoints());
+            $newPointSequences = Helper::getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
 
             foreach ($newPointSequences as $newPointSequence)
             {
-                $path = new Path(['points' => $newPointSequence]);
+                $path    = new Path(['points'  => $newPointSequence]);
                 $newNode = new Node(['content' => $path]);
-                $newNode->setOptimisticBound((new Evaluator)->getBound($newNode, Evaluator::BOUND_TYPE_OPTIMISTIC , [
+
+                $newNode->setOptimisticBound($this->getEvaluator()->getBound($path, Evaluator::BOUND_TYPE_OPTIMISTIC , [
                     'parent_node'       => $node,
                     'total_point_count' => Point::getPointCount($this->getPoints())
                     ]));

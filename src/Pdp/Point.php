@@ -21,11 +21,6 @@ class Point extends \Litvinenko\Common\Object
         );
     }
 
-    public function getDistanceTo($point)
-    {
-        return sqrt(pow($this->getX() - $point->getX(),2) + pow($this->getY() - $point->getY(),2));
-    }
-
     /**
      * Returns array of ids of given points
      *

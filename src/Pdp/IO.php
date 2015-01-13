@@ -95,9 +95,10 @@ class IO
                 'check_loading'        => isset($config['general']['check_loading'])        ? (bool)$config['general']['check_loading']  : null,
                 'loading_checker_file' => isset($config['general']['loading_checker_file']) ? $config['general']['loading_checker_file'] : null,
                 'maximize_cost'        => isset($config['general']['maximize_cost'])        ?(bool)$config['general']['maximize_cost']   : null,
+                'precise'              => isset($config['general']['precise'])              ? (float)$config['general']['precise']       : null,
 
-                'weight_capacity'      => isset($config['load']['weight_capacity'])         ? (float)$config['load']['weight_capacity']  : null,
-                'load_area'            => isset($config['load']['load_area'])               ? $config['load']['load_area']               : null
+                'weight_capacity'      => isset($config['load']['weight_capacity'])         ? (float)($config['load']['weight_capacity'])  : null,
+                'load_area'            => isset($config['load']['load_area'])               ? $config['load']['load_area']               : null,
                 ];
         }
 

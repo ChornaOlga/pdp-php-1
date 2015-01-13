@@ -1,26 +1,31 @@
 <?php
 namespace Litvinenko\Combinatorics\Pdp\Evaluator;
 
-class DummyEvaluator extends \Litvinenko\Combinatorics\BranchBound\Evaluator\AbstractEvaluator
+class DummyEvaluator extends \Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator
 {
+
+    protected $dataRules = array(
+        'avaliable_bound_types' => 'required|array',
+    );
+
     /**
      * Stub for calculating OPTIMISTIC node bound for PDP
      * NEEDED $additionalInfo content: array('parent_node' => <parent node>, 'total_point_count' => <number of gererating elements used for bound calculation>)
      *
-     * @param  \Litvinenko\Combinatorics\BranchBound\Node $node
-     * @param  string                                     $boundType
-     * @param  array                                      $additionalInfo
+     * @param  \Litvinenko\Combinatorics\Pdp\Path $path
+     * @param  string                             $boundType
+     * @param  array                              $additionalInfo
      *
      * @return float
      */
-    protected function _calculateBound(\Litvinenko\Combinatorics\BranchBound\Node $node, $boundType, array $additionalInfo = array())
+    protected function _calculateBound(\Litvinenko\Combinatorics\Pdp\Path $path, $boundType, array $additionalInfo = array())
     {
         $result = null;
 
         // this stub calculates only optimistic bounds
         if ($boundType == self::BOUND_TYPE_OPTIMISTIC)
         {
-            $points     = $node->getContent()->getPoints();
+            $points     = $path->getPoints();
             $parentNode = $additionalInfo['parent_node'];
 
             // if parent node is empty, just return id of first point
