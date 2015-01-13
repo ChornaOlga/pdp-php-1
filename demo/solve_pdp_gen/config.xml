@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config>
     <events>
-        <branch_bound_step_begin>
+<!--         <branch_bound_step_begin>
             <observers>
                 <solutioninfocollector_branch_bound_step_begin>
                     <class>\SolutionInfoCollector</class>
@@ -36,7 +36,7 @@
                     <singleton>1</singleton>
                 </solutioninfocollector_branch_bound_step_end>
             </observers>
-        </branch_bound_step_end>
+        </branch_bound_step_end> -->
     </events>
     <developer_mode>1</developer_mode>
 </config>

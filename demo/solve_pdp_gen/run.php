@@ -6,7 +6,7 @@ require_once '../../vendor/autoload.php';
 
 $pointInfoFile  = 'pdp_points.txt';
 $pdpConfigFile  = 'pdp_config.ini';
-$solverClass    = '\Litvinenko\Combinatorics\Pdp\Solver\BranchBoundSolver';
+$solverClass    = '\Litvinenko\Combinatorics\Pdp\Solver\PreciseGenerationSolver';
 $metricsClass   = '\Litvinenko\Combinatorics\Pdp\Metrics\EuclideanMetric';
 $evaluatorClass = '\Litvinenko\Combinatorics\Pdp\Evaluator\PdpEvaluator';
 
@@ -15,6 +15,7 @@ $pointInfo = IO::readPointsFromFile($pointInfoFile);
 $pdpConfig = IO::readConfigFromIniFile($pdpConfigFile);
 // var_dump($pdpInfo);
 
+    echo "<pre>";
 
 $solver = new $solverClass(array_merge($pointInfo, $pdpConfig, [
     'evaluator' => new $evaluatorClass(['metrics'   => new $metricsClass])
@@ -23,7 +24,6 @@ try
 {
     $bestPath = $solver->getSolution()->getContent();
 
-    echo "<pre>";
     // $i = 0;
     // foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
     // {

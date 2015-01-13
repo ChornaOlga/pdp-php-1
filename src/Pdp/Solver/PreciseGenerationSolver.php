@@ -8,7 +8,7 @@ use Litvinenko\Combinatorics\Pdp\Point;
 use Litvinenko\Combinatorics\Pdp\Generators\Recursive\PrecisedPdpPermutationGenerator as Generator;
 
 use Litvinenko\Common\App;
-class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\AbstractSolver
+class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\AbstractSolver
 {
     protected $dataRules = array(
         // rules from abstract solver
@@ -24,7 +24,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\AbstractS
 
         'evaluator' => 'required|object:\Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator',
 
-        'precise'              => 'required|float_strict',
+        'precise' => 'required|float_strict',
     );
 
     public function _construct()
@@ -44,8 +44,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\AbstractS
             'weight_capacity'     => $this->getWeightCapacity(),
 
             'precise'             => $this->getPrecise(),
-            'evaluator'           => $this->getEvaluator(),
-            'metrics'             => $this->getMetrics(),
+            'metrics'           => $this->getEvaluator()->getMetrics()
         ]);
 
         $pointSequences = Helper::getPointSequencesFromGeneratorData($generator->generateAll());

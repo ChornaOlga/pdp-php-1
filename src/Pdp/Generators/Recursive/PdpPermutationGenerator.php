@@ -19,7 +19,7 @@ class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generator
         $result = [];
 
         // we assume that tuple contain \Litvinenko\Combinatorics\Pdp\Point objects
-        $currentPath  = $this->getCurrentPath();
+        $currentPath  = $this->_getCurrentPath($tuple);
         foreach($this->getGeneratingElements() as $element)
         {
             $point = $element['value'];
@@ -37,6 +37,18 @@ class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generator
                     $result[] = $element;
                 }
             }
+        }
+
+        return $result;
+    }
+
+    protected function _getCurrentPath($tuple)
+    {
+        $result = null;
+        if (!($result = $this->getCurrentPath()))
+        {
+
+            // десь создавать путь из точек в tuple
         }
 
         return $result;

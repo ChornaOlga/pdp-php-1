@@ -59,9 +59,6 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
         return $result;
     }
 
-// !! написать сортировку которая берёт соответствие ТОЧКА => РАССТОЯНИЕ ДО ПОСЛЕДНЕЙ ТОЧКИ В ПУТИ
-// сортирует по этому расстоянию
-// и возвращает Н ближайших точек
     protected function _getNMinArrayElements($arr, $n)
     {
         $keys  = array_keys($arr);
@@ -85,26 +82,4 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
             $arr[$keys[$i]] = $min;
         }
     }
-
-//    protected function _getNMinArrayElements($arr, $n)
-//    {
-//        for ($i = 0; $i < $n; ++$i)
-//        {
-//            $min    = null;
-//            $minKey = null;
-//
-//            for($j = $i; $j < count($arr); ++$j)
-//            {
-//                if (null === $min || $arr[$j] < $min)
-//                {
-//                    $minKey = $j;
-//                    $min    = $arr[$j];
-//                }
-//            }
-//
-//            $arr[$minKey] = $arr[$i];
-//            $arr[$i]      = $min;
-//        }
-//
-//    }
 }
