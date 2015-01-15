@@ -5,9 +5,11 @@ use Litvinenko\Combinatorics\Pdp\Helper;
 use Litvinenko\Combinatorics\Pdp\Path;
 use Litvinenko\Combinatorics\Pdp\Point;
 // use Litvinenko\Combinatorics\Common\Generators\Recursive\PermutationWithRepetitionsGenerator as Generator;
+use Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator;
 use Litvinenko\Combinatorics\Pdp\Generators\Recursive\PrecisedPdpPermutationGenerator as Generator;
 
 use Litvinenko\Common\App;
+
 class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\AbstractSolver
 {
     protected $dataRules = array(
@@ -44,7 +46,10 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
             'weight_capacity'     => $this->getWeightCapacity(),
 
             'precise'             => $this->getPrecise(),
-            'metrics'           => $this->getEvaluator()->getMetrics()
+            'metrics'             => $this->getEvaluator()->getMetrics(),
+            'initial_object'      => Helper::getGeneratorDataFromPoints([$this->getDepot()]),
+
+            'log_steps' => true
         ]);
 
         $pointSequences = Helper::getPointSequencesFromGeneratorData($generator->generateAll());
@@ -52,7 +57,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         $bestPointSequence = null;
         foreach ($pointSequences as $pointSequence)
         {
-            $currentCost = $this->getCost($pointSequence);
+            $currentCost = $this->_getCost($pointSequence);
             if (is_null($bestPointSequence) || $this->_compareCosts($currentCost, $bestCost))
             {
                 $bestPointSequence = $pointSequence;
@@ -62,5 +67,11 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
 
         $this->setGeneratedPointSequences($pointSequences);
         return new Path(['points' => $bestPointSequence]);
+    }
+
+    protected function _getCost($pointSequence)
+    {
+        $path = new Path(['points' => $pointSequence]);
+        return $this->getEvaluator()->getBound($path, AbstractEvaluator::BOUND_TYPE_OPTIMISTIC);
     }
 }

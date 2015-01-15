@@ -2,6 +2,7 @@
 namespace Litvinenko\Combinatorics\Pdp\Generators\Recursive;
 
 use Litvinenko\Combinatorics\Pdp\Helper;
+use Litvinenko\Combinatorics\Pdp\Path;
 class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generators\Recursive\RegularSetGenerator
 {
     protected $dataRules = array(
@@ -47,8 +48,7 @@ class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generator
         $result = null;
         if (!($result = $this->getCurrentPath()))
         {
-
-            // десь создавать путь из точек в tuple
+            $result = new Path(['points' => array_column($tuple, 'value')]);
         }
 
         return $result;
@@ -63,5 +63,10 @@ class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generator
         }
 
         return $result;
+    }
+
+    public function objectIsComplete($tuple)
+    {
+        return ((count($tuple) - 1) == $this->getTupleLength()); // -1 because first pont is depot
     }
 }

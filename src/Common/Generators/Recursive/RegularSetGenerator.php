@@ -32,19 +32,15 @@ abstract class RegularSetGenerator extends AbstractGenerator
     public function _construct()
     {
         parent::_construct();
-        $this->setInitialObject([]);
+        if (!$this->hasInitialObject()) $this->setInitialObject([]);
     }
 
     public function generateNextObjects($tuple)
     {
-        $this->validate();
-
         $result = [];
         foreach ($this->_getSuccessiveElements($tuple) as $newElement)
         {
             $result[] = array_merge($tuple, [$newElement]);
-        echo implode(' ', array_column(last($result), 'combinatorial_value')) . "\n";
-        //!!!!
         }
 
         return $result;

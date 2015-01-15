@@ -1,6 +1,7 @@
 <?php
 namespace Litvinenko\Combinatorics\Pdp\Generators\Recursive;
 
+use Litvinenko\Common\App;
 class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
 {
     protected $dataRules = array(
@@ -13,7 +14,9 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
 
         // this class specific params
         'precise' => 'required|float_strict',
-        'metrics' => 'required|object:\Litvinenko\Combinatorics\Pdp\Metrics\AbstractMetric'
+        'metrics' => 'required|object:\Litvinenko\Combinatorics\Pdp\Metrics\AbstractMetric',
+
+        'log_steps' => 'required|boolean'
     );
 
     protected function _getSuccessiveElements($tuple)
@@ -22,11 +25,31 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
 
         if ($allCandidates = parent::_getSuccessiveElements($tuple))
         {
-            $childrenCount = max(1, round($this->getPrecise() * count($allCandidates)));
+            $childrenCount = max(1, round($this->getPrecise() * count($allCandidates)/100));
             $result = $this->_getNElementsNearestTo(last($tuple), $allCandidates, $childrenCount);
         }
 
         return $result;
+    }
+
+
+    protected function _generate($object)
+    {
+        if ($this->objectIsComplete($object))
+        {
+            $this->_data['generatedObjects'][] = $object;
+        }
+        else
+        {
+            foreach ($this->generateNextObjects($object) as $nextObject)
+            {
+                if ($this->getLogSteps())
+                {
+                    App::dispatchEvent("new_path_generated", ['tuple' => $nextObject]);
+                }
+                $this->_generate($nextObject);
+            }
+        }
     }
 
     protected function _getTuplePointIds($tuple)
@@ -62,7 +85,7 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
     protected function _getNMinArrayElements($arr, $n)
     {
         $keys  = array_keys($arr);
-        $point = $arr[$keys[$i]];
+        $point = $arr[$keys[0]];
 
         for ($i = 0; $i < $n; ++$i)
         {
@@ -81,5 +104,8 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
             $arr[$minKey]   = $arr[$keys[$i]];
             $arr[$keys[$i]] = $min;
         }
+
+        return array_slice($arr, 0, $n);
     }
+
 }

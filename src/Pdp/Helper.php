@@ -65,7 +65,7 @@ class Helper extends \Litvinenko\Common\Object
      *
      * @return array
      */
-    public static function getGeneratorDataFromPoints($points)
+    public static function getGeneratorDataFromPoints(array $points)
     {
         $result = [];
         foreach ($points as $point)

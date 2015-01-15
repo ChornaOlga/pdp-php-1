@@ -1,42 +1,15 @@
 <?xml version="1.0"?>
 <config>
     <events>
-<!--         <branch_bound_step_begin>
+        <new_path_generated>
             <observers>
-                <solutioninfocollector_branch_bound_step_begin>
+                <solutioninfocollector_new_path_generated>
                     <class>\SolutionInfoCollector</class>
-                    <method>stepBegin</method>
+                    <method>logGeneratedPath</method>
                     <singleton>1</singleton>
-                </solutioninfocollector_branch_bound_step_begin>
+                </solutioninfocollector_new_path_generated>
             </observers>
-        </branch_bound_step_begin>
-        <branch_bound_step_branching_begin>
-            <observers>
-                <solutioninfocollector_branch_bound_step_branching_begin>
-                    <class>\SolutionInfoCollector</class>
-                    <method>stepBranchingBegin</method>
-                    <singleton>1</singleton>
-                </solutioninfocollector_branch_bound_step_branching_begin>
-            </observers>
-        </branch_bound_step_branching_begin>
-        <branch_bound_step_branching_children_generated>
-            <observers>
-                <solutioninfocollector_branch_bound_step_branching_children_generated>
-                    <class>\SolutionInfoCollector</class>
-                    <method>stepBranchingChildrenGenerated</method>
-                    <singleton>1</singleton>
-                </solutioninfocollector_branch_bound_step_branching_children_generated>
-            </observers>
-        </branch_bound_step_branching_children_generated>
-        <branch_bound_step_end>
-            <observers>
-                <solutioninfocollector_branch_bound_step_end>
-                    <class>\SolutionInfoCollector</class>
-                    <method>stepEnd</method>
-                    <singleton>1</singleton>
-                </solutioninfocollector_branch_bound_step_end>
-            </observers>
-        </branch_bound_step_end> -->
-    </events>
+        </new_path_generated>
+     </events>
     <developer_mode>1</developer_mode>
 </config>

@@ -66,6 +66,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
                 'current_path'        => $node->getContent(),
                 'weight_capacity'     => $this->getWeightCapacity()
             ]);
+            $generator->validate();
 
             $points            = Helper::getGeneratorDataFromPoints($node->getContent()->getPoints());
             $newPointSequences = Helper::getPointSequencesFromGeneratorData($generator->generateNextObjects($points));

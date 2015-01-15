@@ -3,6 +3,7 @@ use \Litvinenko\Combinatorics\Pdp\IO;
 use \Litvinenko\Common\App;
 
 require_once '../../vendor/autoload.php';
+require 'SolutionInfoCollector.php';
 
 $pointInfoFile  = 'pdp_points.txt';
 $pdpConfigFile  = 'pdp_config.ini';
@@ -15,14 +16,16 @@ $pointInfo = IO::readPointsFromFile($pointInfoFile);
 $pdpConfig = IO::readConfigFromIniFile($pdpConfigFile);
 // var_dump($pdpInfo);
 
-    echo "<pre>";
+    // echo "<pre>";
 
 $solver = new $solverClass(array_merge($pointInfo, $pdpConfig, [
     'evaluator' => new $evaluatorClass(['metrics'   => new $metricsClass])
     ]));
 try
 {
-    $bestPath = $solver->getSolution()->getContent();
+    $bestPath = $solver->getSolution();
+
+file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
 
     // $i = 0;
     // foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
