@@ -29,18 +29,20 @@ try
 
     file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
 
-    foreach ($solver->getGeneratedPointSequences() as $pointSequence)
-    {
-        $path = new Path(['points' => $pointSequence]);
-        echo IO::getPathAsText($path) . ' ' . $solver->_getCost($path) .   "\n";
-    }
+    echo "all paths at last step:\n";
+    // foreach ($solver->getGeneratedPointSequences() as $pointSequence)
+    // {
+    //     // $path = new Path(['points' => $pointSequence]);
+    //     echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
+    // }
     // $i = 0;
     // foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
     // {
     //     echo IO::getReadableStepInfo($stepInfo, ++$i);
     // }
 
-    echo "\n\nfinal path: " . IO::getPathAsText($bestPath);
+    echo "\n\nfinal path: " . IO::getPathAsText($bestPath) . " with cost " . $solver->_getCost($bestPath) ;
+    echo "\n";
 }
 catch (\Exception $e)
 {

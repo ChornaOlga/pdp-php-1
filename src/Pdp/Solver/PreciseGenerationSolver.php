@@ -57,6 +57,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         $bestPointSequence = null;
         foreach ($pointSequences as $pointSequence)
         {
+            $pointSequence[] = $this->getDepot();
             $currentCost = $this->_getCost($pointSequence);
             if (is_null($bestPointSequence) || ($this->_compareCosts($currentCost, $bestCost) === 1))
             {
