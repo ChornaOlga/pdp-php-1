@@ -58,7 +58,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         foreach ($pointSequences as $pointSequence)
         {
             $currentCost = $this->_getCost($pointSequence);
-            if (is_null($bestPointSequence) || $this->_compareCosts($currentCost, $bestCost))
+            if (is_null($bestPointSequence) || ($this->_compareCosts($currentCost, $bestCost) === 1))
             {
                 $bestPointSequence = $pointSequence;
                 $bestCost          = $currentCost;
@@ -69,9 +69,9 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         return new Path(['points' => $bestPointSequence]);
     }
 
-    protected function _getCost($pointSequence)
+    public function _getCost($pointSequence)
     {
-        $path = new Path(['points' => $pointSequence]);
+        $path = ($pointSequence instanceof Path) ? $pointSequence : (new Path(['points' => $pointSequence]));
         return $this->getEvaluator()->getBound($path, AbstractEvaluator::BOUND_TYPE_OPTIMISTIC);
     }
 }

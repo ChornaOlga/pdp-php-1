@@ -1,6 +1,8 @@
 <?php
 use \Litvinenko\Combinatorics\Pdp\IO;
+use \Litvinenko\Combinatorics\Pdp\Helper;
 use \Litvinenko\Common\App;
+use \Litvinenko\Combinatorics\Pdp\Path;
 
 require_once '../../vendor/autoload.php';
 require 'SolutionInfoCollector.php';
@@ -25,8 +27,13 @@ try
 {
     $bestPath = $solver->getSolution();
 
-file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
+    file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
 
+    foreach ($solver->getGeneratedPointSequences() as $pointSequence)
+    {
+        $path = new Path(['points' => $pointSequence]);
+        echo IO::getPathAsText($path) . ' ' . $solver->_getCost($path) .   "\n";
+    }
     // $i = 0;
     // foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
     // {

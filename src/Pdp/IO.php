@@ -105,8 +105,10 @@ class IO
         return $result;
     }
 
-    public static function getPathAsText(\Litvinenko\Combinatorics\Pdp\Path $path, $pointDelimiter = '-')
+    public static function getPathAsText($path, $pointDelimiter = '-')
     {
+        $path = ($path instanceof \Litvinenko\Combinatorics\Pdp\Path) ? $path : (new Path(['points' => $path]));
+
         if ($path->getPoints())
         {
             $result = '<';
