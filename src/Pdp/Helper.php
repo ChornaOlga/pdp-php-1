@@ -95,4 +95,32 @@ class Helper extends \Litvinenko\Common\Object
 
         return $result;
     }
+
+    public static function getPickupsFromPointSequence($pointSequence)
+    {
+        $result = [];
+        foreach ($pointSequence as $point)
+        {
+            if ($point->isPickup())
+            {
+                $result[] = $point;
+            }
+        }
+
+        return $result;
+    }
+
+    public static function removeDepotFromPointSequence($pointSequence)
+    {
+        $result = [];
+        foreach ($pointSequence as $point)
+        {
+            if (!$point->isDepot())
+            {
+                $result[] = $point;
+            }
+        }
+
+        return $result;
+    }
 }

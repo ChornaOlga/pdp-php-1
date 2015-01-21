@@ -26,6 +26,7 @@ class IO
                         'x'                   => floatval($pointInfo[1]),
                         'y'                   => floatval($pointInfo[2]),
                         'box_weight'          => isset($pointInfo[3]) ? floatval($pointInfo[3]) : null,
+                        'box_dimensions'      => isset($pointInfo[4]) ? ['x' => floatval($pointInfo[4]) , 'y' => floatval($pointInfo[5]), 'z' => floatval($pointInfo[6])] : null,
                         'combinatorial_value' => $id,
                     ]);
 
@@ -40,7 +41,7 @@ class IO
                     {
                         $isPickup = ($id <= $count/2);
                         $newPoint->addData([
-                            'type'          => $isPickup ? Point::TYPE_PICKUP                          : Point::TYPE_DELIVERY,
+                            'type'    => $isPickup ? Point::TYPE_PICKUP                          : Point::TYPE_DELIVERY,
                             'pair_id' => $isPickup ? ($id + $count/2)                            : ($id - $count/2),
                             ]);
 
@@ -151,5 +152,19 @@ class IO
         }
 
         return $result;
+    }
+
+    public static function getBoxesTextForExternalPdpHelper($points)
+    {
+        $result = "\n";
+        foreach ($points as $point)
+        {
+            if ($point->isPickup())
+            {
+                $result .= 'from ' . $point->getId() . ' to ' . $point->getPairId() . ' ' . $point->getBoxWeight() . ' ' . implode(' ', $point->getBoxDimensions()) . "\n";
+            }
+        }
+
+        return str_replace('.', ',', $result);
     }
 }

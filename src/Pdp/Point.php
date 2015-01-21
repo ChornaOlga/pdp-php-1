@@ -16,8 +16,9 @@ class Point extends \Litvinenko\Common\Object
             'x'                   => 'not_null|float_strict',
             'y'                   => 'not_null|float_strict',
             'box_weight'          => 'not_null|float_strict',
+            'box_dimensions'      => 'array',
             'combinatorial_value' => 'not_null',
-            'pair_poind_id'       => 'not_null|integer_strict'
+            'pair_id'             => 'not_null|integer_strict'
         );
     }
 

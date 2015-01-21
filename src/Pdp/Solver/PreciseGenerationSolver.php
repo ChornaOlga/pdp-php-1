@@ -1,6 +1,7 @@
 <?php
 namespace Litvinenko\Combinatorics\Pdp\Solver;
 
+use Litvinenko\Combinatorics\Pdp\IO;
 use Litvinenko\Combinatorics\Pdp\Helper;
 use Litvinenko\Combinatorics\Pdp\Path;
 use Litvinenko\Combinatorics\Pdp\Point;
@@ -12,6 +13,7 @@ use Litvinenko\Common\App;
 
 class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\AbstractSolver
 {
+
     protected $dataRules = array(
         // rules from abstract solver
         'maximize_cost'        => 'required|boolean',
@@ -28,6 +30,8 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
 
         'precise' => 'required|float_strict',
     );
+
+    protected $_boxFileName = 'boxes.txt';
 
     public function _construct()
     {
@@ -59,7 +63,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         {
             $pointSequence[] = $this->getDepot();
             $currentCost = $this->_getCost($pointSequence);
-            if (is_null($bestPointSequence) || ($this->_compareCosts($currentCost, $bestCost) === 1))
+            if ((is_null($bestPointSequence) || ($this->_compareCosts($currentCost, $bestCost) === 1)) && $this->canLoad($pointSequence))
             {
                 $bestPointSequence = $pointSequence;
                 $bestCost          = $currentCost;
@@ -74,5 +78,36 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
     {
         $path = ($pointSequence instanceof Path) ? $pointSequence : (new Path(['points' => $pointSequence]));
         return $this->getEvaluator()->getBound($path, AbstractEvaluator::BOUND_TYPE_OPTIMISTIC);
+    }
+
+    public function canLoad($pointSequence)
+    {
+        $result = true;
+
+        $points = Helper::removeDepotFromPointSequence($pointSequence);
+        if ($this->getCheckLoading())
+        {
+            $file = $this->getLoadingCheckerFile();
+            if (file_exists($file))
+            {
+                file_put_contents($this->_boxFileName, IO::getBoxesTextForExternalPdpHelper($points));
+
+                $cmdString = "{$file}" .
+                                " -b {$this->_boxFileName}" .
+                                " -n "   . (int)(count($points)/2) .
+                                " -c \"" . implode(' ', $this->getLoadArea()) . ' ' . $this->getWeightCapacity() . "\"" .
+                                " -r \""  . implode(' ', Point::getPointIds($points)) . "  1\"";
+                $cmdResult = exec($cmdString);
+                echo $cmdResult . "\n";
+                $result = ($cmdResult == 'True');
+            }
+            else
+            {
+                throw new \Exception("loading checker file '{$file}' doesn't exist!");
+            }
+            // pdphelper.exe -b Korobki.txt -n 4 -c "20 20 20 100" -r "2 1 5 6 3 7 4 8  44"
+        }
+
+        return $result;
     }
 }

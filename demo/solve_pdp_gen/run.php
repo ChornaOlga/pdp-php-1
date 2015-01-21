@@ -30,11 +30,11 @@ try
     file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
 
     echo "all paths at last step:\n";
-    // foreach ($solver->getGeneratedPointSequences() as $pointSequence)
-    // {
-    //     // $path = new Path(['points' => $pointSequence]);
-    //     echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
-    // }
+    foreach ($solver->getGeneratedPointSequences() as $pointSequence)
+    {
+        // $path = new Path(['points' => $pointSequence]);
+        echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
+    }
     // $i = 0;
     // foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
     // {
