@@ -80,68 +80,21 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         return $this->getEvaluator()->getBound($path, AbstractEvaluator::BOUND_TYPE_OPTIMISTIC);
     }
 
-    public function canLoad($pointSequence)
+    protected function canLoad($pointSequence)
     {
-        return ($this->getCheckLoading()) ? App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity()) : true;
+        $result = true;
+        if ($this->getCheckLoading())
+        {
+            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity());
+            if (!$canLoad)
+            {
+                App::dispatchEvent('cant_load', ['point_sequence' => $pointSequence]);
+            }
 
-        // if ($this->getCheckLoading())
-        // {
-        //     $file = $this->getCheckLoadingCommandPrefix();
-        //     $boxFileName = 'boxes.txt';
-        //     if (file_exists($file))
-        //     {
-        //         if (!$this->getBoxesFileIsFilled())
-        //         {
-        //             file_put_contents($boxFileName, IO::getBoxesTextForExternalPdpHelper($points));
-        //             $this->setBoxesFileIsFilled(true);
-        //         }
+            $result = $canLoad;
+        }
 
-        //         $cmdString = "{$file}" .
-        //                         " -b {$boxFileName}" .
-        //                         " -n "   . (int)(count($points)/2) .
-        //                         " -c \"" . implode(' ', $this->getLoadArea()) . ' ' . $this->getWeightCapacity() . "\"" .
-        //                         " -r \""  . implode(' ', Point::getPointIds($points)) . "  1\"";
-        //         $cmdResult = exec($cmdString);
-        //         echo $cmdResult . "\n";
-        //         $result = ($cmdResult == 'True');
-        //     }
-        //     else
-        //     {
-        //         throw new \Exception("loading checker file '{$file}' doesn't exist!");
-        //     }
-        //     // pdphelper.exe -b Korobki.txt -n 4 -c "20 20 20 100" -r "2 1 5 6 3 7 4 8  44"
-        // }
-
-        // return $result;
+        return $result;
+        // return ($this->getCheckLoading()) ? App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity()) : true;
     }
-
-    // public function canLoad($pointSequence, $loadingCheckerFile)
-    // {
-    //     return ($this->getCheckLoading()) ? Helper::loadingIsValid() : true;
-
-    //     $points = Helper::removeDepotFromPointSequence($pointSequence);
-
-    //         $loadingCheckerFile = $this->getCheckLoadingCommandPrefix();
-    //         if (file_exists($loadingCheckerFile))
-    //         {
-    //             file_put_contents($boxFileName, IO::getBoxesTextForExternalPdpHelper($points));
-
-    //             $cmdString = "{$loadingCheckerFile}" .
-    //                             " -b {$boxFileName}" .
-    //                             " -n "   . (int)(count($points)/2) .
-    //                             " -c \"" . implode(' ', $this->getLoadArea()) . ' ' . $this->getWeightCapacity() . "\"" .
-    //                             " -r \""  . implode(' ', Point::getPointIds($points)) . "  1\"";
-    //             $cmdResult = exec($cmdString);
-    //             echo $cmdResult . "\n";
-    //             $result = ($cmdResult == 'True');
-    //         }
-    //         else
-    //         {
-    //             throw new \Exception("loading checker file '{$loadingCheckerFile}' doesn't exist!");
-    //         }
-    //         // pdphelper.exe -b Korobki.txt -n 4 -c "20 20 20 100" -r "2 1 5 6 3 7 4 8  44"
-    //     }
-
-    //     return $result;
-    // }
 }

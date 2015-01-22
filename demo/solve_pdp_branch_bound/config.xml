@@ -37,6 +37,15 @@
                 </solutioninfocollector_branch_bound_step_end>
             </observers>
         </branch_bound_step_end>
+        <branch_bound_cant_load>
+            <observers>
+                <solutioninfocollector_branch_bound_cant_load>
+                    <class>\SolutionInfoCollector</class>
+                    <method>cantLoad</method>
+                    <singleton>1</singleton>
+                </solutioninfocollector_branch_bound_cant_load>
+            </observers>
+        </branch_bound_cant_load>
     </events>
     <developer_mode>1</developer_mode>
 </config>

@@ -47,4 +47,13 @@ class SolutionInfoCollector extends \Litvinenko\Common\Object
 
         $this->setStepsInfo($steps);
     }
+
+    public function cantLoad($event)
+    {
+        $pathsCouldNotBeLoaded   = isset($this->getCurrentStepInfo()['paths_could_not_be_loaded']) ? $this->getCurrentStepInfo()['paths_could_not_be_loaded'] : [];
+        $pathsCouldNotBeLoaded[] = $event->getPointSequence();
+
+        $stepInfo = array_replace($this->getCurrentStepInfo(), ['paths_could_not_be_loaded' => $pathsCouldNotBeLoaded]);
+        $this->setCurrentStepInfo($stepInfo);
+    }
 }

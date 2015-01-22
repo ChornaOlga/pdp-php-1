@@ -93,10 +93,13 @@ class IO
         if (file_exists($filename) && ($config = parse_ini_file($filename, true)))
         {
             $result = [
-                'check_loading'        => isset($config['general']['check_loading'])        ? (bool)$config['general']['check_loading']  : null,
-                'check_loading_command_prefix' => isset($config['general']['check_loading_command_prefix']) ? $config['general']['check_loading_command_prefix'] : null,
-                'maximize_cost'        => isset($config['general']['maximize_cost'])        ?(bool)$config['general']['maximize_cost']   : null,
-                'precise'              => isset($config['general']['precise'])              ? (float)$config['general']['precise']       : null,
+                'check_loading'                    => isset($config['general']['check_loading'])        ? (bool)$config['general']['check_loading']  : null,
+                'check_loading_command_prefix'     => isset($config['general']['check_loading_command_prefix']) ? $config['general']['check_loading_command_prefix'] : null,
+                'check_loading_for_every_new_node' => isset($config['general']['check_loading_for_every_new_node']) ? (bool)$config['general']['check_loading_for_every_new_node'] : null,
+                'maximize_cost'                    => isset($config['general']['maximize_cost'])        ?(bool)$config['general']['maximize_cost']   : null,
+                'precise'                          => isset($config['general']['precise'])              ? (float)$config['general']['precise']       : null,
+
+                'log_solution'                     => isset($config['general']['log_solution'])         ?(bool)$config['general']['log_solution']    : null,
 
                 'weight_capacity'      => isset($config['load']['weight_capacity'])         ? (float)($config['load']['weight_capacity'])  : null,
                 'load_area'            => isset($config['load']['load_area'])               ? $config['load']['load_area']               : null,
@@ -143,6 +146,13 @@ class IO
             foreach ($stepInfo['children_generated'] as $child)
                 $result .= IO::getPathAsText($child->getContent()) . ' with bound ' . $child->getOptimisticBound() . "\n";
 
+            if (isset($stepInfo['paths_could_not_be_loaded']))
+            {
+                $result .= "\nfull paths could not be loaded: \n";
+                foreach ($stepInfo['paths_could_not_be_loaded'] as $pointSequence)
+                    $result .= IO::getPathAsText($pointSequence) . "\n";
+            }
+
             $result .= "\nbest full node at the end: " . IO::getPathAsText($stepInfo['best_full_node_at_the_end']->getContent()) . ' with bound ' . $stepInfo['best_full_node_at_the_end']->getOptimisticBound() . "\n";
 
             $result .= "\nactive nodes at the end: \n";
@@ -161,7 +171,7 @@ class IO
         {
             if ($point->isPickup())
             {
-                $result .= 'from ' . $point->getId() . ' to ' . $point->getPairId() . ' ' . $point->getBoxWeight() . ' ' . implode(' ', $point->getBoxDimensions()) . "\n";
+                $result .= 'from ' . $point->getId() . ' to ' . $point->getPairId() . ' ' . implode(' ', $point->getBoxDimensions()) . ' ' . $point->getBoxWeight() . "\n";
             }
         }
 

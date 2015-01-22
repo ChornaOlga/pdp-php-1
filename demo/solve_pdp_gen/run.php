@@ -12,7 +12,6 @@ $pdpConfigFile  = 'pdp_config.ini';
 $solverClass    = '\Litvinenko\Combinatorics\Pdp\Solver\PreciseGenerationSolver';
 $metricsClass   = '\Litvinenko\Combinatorics\Pdp\Metrics\EuclideanMetric';
 $evaluatorClass = '\Litvinenko\Combinatorics\Pdp\Evaluator\PdpEvaluator';
-$outputAllGeneratedPaths = false;
 $generationLogFile = '';
 
 App::init();
@@ -34,10 +33,18 @@ try
     }
 
     echo "<pre>";
-    if ($outputAllGeneratedPaths)
+    if ($pdpConfig['log_solution'])
     {
+
         echo "all paths at last step:\n";
         foreach ($solver->getGeneratedPointSequences() as $pointSequence)
+        {
+        // $path = new Path(['points' => $pointSequence]);
+            echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
+        }
+
+        echo "\n\nnot loaded paths:\n";
+        foreach (App::getSingleton('\SolutionInfoCollector')->getNotLoadedPaths() as $pointSequence)
         {
         // $path = new Path(['points' => $pointSequence]);
             echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
@@ -49,7 +56,7 @@ try
     //     echo IO::getReadableStepInfo($stepInfo, ++$i);
     // }
 
-    echo "\n\nfinal path: " . IO::getPathAsText($bestPath) . " with cost " . $solver->_getCost($bestPath) ;
+    echo "\n\nfinal path: " . IO::getPathAsText($bestPath) . " with cost " . $solver->_getCost($bestPath);
     echo "\n";
 }
 catch (\Exception $e)

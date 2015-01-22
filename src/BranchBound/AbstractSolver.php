@@ -46,7 +46,14 @@ abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
                 // if new node is better (or has better evaluation) than current best node
                 if ($this->_compareNodes($newNode, $currentBestFullNode) > -1)
                 {
-                    ($this->_nodeIsCompleteSolution($newNode)) ? ($currentBestFullNode = $newNode) : $newNode->setActive(true);
+                    if ($this->_nodeIsCompleteSolution($newNode))
+                    {
+                        $currentBestFullNode = $newNode;
+                    }
+                    else
+                    {
+                        $newNode->setActive(true);
+                    }
                 }
                 else
                 {
