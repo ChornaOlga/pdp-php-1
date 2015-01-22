@@ -94,7 +94,7 @@ class IO
         {
             $result = [
                 'check_loading'        => isset($config['general']['check_loading'])        ? (bool)$config['general']['check_loading']  : null,
-                'loading_checker_file' => isset($config['general']['loading_checker_file']) ? $config['general']['loading_checker_file'] : null,
+                'check_loading_command_prefix' => isset($config['general']['check_loading_command_prefix']) ? $config['general']['check_loading_command_prefix'] : null,
                 'maximize_cost'        => isset($config['general']['maximize_cost'])        ?(bool)$config['general']['maximize_cost']   : null,
                 'precise'              => isset($config['general']['precise'])              ? (float)$config['general']['precise']       : null,
 

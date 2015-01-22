@@ -1,6 +1,9 @@
 <?php
 namespace Litvinenko\Combinatorics\Pdp;
 
+use Litvinenko\Combinatorics\Pdp\IO;
+use Litvinenko\Combinatorics\Pdp\Point;
+
 class Helper extends \Litvinenko\Common\Object
 {
     const LOG_FILE       = 'log/system.log';
@@ -120,6 +123,31 @@ class Helper extends \Litvinenko\Common\Object
                 $result[] = $point;
             }
         }
+
+        return $result;
+    }
+
+    public function canLoad($pointSequence, $checkLoadingCommandPrefix, $loadArea, $weightCapacity)
+    {
+        $result = false;
+
+        $points = Helper::removeDepotFromPointSequence($pointSequence);
+        $boxFileName = 'boxes.txt';
+
+        if (!$this->getBoxesFileIsFilled())
+        {
+            file_put_contents($boxFileName, IO::getBoxesTextForExternalPdpHelper($points));
+            $this->setBoxesFileIsFilled(true);
+        }
+
+        $cmdString = "{$checkLoadingCommandPrefix}" .
+                        " -b {$boxFileName}" .
+                        " -n "   . (int)(count($points)/2) .
+                        " -c \"" . implode(' ', $loadArea) . ' ' . $weightCapacity . "\"" .
+                        " -r \""  . implode(' ', Point::getPointIds($points)) . "  1\"";
+        $cmdResult = exec($cmdString);
+      //  echo $cmdResult . "\n";
+        $result = ($cmdResult == 'True');
 
         return $result;
     }

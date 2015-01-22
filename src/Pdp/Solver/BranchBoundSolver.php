@@ -24,7 +24,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         'weight_capacity'      => 'required|float_strict',
         'load_area'            => 'required|array',
         'check_loading'        => 'required|boolean',
-        'loading_checker_file' => 'required',
+        'check_loading_command_prefix' => 'required',
 
         'evaluator' => 'required|object:\Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator'
     );

@@ -12,13 +12,14 @@ $pdpConfigFile  = 'pdp_config.ini';
 $solverClass    = '\Litvinenko\Combinatorics\Pdp\Solver\PreciseGenerationSolver';
 $metricsClass   = '\Litvinenko\Combinatorics\Pdp\Metrics\EuclideanMetric';
 $evaluatorClass = '\Litvinenko\Combinatorics\Pdp\Evaluator\PdpEvaluator';
+$outputAllGeneratedPaths = false;
+$generationLogFile = '';
 
 App::init();
 $pointInfo = IO::readPointsFromFile($pointInfoFile);
 $pdpConfig = IO::readConfigFromIniFile($pdpConfigFile);
 // var_dump($pdpInfo);
 
-    // echo "<pre>";
 
 $solver = new $solverClass(array_merge($pointInfo, $pdpConfig, [
     'evaluator' => new $evaluatorClass(['metrics'   => new $metricsClass])
@@ -27,13 +28,20 @@ try
 {
     $bestPath = $solver->getSolution();
 
-    file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
-
-    echo "all paths at last step:\n";
-    foreach ($solver->getGeneratedPointSequences() as $pointSequence)
+    if ($generationLogFile)
     {
+        file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
+    }
+
+    echo "<pre>";
+    if ($outputAllGeneratedPaths)
+    {
+        echo "all paths at last step:\n";
+        foreach ($solver->getGeneratedPointSequences() as $pointSequence)
+        {
         // $path = new Path(['points' => $pointSequence]);
-        echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
+            echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
+        }
     }
     // $i = 0;
     // foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
