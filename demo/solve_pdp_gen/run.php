@@ -23,19 +23,18 @@ $pdpConfig = IO::readConfigFromIniFile($pdpConfigFile);
 $solver = new $solverClass(array_merge($pointInfo, $pdpConfig, [
     'evaluator' => new $evaluatorClass(['metrics'   => new $metricsClass])
     ]));
+echo "<pre>\n";
 try
 {
+    App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->start();
     $bestPath = $solver->getSolution();
+    printf('Solution was obtained in %.4F seconds', App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart());
 
-    if ($generationLogFile)
-    {
-        file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
-    }
+    echo "\n\ntotal paths generated:" .  count($solver->getGeneratedPointSequences()) . "\n";
+    App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->start();
 
-    echo "<pre>";
     if ($pdpConfig['log_solution'])
     {
-
         echo "all paths at last step:\n";
         foreach ($solver->getGeneratedPointSequences() as $pointSequence)
         {
@@ -49,6 +48,11 @@ try
         // $path = new Path(['points' => $pointSequence]);
             echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
         }
+
+    }
+    if ($generationLogFile)
+    {
+        file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
     }
     // $i = 0;
     // foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
@@ -56,8 +60,10 @@ try
     //     echo IO::getReadableStepInfo($stepInfo, ++$i);
     // }
 
-    echo "\n\nfinal path: " . IO::getPathAsText($bestPath) . " with cost " . $solver->_getCost($bestPath);
-    echo "\n";
+    echo "\n\nfinal path: " . IO::getPathAsText($bestPath) . " with cost " . $solver->_getCost($bestPath) . "\n";
+
+
+    printf('All other operations took %.4F seconds', App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart());
 }
 catch (\Exception $e)
 {
@@ -70,3 +76,5 @@ catch (\Exception $e)
 
 //info about last step:
 // \Litvinenko\Combinatorics\Pdp\IO::getReadableStepInfo(last(\Litvinenko\Common\App::getSingleton('\SolutionInfoCollector')->getStepsInfo()))
+
+    echo "\n";

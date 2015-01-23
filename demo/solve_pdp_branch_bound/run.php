@@ -24,11 +24,14 @@ try
     $bestPath = $solver->getSolution()->getContent();
 
     echo "<pre>";
-    $i = 0;
-    foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
-    {
-        echo IO::getReadableStepInfo($stepInfo, ++$i);
 
+    if ($pdpConfig['log_solution'])
+    {
+        $i = 0;
+        foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
+        {
+            echo IO::getReadableStepInfo($stepInfo, ++$i);
+        }
     }
 
     echo "\n\nfinal path: " . IO::getPathAsText($bestPath);
