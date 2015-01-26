@@ -68,25 +68,29 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
         $metrics = $this->getMetrics();
 
         $distancesToTarget = [];
-        foreach ($allElements as $element)
+
+        // create assoc array where keys are element ids
+        $allElements = array_combine(array_column($allElements, 'id'), array_values($allElements));
+        foreach ($allElements as $elementId => $element)
         {
-            $distancesToTarget[$element['id']] = $metrics->getDistanceBetweenPoints($element['value'], $targetElement['value']);
+            $distancesToTarget[$elementId] = $metrics->getDistanceBetweenPoints($element['value'], $targetElement['value']);
         }
 
         $result = [];
-        foreach (array_keys($this->_getNMinArrayElements($distancesToTarget, $n)) as $id)
+        foreach ($this->_getKeysOfNMinArrayElements($distancesToTarget, $n) as $elementId)
         {
-            $result[] = $allElements[$id];
+            $result[] = $allElements[$elementId];
         }
 
         return $result;
     }
 
-    protected function _getNMinArrayElements($arr, $n)
+    protected function _getKeysOfNMinArrayElements($arr, $n)
     {
         $keys  = array_keys($arr);
         $point = $arr[$keys[0]];
 
+        $result = [];
         for ($i = 0; $i < $n; ++$i)
         {
             $min    = null;
@@ -101,11 +105,13 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
                 }
             }
 
-            $arr[$minKey]   = $arr[$keys[$i]];
+            $arr[$minKey] = $arr[$keys[$i]];
             $arr[$keys[$i]] = $min;
+
+            $result[] = $minKey;
         }
 
-        return array_slice($arr, 0, $n);
+        return $result;
     }
 
 }

@@ -7,12 +7,13 @@ use \Litvinenko\Combinatorics\Pdp\Path;
 require_once '../../vendor/autoload.php';
 require 'SolutionInfoCollector.php';
 
-$pointInfoFile  = 'pdp_points.txt';
-$pdpConfigFile  = 'pdp_config.ini';
+$pointInfoFile  = '../pdp_points.txt';
+$pdpConfigFile  = '../pdp_config.ini';
 $solverClass    = '\Litvinenko\Combinatorics\Pdp\Solver\PreciseGenerationSolver';
 $metricsClass   = '\Litvinenko\Combinatorics\Pdp\Metrics\EuclideanMetric';
 $evaluatorClass = '\Litvinenko\Combinatorics\Pdp\Evaluator\PdpEvaluator';
 $generationLogFile = '';
+$solutionLogFile = 'solution.txt';
 
 App::init();
 $pointInfo = IO::readPointsFromFile($pointInfoFile);
@@ -33,21 +34,23 @@ try
     echo "\n\ntotal paths generated:" .  count($solver->getGeneratedPointSequences()) . "\n";
     App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->start();
 
-    if ($pdpConfig['log_solution'])
+    if ($pdpConfig['log_solution'] && $solutionLogFile)
     {
-        echo "all paths at last step:\n";
+        $log =  "-------------- all paths at last step:\n";
         foreach ($solver->getGeneratedPointSequences() as $pointSequence)
         {
         // $path = new Path(['points' => $pointSequence]);
-            echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
+            $log .= IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
         }
 
-        echo "\n\nnot loaded paths:\n";
+        $log .= "\n\n-------------not loaded paths:\n";
         foreach (App::getSingleton('\SolutionInfoCollector')->getNotLoadedPaths() as $pointSequence)
         {
         // $path = new Path(['points' => $pointSequence]);
-            echo IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
+            $log .= IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
         }
+
+        file_put_contents($solutionLogFile, $log);
 
     }
     if ($generationLogFile)

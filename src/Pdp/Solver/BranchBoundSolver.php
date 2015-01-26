@@ -61,16 +61,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         $result = [];
         if (!$this->_nodeIsCompleteSolution($node))
         {
-            $generator = new Generator([
-                'tuple_length'        => Point::getPointCount($this->getPoints()),
-                'generating_elements' => Helper::getGeneratorDataFromPoints($this->getPoints()),
-                'current_path'        => $node->getContent(),
-                'weight_capacity'     => $this->getWeightCapacity()
-            ]);
-            $generator->validate();
-
-            $points            = Helper::getGeneratorDataFromPoints($node->getContent()->getPoints());
-            $newPointSequences = Helper::getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
+            $newPointSequences = $this->_generateNestedPointSequences($node);
 
             foreach ($newPointSequences as $newPointSequence)
             {
@@ -82,7 +73,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
                     $newNode->setOptimisticBound($this->getEvaluator()->getBound($path, Evaluator::BOUND_TYPE_OPTIMISTIC , [
                         'parent_node'       => $node,
-                        'total_point_count' => Point::getPointCount($this->getPoints())
+                        'total_point_count' => count($this->getPoints())
                         ]));
                     $result[] = $newNode;
                 }
@@ -91,14 +82,41 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         return $result;
     }
 
+    protected function _generateNestedPointSequences($node)
+    {
+        $pointSequence = $node->getContent()->getPoints();
+        $nodeHasAllPointsExceptOfDepot = Helper::pointSequenceIncludesAllPickupsAndDeliveries($pointSequence, $this->getPoints());
+        if ($nodeHasAllPointsExceptOfDepot)
+        {
+            $result = [array_merge($pointSequence, [$this->getDepot()])];
+        }
+        else
+        {
+            $generator = new Generator([
+                'tuple_length'        => Point::getPointCount($this->getPoints()),
+                'generating_elements' => Helper::getGeneratorDataFromPoints($this->getPoints()),
+                'current_path'        => $node->getContent(),
+                'weight_capacity'     => $this->getWeightCapacity()
+                ]);
+            $generator->validate();
+
+            $points            = Helper::getGeneratorDataFromPoints($pointSequence);
+            $result = Helper::getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
+        }
+
+        return $result;
+    }
+
     protected function _nodeIsCompleteSolution($node)
     {
         $pointSequence = $node->getContent()->getPoints();
-        $nodeHasAllPoints = (count( Helper::removeDepotFromPointSequence($pointSequence) ) == count( Helper::removeDepotFromPointSequence($this->getPoints()) ) );
+
+        // + 2 because at the begin and end of path should be depot
+        $nodeHasAllPoints = (count($pointSequence) == (2 + count($this->getPoints())));
 
         return ($nodeHasAllPoints && $this->canLoad($pointSequence));
-
     }
+
 
     /**
      * Helper function for packing points to data neede for generator
@@ -156,7 +174,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
             $result = $canLoad;
         }
-        
+
         return $result;
     }
 }

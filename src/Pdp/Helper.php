@@ -127,6 +127,11 @@ class Helper extends \Litvinenko\Common\Object
         return $result;
     }
 
+    public static function pointSequenceIncludesAllPickupsAndDeliveries($pointSequence, $allPoints)
+    {
+        return (count( self::removeDepotFromPointSequence($pointSequence) ) == count( self::removeDepotFromPointSequence($allPoints)) ) ;
+    }
+
     public function canLoad($pointSequence, $checkLoadingCommandPrefix, $loadArea, $weightCapacity)
     {
         $result = false;
