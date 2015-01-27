@@ -1,0 +1,65 @@
+<html>
+<head>
+    <script src="js/common/jquery-1.9.0-min.js"></script>
+    <script src="js/common/jquery-ui-1.9.2.min.js"></script>
+    <style>
+        .wrap {
+            width: 100%;
+            border: 1px brown solid;
+            font-size: 0;
+        }
+        .resizable {
+            width: 50%;
+            height: 120px;
+            padding: 0.5em;
+            background-color: coral;
+            display: inline-block;
+        }
+        .resizable2 {
+            background-color: lightblue;
+        }
+        .ui-resizable-e {
+            cursor: e-resize;
+            width: 16px;
+            right: -5px;
+            top: 0;
+            bottom: 0;
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrap">
+        <div class="resizable resizable1"></div>
+        <div class="resizable resizable2"></div>
+    </div>
+
+    <script>
+        $(function ()
+        {
+            $(".resizable1").resizable(
+            {
+                autoHide: true,
+                handles: 'e',
+                resize: function(e, ui)
+                {
+                    var parent = ui.element.parent();
+                    var remainingSpace = parent.width() - ui.element.outerWidth(),
+                    divTwo = ui.element.next(),
+                    divTwoWidth = (remainingSpace - (divTwo.outerWidth() - divTwo.width()))/parent.width()*100+"%";
+                    divTwo.width(divTwoWidth);
+                },
+                stop: function(e, ui)
+                {
+                    var parent = ui.element.parent();
+                    ui.element.css(
+                    {
+                        width: ui.element.width()/parent.width()*100+"%",
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
