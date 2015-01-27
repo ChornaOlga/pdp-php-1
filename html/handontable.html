@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Load &amp; Save (Ajax) - Handsontable</title>
+
+  <!--
+    Loading Handsontable (full distribution that includes all dependencies apart from jQuery)
+  -->
+  <script src="js/handsontable/handsontable.full.js"></script>
+  <link rel="stylesheet" media="screen" href="css/handsontable/handsontable.full.css">
+
+  <!--
+    Loading demo dependencies. They are used here only to enhance the examples on this page
+  -->
+  <link rel="stylesheet" media="screen" href="css/handsontable/samples.css">
+  <script  src="js/handsontable/helper.js"></script>
+  <script src="js/handsontable/highlight.pack.js"></script>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <p>
+      <input type="file" id="pdp_points_filename" />
+
+      <button name="load" id="load">Load</button>
+      <!-- <button name="save" id="save">Save</button> -->
+    </p>
+
+    <div id="console" >Click "Load" to load data from server</div>
+
+    <div id="example1"></div>
+
+    <script>
+      // var
+      $ = function(id) {
+        return document.getElementById(id);
+      },
+      container = $('example1'),
+      exampleConsole = $('console'),
+      autosave = $('autosave'),
+      load = $('load'),
+      save = $('save');
+      filenameContainer = $('pdp_points_filename');
+
+      hot = new Handsontable(container, {
+        startRows: 8,
+        startCols: 6,
+        rowHeaders: true,
+        colHeaders: true,
+        minSpareRows: 1,
+        afterChange: function (change, source) {
+         // alert('changed');
+        }
+      });
+
+      Handsontable.Dom.addEvent(load, 'click', function() {
+        var file = filenameContainer.files[0];
+        if (file) {
+          var reader = new FileReader();
+          reader.onload = function() {
+              var data = JSON.parse(this.result);
+
+              exampleConsole.innerHTML = 'Data loaded';
+              hot.loadData(data.data);
+          };
+          reader.readAsText(file);
+        }
+      });
+
+      Handsontable.Dom.addEvent(save, 'click', function() {
+        // save all cell's data
+        ajax('json/save.json', 'GET', JSON.stringify({data: hot.getData()}), function (res) {
+          var response = JSON.parse(res.response);
+
+          if (response.result === 'ok') {
+            exampleConsole.innerHTML = 'Data saved';
+          }
+          else {
+            exampleConsole.innerHTML = 'Save error';
+          }
+        });
+      });
+    </script>
+  </div>
+</body>
+</html>
