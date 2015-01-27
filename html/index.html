@@ -7,6 +7,13 @@
   <script src="js/common/jquery-1.9.0-min.js"></script>
   <script src="js/common/jquery-ui-1.9.2.min.js"></script>
 
+
+  <!-- Sidebar dependencies -->
+        <link rel="stylesheet" href="css/sidebar/lib/fontello.css" />
+        <link rel="stylesheet" href="css/sidebar/lib/normalize.css" />
+        <link rel="stylesheet" href="css/sidebar/sidebar.css" />
+  <!-- end Sidebar dependencies -->
+
   <!-- Handsontable dependencies-->
       <script src="js/handsontable/handsontable.full.js"></script>
       <link rel="stylesheet" media="screen" href="css/handsontable/handsontable.full.css">
@@ -62,24 +69,44 @@
   <!-- end of jsPlumb dependencies -->
 
   <link rel="stylesheet" media="screen" href="css/main.css">
+
 </head>
 <body>
 
-    <div style="float:top">
-        Page title
-    </div>
-    <div id="sidebar">
-        <div id="split-bar"></div>
+<div class="jsc-sidebar-content jsc-sidebar-pulled sidebar" style="z-index:999">
+    <nav>
+        <a href="#" class="icon-menu link-menu jsc-sidebar-trigger"></a>
+    </nav>
+    <section>
 
+        <div id="content_container" class="container">
+            <div class="demo perimeter-demo" id="points_container">
+                <div class="shape" data-shape="Circle" title="122"></div>
+                <div class="shape" data-shape="Circle" title="122"></div>
+                <div class="shape" data-shape="Circle" title="122"></div>
+                <div class="shape" data-shape="Circle" title="122"></div>
+                <div class="shape" data-shape="Circle" title="122"></div>
+            </div>
+            <script src="js/jsplumb/demo.js"></script>
+
+        </div>
+
+    </section>
+
+    </div>
+
+    <nav class="sidebar jsc-sidebar" id="jsi-nav" data-sidebar-options="">
         <div id="sidebar_container" class="container">
           <p>
             <input type="file" id="pdp_points_filename" />
 
             <button name="load" id="load">Load</button>
-            <!-- <button name="save" id="save">Save</button> -->
+            <button name="save" id="save">Save</button>
           </p>
 
-          <div id="console" >Click "Load" to load data from server</div>
+          <div id="console" >
+          Click "Load" to load data from server
+          </div>
 
           <div id="example1"></div>
 
@@ -135,46 +162,32 @@
             });
           </script>
         </div>
+    </nav>
 
-    </div>
-    <div id="content">
-        <div id="content_container" class="container">
-            <!-- demo -->
-            <div class="demo perimeter-demo" id="points_container">
-                <div class="shape" data-shape="Circle" title="122"></div>
-                <div class="shape" data-shape="Circle" title="122"></div>
-                <div class="shape" data-shape="Circle" title="122"></div>
-                <div class="shape" data-shape="Circle" title="122"></div>
-                <div class="shape" data-shape="Circle" title="122"></div>
-            </div>
-            <!-- /demo -->
+    <script src="js/sidebar/sidebar.js"></script>
 
-
-            <!--  demo code -->
-            <script src="js/jsplumb/demo.js"></script>
-
-        </div>
-
-    </div>
     <script>
-     var min = 395;
-     var max = 3600;
-     var contentMinWidth = 200;
 
-     $('#split-bar').mousedown(function (e) {
-        e.preventDefault();
-        $(document).mousemove(function (e) {
-            e.preventDefault();
-            var x = e.pageX - $('#sidebar').offset().left;
-            if (x > min && x < max && e.pageX < ($(window).width() - contentMinWidth)) {
-              $('#sidebar').css("width", x);
-              $('#content').css("margin-left", x);
-          }
-      })
-    });
-     $(document).mouseup(function (e) {
-        $(document).unbind('mousemove');
-    });
-</script>
+        $(function() {
+            $('#jsi-nav').sidebar({
+                trigger: '.jsc-sidebar-trigger',
+                scrollbarDisplay: true,
+                pullCb: function () { console.log('pull'); },
+                pushCb: function () { console.log('push'); }
+            });
+
+            $('#api-pull').on('click', function (e) {
+                e.preventDefault();
+                $('#jsi-nav').data('sidebar').push();
+            });
+            $('#api-push').on('click', function (e) {
+                e.preventDefault();
+                $('#jsi-nav').data('sidebar').pull();
+            });
+        });
+    </script>
+
+
+
 </body>
 </html>
