@@ -21,53 +21,101 @@
 </head>
 <body>
 
-<div style="float:top">dsfa sd
-a sdf</div>
+    <div style="float:top">
+        Page title
+    </div>
     <div id="sidebar">
         <div id="split-bar"></div>
-        <pre>sidebar
-        daf a
-         df
-         dafds
-         fdas
-         f
-         asfas
 
-         adsfasd
-         </pre>
-    </div>
-    <div id="container">
-        container
-                <pre>sidebar
-        daf a
-         df
-         dafds
-         fdas
-         f
-         asfas
+        <div id="sidebar_container" class="container">
+          <p>
+            <input type="file" id="pdp_points_filename" />
 
-         adsfasd
-         </pre>
-         </div>
-    <script>
-       var min = 300;
-       var max = 3600;
-       var containerMinWidth = 200;
+            <button name="load" id="load">Load</button>
+            <!-- <button name="save" id="save">Save</button> -->
+          </p>
 
-       $('#split-bar').mousedown(function (e) {
-            e.preventDefault();
-            $(document).mousemove(function (e) {
-                e.preventDefault();
-                var x = e.pageX - $('#sidebar').offset().left;
-                if (x > min && x < max && e.pageX < ($(window).width() - containerMinWidth)) {
-                  $('#sidebar').css("width", x);
-                  $('#container').css("margin-left", x);
+          <div id="console" >Click "Load" to load data from server</div>
+
+          <div id="example1"></div>
+
+          <script>
+            // var
+            get = function(id) {
+              return document.getElementById(id);
+            },
+            container = get('example1'),
+            exampleConsole = get('console'),
+            autosave = get('autosave'),
+            load = get('load'),
+            save = get('save');
+            filenameContainer = get('pdp_points_filename');
+
+            hot = new Handsontable(container, {
+              startRows: 10,
+              startCols: 6,
+              rowHeaders: true,
+              colHeaders: true,
+              minSpareRows: 1,
+              afterChange: function (change, source) {
+               // alert('changed');
+              }
+            });
+
+            Handsontable.Dom.addEvent(load, 'click', function() {
+              var file = filenameContainer.files[0];
+              if (file) {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var data = JSON.parse(this.result);
+
+                    exampleConsole.innerHTML = 'Data loaded';
+                    hot.loadData(data.data);
+                };
+                reader.readAsText(file);
+              }
+            });
+
+            Handsontable.Dom.addEvent(save, 'click', function() {
+              // save all cell's data
+              ajax('json/save.json', 'GET', JSON.stringify({data: hot.getData()}), function (res) {
+                var response = JSON.parse(res.response);
+
+                if (response.result === 'ok') {
+                  exampleConsole.innerHTML = 'Data saved';
                 }
-            })
-        });
-        $(document).mouseup(function (e) {
-            $(document).unbind('mousemove');
-        });
-    </script>
+                else {
+                  exampleConsole.innerHTML = 'Save error';
+                }
+              });
+            });
+          </script>
+        </div>
+
+    </div>
+    <div id="content">
+аывафы
+
+    </div>
+    <script>
+     var min = 395;
+     var max = 3600;
+     var contentMinWidth = 200;
+
+     $('#split-bar').mousedown(function (e) {
+        e.preventDefault();
+        $(document).mousemove(function (e) {
+            e.preventDefault();
+            var x = e.pageX - $('#sidebar').offset().left;
+            if (x > min && x < max && e.pageX < ($(window).width() - contentMinWidth)) {
+              $('#sidebar').css("width", x);
+              $('#content').css("margin-left", x);
+          }
+      })
+    });
+     $(document).mouseup(function (e) {
+        $(document).unbind('mousemove');
+    });
+</script>
 </body>
 </html>
