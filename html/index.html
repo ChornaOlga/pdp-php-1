@@ -79,8 +79,18 @@
         <h1 class="inline">Welcome to online PDP solver!</h1>
     </nav>
     <section>
-
         <div id="content_container" class="container">
+            <p>
+              <input type="file" id="pdp_points_filename" />
+
+              <button name="load" id="load" class="hidden_until_file_choose">Load</button>
+              <button name="save" id="save" class="hidden_until_file_choose">Save</button>
+            </p>
+
+            <div id="console" >
+                Click "Load" to load data from server
+            </div>
+
             <div class="demo perimeter-demo" id="points_container">
                 <div class="shape" data-shape="Circle" title="122"></div>
                 <div class="shape" data-shape="Circle" title="122"></div>
@@ -102,22 +112,11 @@
 
     <nav class="sidebar jsc-sidebar" id="jsi-nav" data-sidebar-options="">
         <div id="sidebar_container" class="container">
-
-          <p>
-            <input type="file" id="pdp_points_filename" />
-
-            <button name="load" id="load" class="hidden_until_file_choose">Load</button>
-            <button name="save" id="save" class="hidden_until_file_choose">Save</button>
+            <h1>Solution data</h1>
+           <p>
+             <label for="pdp_pairs_number">Pdp pairs:</label>
+             <input id="pdp_pairs_number" class="numbersOnly" size="5">
           </p>
-
-          <div id="console" >
-              Click "Load" to load data from server
-          </div>
-
-          <p>
-            <label for="pdp_pairs_number">Pdp pairs:</label>
-            <input id="pdp_pairs_number" class="numbersOnly" size="5">
-        </p>
           <div id="example1"></div>
 
           <script>
