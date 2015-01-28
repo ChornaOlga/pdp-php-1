@@ -21,7 +21,7 @@
       <!-- File below contains ajax function used by handsontable -->
       <script src="js/handsontable/helper.js"></script>
 
-      <script src="js/handsontable/highlight.pack.js"></script>
+      <script src="js/handsontable/zeroclipboard/ZeroClipboard.js"></script>
   <!--end Handsontable dependencies -->
 
   <!-- jsPlumb dependencies -->
@@ -106,8 +106,8 @@
           <p>
             <input type="file" id="pdp_points_filename" />
 
-            <button name="load" id="load">Load</button>
-            <button name="save" id="save">Save</button>
+            <button name="load" id="load" class="hidden_until_file_choose">Load</button>
+            <button name="save" id="save" class="hidden_until_file_choose">Save</button>
           </p>
 
           <div id="console" >
@@ -117,18 +117,6 @@
           <p>
             <label for="pdp_pairs_number">Pdp pairs:</label>
             <input id="pdp_pairs_number" class="numbersOnly" size="5">
-            <script>
-                $("#pdp_pairs_number").spinner({
-                    min: 2,
-                    change: function (event, ui) {
-                        // alert(ui.value);
-                     // alert($("#pdp_pairs_number").spinner().spinner( "value" ));
-                    }
-                });
-                // $( "#pdp_pairs_number" ).spinner().change(function(){
-                //      alert($(this).spinner('value'));
-                // });
-            </script>
         </p>
           <div id="example1"></div>
 
@@ -144,14 +132,42 @@
             save = get('save');
             filenameContainer = get('pdp_points_filename');
 
-            hot = new Handsontable(container, {
-              startRows: 10,
+            pickupRenderer = function(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.TextRenderer.apply(this, arguments);
+              td.style.borderColor = 'green';
+              td.style.borderWidth = '2px';
+            };
+            deliveryRenderer = function(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.TextRenderer.apply(this, arguments);
+              td.style.backgroundColor = 'green';
+            };
+
+            function hiddenRenderer(instance, td, row, col, prop, value, cellProperties) {
+                Handsontable.renderers.TextRenderer.apply(this, arguments);
+                td.style.display = "none";
+            }
+
+            _hot = new Handsontable(container, {
+              startRows: 4,
               startCols: 6,
               rowHeaders: true,
               colHeaders: true,
-              minSpareRows: 1,
-              // colHeaders: ['Car', 'Year', 'Price ($)', 'Price (€)'],
+              minSpareRows: 0,
+              colHeaders: ['X', 'Y', 'box x', 'box y', 'box z', 'box weight'],
               columnSorting: true,
+              // contextMenu: true,
+              contextMenuCopyPaste: {
+                swfPath: 'js/handsontable/zeroclipboard/ZeroClipboard.swf'
+              },
+              cells: function (row, col, prop) {
+                if (row < (this.instance.countRows() / 2) ) {
+                  this.renderer = pickupRenderer;
+                }
+                else
+                {
+                   this.renderer = deliveryRenderer;
+                }
+              },
               // columns: [
               // {
               //     data: 'car'
@@ -163,43 +179,64 @@
 
               // ],
               beforeChange: function (changes, source) {
+                // remove all non-number symbols
                  for (var i = changes.length - 1; i >= 0; i--) {
-                        changes[i][3] = changes[i][3].replace(/[^0-9\.]/g,'');
+                    changes[i][3] = changes[i][3].replace(/[^0-9\.]/g,'');
                  }
               },
-              afterChange: function (change, source) {
-               var a = 1;
+              // afterChange: function (change, source) {
+              //  var a = 1;
+              // },
+              afterChange: function () {
+                $("#pdp_pairs_number").spinner().spinner("value", Math.floor(this.getData().length/2));
               },
 
             });
 
 
-            Handsontable.Dom.addEvent(load, 'click', function() {
-              var file = filenameContainer.files[0];
+            loadJsonToTable = function(file) {
+              // var file = filenameContainer.files[0];
               if (file) {
                 var reader = new FileReader();
                 reader.onload = function() {
-                    var data = JSON.parse(this.result);
+                    try {
+                        var data = JSON.parse(this.result);
 
-                    exampleConsole.innerHTML = 'Data loaded';
-                    hot.loadData(data.data);
-                };
-                reader.readAsText(file);
-              }
+                        _lastLoadedData = data.data; // global var
+                        exampleConsole.innerHTML = 'Data loaded';
+                        _hot.loadData(_lastLoadedData.slice(0));
+                    }
+                    catch (e) {
+                        exampleConsole.innerHTML = 'Data is incorrect. <br/>' + e;
+                    }
+                  };
+
+                  reader.readAsText(file);
+                }
+            };
+
+            loadJsonFromFileContainer = function(){
+                loadJsonToTable(filenameContainer.files[0]);
+                $('.hidden_until_file_choose').show();
+            };
+
+            Handsontable.Dom.addEvent(load, 'click', function(){
+                loadJsonFromFileContainer();
             });
 
             Handsontable.Dom.addEvent(save, 'click', function() {
-              // save all cell's data
-              ajax('json/save.json', 'GET', JSON.stringify({data: hot.getData()}), function (res) {
-                var response = JSON.parse(res.response);
+                // _hot.loadData([['', '', '', '', '', '']]);
+              // // save all cell's data
+              // ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
+              //   var response = JSON.parse(res.response);
 
-                if (response.result === 'ok') {
-                  exampleConsole.innerHTML = 'Data saved';
-                }
-                else {
-                  exampleConsole.innerHTML = 'Save error';
-                }
-              });
+              //   if (response.result === 'ok') {
+              //     exampleConsole.innerHTML = 'Data saved';
+              //   }
+              //   else {
+              //     exampleConsole.innerHTML = 'Save error';
+              //   }
+              // });
             });
           </script>
         </div>
@@ -235,7 +272,37 @@
         jQuery('.htInvalid').keyup(function () {
             this.value = this.value.replace(/[^0-9\.]/g,'');
         });
+
+        $("#pdp_pairs_number").spinner().spinner("value", 2);
+
+        $('#pdp_points_filename').on("change", function(){ loadJsonFromFileContainer(); });
     </script>
 
+            <script>
+                $("#pdp_pairs_number").spinner({
+                    min: 2,
+                    change: function (event, ui) {
+                        var pairCount = parseInt($("#pdp_pairs_number").spinner().spinner("value"));
+                        var data = (typeof _lastLoadedData == 'undefined') ? [] : _lastLoadedData;
+
+                        var emptyRow = ['', '', '', '', '', ''];
+
+                        // new data is N (pairCount) first pickups and N first deliveries (if they don't exist in loaded data, leave them empty)
+                        var newData = [];
+                        for (var i = 0; i < pairCount; i++)
+                        {
+                            // if pair number increased, we try to reuse existing PDP points
+                            // i.g., if number was increased from 3 to 5, we leave already loaded 3 points
+                            // BUT we force new PDP points (last 2 points in example) to be empty. This is why we check 'data[data.length/2 + i]'
+                            newData.push(((typeof data[i] == 'undefined') || (typeof data[data.length/2 + i] == 'undefined')) ? emptyRow : data[i]);
+                        }
+                        for (var i = 0; i < pairCount; i++)
+                        {
+                            newData.push((typeof data[data.length/2 + i] == 'undefined') ? emptyRow : data[data.length/2 + i]);
+                        }
+                        _hot.loadData(newData);
+                    }
+                });
+            </script>
 </body>
 </html>

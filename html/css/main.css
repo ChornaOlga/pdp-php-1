@@ -12,6 +12,16 @@ body, html
 {
     display:inline-block;
 }
+
+#pdp_pairs_number
+{
+
+}
+
+.hidden_until_file_choose
+{
+    display:none;
+}
 /**/
 .link-menu {
   font-size: 2.2rem; }
