@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config>
+    <events>
+        <new_path_generated>
+            <observers>
+                <solutioninfocollector_new_path_generated>
+                    <class>\SolutionInfoCollector</class>
+                    <method>logGeneratedPath</method>
+                    <singleton>1</singleton>
+                </solutioninfocollector_new_path_generated>
+            </observers>
+        </new_path_generated>
+        <cant_load>
+            <observers>
+                <solutioninfocollector_cant_load>
+                    <class>\SolutionInfoCollector</class>
+                    <method>logNotLoadedPath</method>
+                    <singleton>1</singleton>
+                </solutioninfocollector_cant_load>
+            </observers>
+        </cant_load>
+     </events>
+    <developer_mode>1</developer_mode>
+</config>

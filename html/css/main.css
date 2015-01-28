@@ -8,9 +8,9 @@ body, html
     margin:20px;
 }
 
-.sidebar
+.inline
 {
-width:auto;
+    display:inline-block;
 }
 /**/
 .link-menu {
@@ -18,7 +18,13 @@ width:auto;
   .link-menu:hover {
     color: #807d7d; }
 
-/* ---------------------------- jsPlumb style ----------------------------*/
+    #points_container
+    {
+        /*height:100%;*/
+        background-color: lightgray;
+    }
+
+    /* ---------------------------- jsPlumb style ----------------------------*/
 
     /** JSPLUMB ARTEFACTS **/
     ._jsPlumb_connector {
