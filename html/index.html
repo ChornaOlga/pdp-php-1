@@ -142,9 +142,9 @@
               td.style.backgroundColor = 'green';
             };
 
-            function hiddenRenderer(instance, td, row, col, prop, value, cellProperties) {
+            function disabledRenderer(instance, td, row, col, prop, value, cellProperties) {
                 Handsontable.renderers.TextRenderer.apply(this, arguments);
-                td.style.display = "none";
+                td.style.backgroundColor = 'grey';
             }
 
             _hot = new Handsontable(container, {
@@ -166,6 +166,13 @@
                 else
                 {
                    this.renderer = deliveryRenderer;
+                   if (col > 1)
+                   {
+                      var cellProperties = {};
+                      cellProperties.readOnly = true;
+                      cellProperties.renderer = disabledRenderer;
+                      return cellProperties;
+                   }
                 }
               },
               // columns: [
@@ -179,9 +186,19 @@
 
               // ],
               beforeChange: function (changes, source) {
+                //changes[i][0] - row number
+                //changes[i][1] - column number
+                //changes[i][3] - new value
+
                 // remove all non-number symbols
                  for (var i = changes.length - 1; i >= 0; i--) {
                     changes[i][3] = changes[i][3].replace(/[^0-9\.]/g,'');
+
+                    // don't allow to fill box fields for delivery points
+                    if ((changes[i][1] > 1) && changes[i][0] >= Math.floor(this.getData().length/2) ) // if changed cell column > 1 and this is delivery point, ..
+                    {
+                        changes[i][3] = '';
+                    }
                  }
               },
               // afterChange: function (change, source) {
