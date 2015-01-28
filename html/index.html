@@ -6,7 +6,7 @@
 
   <script src="js/common/jquery-1.9.0-min.js"></script>
   <script src="js/common/jquery-ui-1.9.2.min.js"></script>
-
+  <link rel="stylesheet" href="css\jquery-ui\jquery-ui.css">
 
   <!-- Sidebar dependencies -->
         <link rel="stylesheet" href="css/sidebar/lib/fontello.css" />
@@ -102,6 +102,7 @@
 
     <nav class="sidebar jsc-sidebar" id="jsi-nav" data-sidebar-options="">
         <div id="sidebar_container" class="container">
+
           <p>
             <input type="file" id="pdp_points_filename" />
 
@@ -113,6 +114,13 @@
               Click "Load" to load data from server
           </div>
 
+          <p>
+            <label for="pdp_pairs_number">Pdp pairs:</label>
+            <input id="pdp_pairs_number" size="5">
+            <script>
+                $( "#pdp_pairs_number" ).spinner();
+            </script>
+        </p>
           <div id="example1"></div>
 
           <script>
