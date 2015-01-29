@@ -99,7 +99,7 @@
             </div>
             <script>
                 jsPlumb.ready(function() {
-
+                     // GLOBAL DEF
                     _pointsContainer = jsPlumb.getInstance({
                         Connector:"StateMachine",
                         PaintStyle:{ lineWidth:3, strokeStyle:"#ffa500", "dashstyle":"2 4" },
@@ -108,28 +108,28 @@
                         Container:"points_container"
                     });
 
-                    var _pdpPoints = jsPlumb.getSelector(".shape");
+                    var pdpPoints = jsPlumb.getSelector(".shape");
                     // make everything draggable
-                    _pointsContainer.draggable(_pdpPoints);
+                    _pointsContainer.draggable(pdpPoints);
 
                     // suspend drawing and initialise.
                     _pointsContainer.doWhileSuspended(function() {
 
-                            var min = 100;
-                            var max = 400;
+                        var min = 100;
+                        var max = 400;
                         // loop through them and connect each one to each other one.
-                        for (var i = 0; i < _pdpPoints.length; i++) {
-                            $(_pdpPoints[i]).css({'top':min + (max - min) * Math.random()});
-                            $(_pdpPoints[i]).css({'left':min + (max - min) * Math.random()});
-                            for (var j = i + 1; j < _pdpPoints.length; j++) {
+                        for (var i = 0; i < pdpPoints.length; i++) {
+                            $(pdpPoints[i]).css({'top':min + (max - min) * Math.random()});
+                            $(pdpPoints[i]).css({'left':min + (max - min) * Math.random()});
+                            for (var j = i + 1; j < pdpPoints.length; j++) {
                                 _pointsContainer.connect({
-                                    source:_pdpPoints[i],  // just pass in the current node in the selector for source
-                                    target:_pdpPoints[j],
+                                    source:pdpPoints[i],  // just pass in the current node in the selector for source
+                                    target:pdpPoints[j],
                                     // here we supply a different anchor for source and for target, and we get the element's "data-shape"
                                     // attribute to tell us what shape we should use, as well as, optionally, a rotation value.
                                     anchors:[
-                                        [ "Perimeter", { shape:_pdpPoints[i].getAttribute("data-shape"), rotation:_pdpPoints[i].getAttribute("data-rotation") }],
-                                        [ "Perimeter", { shape:_pdpPoints[j].getAttribute( "data-shape"), rotation:_pdpPoints[j].getAttribute("data-rotation") }]
+                                        [ "Perimeter", { shape:pdpPoints[i].getAttribute("data-shape"), rotation:pdpPoints[i].getAttribute("data-rotation") }],
+                                        [ "Perimeter", { shape:pdpPoints[j].getAttribute( "data-shape"), rotation:pdpPoints[j].getAttribute("data-rotation") }]
                                     ]
                                 });
                             }
@@ -196,10 +196,6 @@
                 td.style.backgroundColor = 'grey';
             }
 
-            function getPointIdFromRowNumber (rowNumber) {
-                return rowNumber + 1;
-            };
-
             _hot = new Handsontable(container, {
               startRows: 4,
               startCols: 6,
@@ -249,16 +245,7 @@
                 {
                     $("#pdp_pairs_number").spinner().spinner("value", Math.floor(this.getData().length/2));
 
-                    var positions = [];
-                    for (var i = 0; i < changes.length; i++) {
-                        // if column with point coordinates changed
-                        if ((changes[i][1] === 0) || (changes[i][1] === 1))
-                        {
-                            dimension = (changes[i][1] === 0) ? 'left' : 'top';
-                            positions[i] = {'point_id': getPointIdFromRowNumber(changes[i][0])};
-                            positions[i][dimension] = parseFloat(changes[i][3]);
-                        }
-                    }
+                    var positions = getPointPositionsFromTableDataChanges(changes);
                     if (positions.length) {
                         updatePdpPointPositions(positions);
                     }
@@ -267,7 +254,6 @@
 
             });
 
-    _hot
             loadJsonToTable = function(file) {
               if (file) {
                 var reader = new FileReader();
@@ -311,6 +297,46 @@
               //   }
               // });
             });
+
+            function getPointIdFromRowNumber (rowNumber) {
+                return rowNumber + 1;
+            };
+
+            function getPointPositionsFromTableDataChanges(changes) {
+                var positions = [];
+                for (var i = 0; i < changes.length; i++) {
+                    // if column with point coordinates changed
+                    if ((changes[i][1] === 0) || (changes[i][1] === 1))
+                    {
+                        dimension = (changes[i][1] === 0) ? 'left' : 'top';
+                        positions[i] = {'point_id': getPointIdFromRowNumber(changes[i][0])};
+                        positions[i][dimension] = parseFloat(changes[i][3]);
+                    }
+                }
+
+                return positions;
+            };
+
+            // adds or removes rows according to pairCount (number of PDP point pairs)
+            function updateTablePairCount (pairCount) {
+                var data = (typeof _lastLoadedData == 'undefined') ? [] : _lastLoadedData;
+                var emptyRow = ['', '', '', '', '', ''];
+
+                // new data is N (pairCount) first pickups and N first deliveries (if they don't exist in loaded data, leave them empty)
+                var newData = [];
+                for (var i = 0; i < pairCount; i++)
+                {
+                    // if pair number increased, we try to reuse existing PDP points
+                    // i.g., if number was increased from 3 to 5, we leave already loaded 3 points
+                    // BUT we force new PDP points (last 2 points in example) to be empty. This is why we check 'data[data.length/2 + i]'
+                    newData.push(((typeof data[i] == 'undefined') || (typeof data[data.length/2 + i] == 'undefined')) ? emptyRow : data[i]);
+                }
+                for (var i = 0; i < pairCount; i++)
+                {
+                    newData.push((typeof data[data.length/2 + i] == 'undefined') ? emptyRow : data[data.length/2 + i]);
+                }
+                _hot.loadData(newData);
+            }
           </script>
         </div>
     </nav>
@@ -356,24 +382,7 @@
             min: 2,
             change: function (event, ui) {
                 var pairCount = parseInt($("#pdp_pairs_number").spinner().spinner("value"));
-                var data = (typeof _lastLoadedData == 'undefined') ? [] : _lastLoadedData;
-
-                var emptyRow = ['', '', '', '', '', ''];
-
-                // new data is N (pairCount) first pickups and N first deliveries (if they don't exist in loaded data, leave them empty)
-                var newData = [];
-                for (var i = 0; i < pairCount; i++)
-                {
-                    // if pair number increased, we try to reuse existing PDP points
-                    // i.g., if number was increased from 3 to 5, we leave already loaded 3 points
-                    // BUT we force new PDP points (last 2 points in example) to be empty. This is why we check 'data[data.length/2 + i]'
-                    newData.push(((typeof data[i] == 'undefined') || (typeof data[data.length/2 + i] == 'undefined')) ? emptyRow : data[i]);
-                }
-                for (var i = 0; i < pairCount; i++)
-                {
-                    newData.push((typeof data[data.length/2 + i] == 'undefined') ? emptyRow : data[data.length/2 + i]);
-                }
-                _hot.loadData(newData);
+                updateTablePairCount(pairCount);
             }
         });
     </script>
