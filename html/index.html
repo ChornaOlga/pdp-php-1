@@ -274,7 +274,7 @@
 
             });
 
-            loadJsonToTable = function(file) {
+            loadJsonToTable = function(table, file) {
               if (file) {
                 var reader = new FileReader();
                 reader.onload = function() {
@@ -286,7 +286,7 @@
 
                         exampleConsole.innerHTML = 'Data loaded';
                         // console.log(_lastLoadedData.slice(0));
-                        _hot.loadData(_lastLoadedData.slice(0));
+                        table.loadData(_lastLoadedData.slice(0));
                     }
                     catch (e) {
                         exampleConsole.innerHTML = 'Data is incorrect. <br/>' + e;
@@ -297,20 +297,24 @@
                 }
             };
 
-            loadJsonFromFileContainer = function(){
-                loadJsonToTable(filenameContainer.files[0]);
+            loadJsonFromFileContainer = function(table){
+                loadJsonToTable(table, filenameContainer.files[0]);
                 $('.hidden_until_file_choose').show();
             };
 
+            loadJsonFromFileContainerToMainTable = function(){
+                loadJsonFromFileContainer(_hot);
+            };
+
             Handsontable.Dom.addEvent(load, 'click', function(){
-                loadJsonFromFileContainer();
+                loadJsonFromFileContainerToMainTable();
             });
 
-            Handsontable.Dom.addEvent(save, 'click', function() {
-                // _hot.alter('insert_row', 2, 1);
-                // _hot.loadData([['', '', '', '', '', '']]);
+            Handsontable.Dom.addEvent(save, 'click', function(table) {
+                // table.alter('insert_row', 2, 1);
+                // table.loadData([['', '', '', '', '', '']]);
               // // save all cell's data
-              // ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
+              // ajax('json/save.json', 'GET', JSON.stringify({data: table.getData()}), function (res) {
               //   var response = JSON.parse(res.response);
 
               //   if (response.result === 'ok') {
@@ -342,8 +346,8 @@
             };
 
             // adds or removes rows according to pairCount (number of PDP point pairs)
-            function updateTablePairCount (newPairCount) {
-                var rowCount     = _hot.countRows();
+            function updateTablePairCount (table, newPairCount) {
+                var rowCount     = table.countRows();
                 var oldPairCount = Math.floor(rowCount / 2);
                 var diff         = newPairCount - oldPairCount;
 
@@ -352,12 +356,12 @@
                 }
 
                 if (diff < 0) {
-                    _hot.alter('remove_row', rowCount - Math.abs(diff), Math.abs(diff));
-                    _hot.alter('remove_row', newPairCount, Math.abs(diff));
+                    table.alter('remove_row', rowCount - Math.abs(diff), Math.abs(diff));
+                    table.alter('remove_row', newPairCount, Math.abs(diff));
                 }
                 if (diff > 0) {
-                    _hot.alter('insert_row', rowCount, diff);
-                    _hot.alter('insert_row', oldPairCount, diff);
+                    table.alter('insert_row', rowCount, diff);
+                    table.alter('insert_row', oldPairCount, diff);
 
                     // if pair number increased, and we can fill cells with already loaded points, we do this
                     // i.g., we:
@@ -374,15 +378,15 @@
                             // if pair 'i' (BOTH pickup and delivery) loaded, restore them to table
                             if ((typeof data[i] !== 'undefined') && (typeof data[data.length/2 + i] !== 'undefined')) {
                                 for (var j = 0; j < data.length; j++) {
-                                    _hot.setDataAtCell(i, j, data[i][j]);
-                                    _hot.setDataAtCell(newPairCount + i, j, data[data.length/2 + i][j]);
+                                    table.setDataAtCell(i, j, data[i][j]);
+                                    table.setDataAtCell(newPairCount + i, j, data[data.length/2 + i][j]);
                                 };
                             }
                         }
                     }
                 }
                 //refresh table to redraw cells
-                _hot.loadData(_hot.getData().slice(0));
+                table.loadData(table.getData().slice(0));
             }
           </script>
         </div>
@@ -421,7 +425,7 @@
 
         $("#pdp_pairs_number").spinner().spinner("value", _initialPairCount);
 
-        $('#pdp_points_filename').on("change", function(){ loadJsonFromFileContainer(); });
+        $('#pdp_points_filename').on("change", function(){ loadJsonFromFileContainerToMainTable(); });
     </script>
 
     <script>
@@ -429,7 +433,7 @@
             min: 2,
             change: function (event, ui) {
                 var pairCount = parseInt($("#pdp_pairs_number").spinner().spinner("value"));
-                updateTablePairCount(pairCount);
+                updateTablePairCount(_hot, pairCount);
             }
         });
     </script>
