@@ -17,22 +17,31 @@ body, html
 {
 
 }
+.points_container
+{
+    /*height:100%;*/
+    background-color: lightgray;
+}
+
+.pickup
+{
+    background: white;
+}
+.delivery
+{
+    background: green;
+}
 
 .hidden_until_file_choose
 {
     display:none;
 }
+
 /**/
 .link-menu {
   font-size: 2.2rem; }
   .link-menu:hover {
     color: #807d7d; }
-
-    .points_container
-    {
-        /*height:100%;*/
-        background-color: lightgray;
-    }
 
     /* ---------------------------- jsPlumb style ----------------------------*/
 
@@ -49,13 +58,13 @@ body, html
         position:absolute;
         cursor:pointer;
         text-align:center;
-        color:#333;
+        /*color:#333;*/
     }
 
     /** SHAPES **/
 
     [data-shape=Circle] {
-        width: 30px; height: 30px; background: red; -moz-border-radius: 15px; -webkit-border-radius: 15px; border-radius: 15px;
+        width: 30px; height: 30px; -moz-border-radius: 15px; -webkit-border-radius: 15px; border-radius: 15px;
         left:100px;
         top:100px;
         /*line-height: 150px;*/
