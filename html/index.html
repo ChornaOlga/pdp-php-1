@@ -92,13 +92,54 @@
             </div>
 
             <div class="demo perimeter-demo" id="points_container">
-                <div class="shape" data-shape="Circle" title="122"></div>
-                <div class="shape" data-shape="Circle" title="122"></div>
-                <div class="shape" data-shape="Circle" title="122"></div>
-                <div class="shape" data-shape="Circle" title="122"></div>
-                <div class="shape" data-shape="Circle" title="122"></div>
+                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
+                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
+                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
+                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
+                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
             </div>
-            <script src="js/jsplumb/demo.js"></script>
+            <script>
+                jsPlumb.ready(function() {
+
+                    _pointsContainer = jsPlumb.getInstance({
+                        Connector:"StateMachine",
+                        PaintStyle:{ lineWidth:3, strokeStyle:"#ffa500", "dashstyle":"2 4" },
+                        Endpoint:[ "Dot", { radius:5 } ],
+                        EndpointStyle:{ fillStyle:"#ffa500" },
+                        Container:"perimeter-demo"
+                    });
+
+                    var _pdpPoints = jsPlumb.getSelector(".shape");
+                    // make everything draggable
+                    _pointsContainer.draggable(_pdpPoints);
+
+                    // suspend drawing and initialise.
+                    _pointsContainer.doWhileSuspended(function() {
+
+                            var min = 100;
+                            var max = 400;
+                        // loop through them and connect each one to each other one.
+                        for (var i = 0; i < _pdpPoints.length; i++) {
+                            $(_pdpPoints[i]).css({'top':min + (max - min) * Math.random()});
+                            $(_pdpPoints[i]).css({'left':min + (max - min) * Math.random()});
+                            for (var j = i + 1; j < _pdpPoints.length; j++) {
+                                _pointsContainer.connect({
+                                    source:_pdpPoints[i],  // just pass in the current node in the selector for source
+                                    target:_pdpPoints[j],
+                                    // here we supply a different anchor for source and for target, and we get the element's "data-shape"
+                                    // attribute to tell us what shape we should use, as well as, optionally, a rotation value.
+                                    anchors:[
+                                        [ "Perimeter", { shape:_pdpPoints[i].getAttribute("data-shape"), rotation:_pdpPoints[i].getAttribute("data-rotation") }],
+                                        [ "Perimeter", { shape:_pdpPoints[j].getAttribute( "data-shape"), rotation:_pdpPoints[j].getAttribute("data-rotation") }]
+                                    ]
+                                });
+                            }
+                        }
+                    });
+
+                    jsPlumb.fire("jsPlumbDemoLoaded", _pointsContainer);
+                });
+            </script>
 
         </div>
 
@@ -174,16 +215,6 @@
                    }
                 }
               },
-              // columns: [
-              // {
-              //     data: 'car'
-              // },
-              // {
-              //     data: 'year',
-              //     type: 'numeric'
-              // }
-
-              // ],
               beforeChange: function (changes, source) {
                 //changes[i][0] - row number
                 //changes[i][1] - column number
@@ -200,18 +231,15 @@
                     }
                  }
               },
-              // afterChange: function (change, source) {
-              //  var a = 1;
-              // },
               afterChange: function () {
                 $("#pdp_pairs_number").spinner().spinner("value", Math.floor(this.getData().length/2));
+             //   updatePdpPointPositions(container, ".pdp_point");
               },
 
             });
 
 
             loadJsonToTable = function(file) {
-              // var file = filenameContainer.files[0];
               if (file) {
                 var reader = new FileReader();
                 reader.onload = function() {
@@ -294,31 +322,38 @@
         $('#pdp_points_filename').on("change", function(){ loadJsonFromFileContainer(); });
     </script>
 
-            <script>
-                $("#pdp_pairs_number").spinner({
-                    min: 2,
-                    change: function (event, ui) {
-                        var pairCount = parseInt($("#pdp_pairs_number").spinner().spinner("value"));
-                        var data = (typeof _lastLoadedData == 'undefined') ? [] : _lastLoadedData;
+    <script>
+        $("#pdp_pairs_number").spinner({
+            min: 2,
+            change: function (event, ui) {
+                var pairCount = parseInt($("#pdp_pairs_number").spinner().spinner("value"));
+                var data = (typeof _lastLoadedData == 'undefined') ? [] : _lastLoadedData;
 
-                        var emptyRow = ['', '', '', '', '', ''];
+                var emptyRow = ['', '', '', '', '', ''];
 
-                        // new data is N (pairCount) first pickups and N first deliveries (if they don't exist in loaded data, leave them empty)
-                        var newData = [];
-                        for (var i = 0; i < pairCount; i++)
-                        {
-                            // if pair number increased, we try to reuse existing PDP points
-                            // i.g., if number was increased from 3 to 5, we leave already loaded 3 points
-                            // BUT we force new PDP points (last 2 points in example) to be empty. This is why we check 'data[data.length/2 + i]'
-                            newData.push(((typeof data[i] == 'undefined') || (typeof data[data.length/2 + i] == 'undefined')) ? emptyRow : data[i]);
-                        }
-                        for (var i = 0; i < pairCount; i++)
-                        {
-                            newData.push((typeof data[data.length/2 + i] == 'undefined') ? emptyRow : data[data.length/2 + i]);
-                        }
-                        _hot.loadData(newData);
-                    }
-                });
-            </script>
+                // new data is N (pairCount) first pickups and N first deliveries (if they don't exist in loaded data, leave them empty)
+                var newData = [];
+                for (var i = 0; i < pairCount; i++)
+                {
+                    // if pair number increased, we try to reuse existing PDP points
+                    // i.g., if number was increased from 3 to 5, we leave already loaded 3 points
+                    // BUT we force new PDP points (last 2 points in example) to be empty. This is why we check 'data[data.length/2 + i]'
+                    newData.push(((typeof data[i] == 'undefined') || (typeof data[data.length/2 + i] == 'undefined')) ? emptyRow : data[i]);
+                }
+                for (var i = 0; i < pairCount; i++)
+                {
+                    newData.push((typeof data[data.length/2 + i] == 'undefined') ? emptyRow : data[data.length/2 + i]);
+                }
+                _hot.loadData(newData);
+            }
+        });
+    </script>
+    <script>
+        function updatePdpPointPositions(handsontableSelector, pointsSelector) {
+            table = $(handsontable);
+            points = $(pointsSelector);
+
+        }
+    </script>
 </body>
 </html>
