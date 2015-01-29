@@ -91,12 +91,11 @@
                 Click "Load" to load data from server
             </div>
 
-            <div class="demo perimeter-demo" id="points_container">
-                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
-                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
-                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
-                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
-                <div class="shape pdp_point" data-shape="Circle" title="122"></div>
+            <div class="demo points_container">
+                <div class="shape pdp_point" data-shape="Circle" title="122" id="1"></div>
+                <div class="shape pdp_point" data-shape="Circle" title="122" id="2"></div>
+                <div class="shape pdp_point" data-shape="Circle" title="122" id="3"></div>
+                <div class="shape pdp_point" data-shape="Circle" title="122" id="4"></div>
             </div>
             <script>
                 jsPlumb.ready(function() {
@@ -106,7 +105,7 @@
                         PaintStyle:{ lineWidth:3, strokeStyle:"#ffa500", "dashstyle":"2 4" },
                         Endpoint:[ "Dot", { radius:5 } ],
                         EndpointStyle:{ fillStyle:"#ffa500" },
-                        Container:"perimeter-demo"
+                        Container:"points_container"
                     });
 
                     var _pdpPoints = jsPlumb.getSelector(".shape");
@@ -139,6 +138,16 @@
 
                     jsPlumb.fire("jsPlumbDemoLoaded", _pointsContainer);
                 });
+
+                function updatePdpPointPositions(positions)
+                {
+                    for(var i = 0; i < positions.length; i++)
+                    {
+                        point = $(".points_container .shape#" + positions[i].point_id);
+                        if (typeof positions[i].top  !== 'undefined') point.css({'top': positions[i].top});
+                        if (typeof positions[i].left !== 'undefined') point.css({'left':positions[i].left});
+                    }
+                }
             </script>
 
         </div>
@@ -187,6 +196,10 @@
                 td.style.backgroundColor = 'grey';
             }
 
+            function getPointIdFromRowNumber (rowNumber) {
+                return rowNumber + 1;
+            };
+
             _hot = new Handsontable(container, {
               startRows: 4,
               startCols: 6,
@@ -231,14 +244,30 @@
                     }
                  }
               },
-              afterChange: function () {
-                $("#pdp_pairs_number").spinner().spinner("value", Math.floor(this.getData().length/2));
-             //   updatePdpPointPositions(container, ".pdp_point");
+              afterChange: function (changes, source) {
+                if (changes)
+                {
+                    $("#pdp_pairs_number").spinner().spinner("value", Math.floor(this.getData().length/2));
+
+                    var positions = [];
+                    for (var i = 0; i < changes.length; i++) {
+                        // if column with point coordinates changed
+                        if ((changes[i][1] === 0) || (changes[i][1] === 1))
+                        {
+                            dimension = (changes[i][1] === 0) ? 'left' : 'top';
+                            positions[i] = {'point_id': getPointIdFromRowNumber(changes[i][0])};
+                            positions[i][dimension] = parseFloat(changes[i][3]);
+                        }
+                    }
+                    if (positions.length) {
+                        updatePdpPointPositions(positions);
+                    }
+                }
               },
 
             });
 
-
+    _hot
             loadJsonToTable = function(file) {
               if (file) {
                 var reader = new FileReader();
@@ -347,13 +376,6 @@
                 _hot.loadData(newData);
             }
         });
-    </script>
-    <script>
-        function updatePdpPointPositions(handsontableSelector, pointsSelector) {
-            table = $(handsontable);
-            points = $(pointsSelector);
-
-        }
     </script>
 </body>
 </html>

@@ -28,7 +28,7 @@ body, html
   .link-menu:hover {
     color: #807d7d; }
 
-    #points_container
+    .points_container
     {
         /*height:100%;*/
         background-color: lightgray;
