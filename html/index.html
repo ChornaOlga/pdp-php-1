@@ -76,6 +76,33 @@
 <script>
     // GLOBAL DEF
     _initialPairCount = 4;
+
+        function attachHighlightEvents() {
+            var pickupColor = 'white';
+            var deliveryColor = 'green';
+            var highlightColor = 'magenta';
+            $( ".pickup" ).on({
+                mouseover: function() {
+                    getPdpPoint(parseInt($(this).data("point-id")) + Math.floor(_hot.countRows()/2)).css({'background-color':highlightColor});
+                    $(this).css({'background-color':highlightColor});
+                },
+                mouseout: function() {
+                    $( ".delivery" ).css({'background-color':deliveryColor});
+                    $(this).css({'background-color':pickupColor});
+                }
+            });
+
+            $( ".delivery" ).on({
+                mouseover: function() {
+                    getPdpPoint(parseInt($(this).data("point-id")) - Math.floor(_hot.countRows()/2)).css({'background-color':highlightColor});
+                    $(this).css({'background-color':highlightColor});
+                },
+                mouseout: function() {
+                    $( ".pickup" ).css({'background-color':pickupColor});
+                    $(this).css({'background-color':deliveryColor});
+                }
+            });
+        };
 </script>
 
 <div class="jsc-sidebar-content jsc-sidebar-pulled sidebar" style="z-index:999">
@@ -87,39 +114,177 @@
         <div id="content_container" class="container">
             <p>
               <input type="file" id="pdp_points_filename" />
-              <div id="console">
-                Click "Load" to load data from server
-            </div>
 
               <button name="load" id="load">Load</button>
               <button name="save" id="save">Save</button>
               <button name="solve_gen" class="solve_button" id="solve_gen">Solve using generation</button>
               <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button>
-            </p>
-
-            <p>
-                <div id="solution_result">&nbsp;</div>
+              <div id="console" style="display:inline-block;">
+                Choose file and click "Load" to load data from server. Or type data by yourself
+              </div>
             </p>
 
             <div class="demo points_container" id="points_container">
-                <div class="shape pdp_point" data-shape="Circle" title="1" data-point-id="1" id="pdp_point_1">1</div>
-                <div class="shape pdp_point" data-shape="Circle" title="2" data-point-id="2" id="pdp_point_2">2</div>
-                <div class="shape pdp_point" data-shape="Circle" title="3" data-point-id="3" id="pdp_point_3">3</div>
-                <div class="shape pdp_point" data-shape="Circle" title="4" data-point-id="4" id="pdp_point_4">4</div>
-                <div class="shape pdp_point" data-shape="Circle" title="5" data-point-id="5" id="pdp_point_5">5</div>
-                <div class="shape pdp_point" data-shape="Circle" title="6" data-point-id="6" id="pdp_point_6">6</div>
-                <div class="shape pdp_point" data-shape="Circle" title="7" data-point-id="7" id="pdp_point_7">7</div>
-                <div class="shape pdp_point" data-shape="Circle" title="8" data-point-id="8" id="pdp_point_8">8</div>
-                <div class="shape pdp_point" data-shape="Circle" title="9" data-point-id="9" id="pdp_point_9">9</div>
+                <div class="shape pdp_point" data-shape="Circle" title="1"  data-point-id="1"  id="pdp_point_1" >1</div>
+                <div class="shape pdp_point" data-shape="Circle" title="2"  data-point-id="2"  id="pdp_point_2" >2</div>
+                <div class="shape pdp_point" data-shape="Circle" title="3"  data-point-id="3"  id="pdp_point_3" >3</div>
+                <div class="shape pdp_point" data-shape="Circle" title="4"  data-point-id="4"  id="pdp_point_4" >4</div>
+                <div class="shape pdp_point" data-shape="Circle" title="5"  data-point-id="5"  id="pdp_point_5" >5</div>
+                <div class="shape pdp_point" data-shape="Circle" title="6"  data-point-id="6"  id="pdp_point_6" >6</div>
+                <div class="shape pdp_point" data-shape="Circle" title="7"  data-point-id="7"  id="pdp_point_7" >7</div>
+                <div class="shape pdp_point" data-shape="Circle" title="8"  data-point-id="8"  id="pdp_point_8" >8</div>
+                <div class="shape pdp_point" data-shape="Circle" title="9"  data-point-id="9"  id="pdp_point_9" >9</div>
+
                 <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
-            </div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="20" data-point-id="20" id="pdp_point_20">20</div>
+                <div class="shape pdp_point" data-shape="Circle" title="21" data-point-id="21" id="pdp_point_21">21</div>
+                <div class="shape pdp_point" data-shape="Circle" title="22" data-point-id="22" id="pdp_point_22">22</div>
+                <div class="shape pdp_point" data-shape="Circle" title="23" data-point-id="23" id="pdp_point_23">23</div>
+                <div class="shape pdp_point" data-shape="Circle" title="24" data-point-id="24" id="pdp_point_24">24</div>
+                <div class="shape pdp_point" data-shape="Circle" title="25" data-point-id="25" id="pdp_point_25">25</div>
+                <div class="shape pdp_point" data-shape="Circle" title="26" data-point-id="26" id="pdp_point_26">26</div>
+                <div class="shape pdp_point" data-shape="Circle" title="27" data-point-id="27" id="pdp_point_27">27</div>
+                <div class="shape pdp_point" data-shape="Circle" title="28" data-point-id="28" id="pdp_point_28">28</div>
+                <div class="shape pdp_point" data-shape="Circle" title="29" data-point-id="29" id="pdp_point_29">29</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="30" data-point-id="30" id="pdp_point_30">30</div>
+                <div class="shape pdp_point" data-shape="Circle" title="31" data-point-id="31" id="pdp_point_31">31</div>
+                <div class="shape pdp_point" data-shape="Circle" title="32" data-point-id="32" id="pdp_point_32">32</div>
+                <div class="shape pdp_point" data-shape="Circle" title="33" data-point-id="33" id="pdp_point_33">33</div>
+                <div class="shape pdp_point" data-shape="Circle" title="34" data-point-id="34" id="pdp_point_34">34</div>
+                <div class="shape pdp_point" data-shape="Circle" title="35" data-point-id="35" id="pdp_point_35">35</div>
+                <div class="shape pdp_point" data-shape="Circle" title="36" data-point-id="36" id="pdp_point_36">36</div>
+                <div class="shape pdp_point" data-shape="Circle" title="37" data-point-id="37" id="pdp_point_37">37</div>
+                <div class="shape pdp_point" data-shape="Circle" title="38" data-point-id="38" id="pdp_point_38">38</div>
+                <div class="shape pdp_point" data-shape="Circle" title="39" data-point-id="39" id="pdp_point_39">39</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="40" data-point-id="40" id="pdp_point_40">40</div>
+                <div class="shape pdp_point" data-shape="Circle" title="41" data-point-id="41" id="pdp_point_41">41</div>
+                <div class="shape pdp_point" data-shape="Circle" title="42" data-point-id="42" id="pdp_point_42">42</div>
+                <div class="shape pdp_point" data-shape="Circle" title="43" data-point-id="43" id="pdp_point_43">43</div>
+                <div class="shape pdp_point" data-shape="Circle" title="44" data-point-id="44" id="pdp_point_44">44</div>
+                <div class="shape pdp_point" data-shape="Circle" title="45" data-point-id="45" id="pdp_point_45">45</div>
+                <div class="shape pdp_point" data-shape="Circle" title="46" data-point-id="46" id="pdp_point_46">46</div>
+                <div class="shape pdp_point" data-shape="Circle" title="47" data-point-id="47" id="pdp_point_47">47</div>
+                <div class="shape pdp_point" data-shape="Circle" title="48" data-point-id="48" id="pdp_point_48">48</div>
+                <div class="shape pdp_point" data-shape="Circle" title="49" data-point-id="49" id="pdp_point_49">49</div>
+<!--
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div>
+
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
+                <div class="shape pdp_point" data-shape="Circle" title="11" data-point-id="11" id="pdp_point_11">11</div>
+                <div class="shape pdp_point" data-shape="Circle" title="12" data-point-id="12" id="pdp_point_12">12</div>
+                <div class="shape pdp_point" data-shape="Circle" title="13" data-point-id="13" id="pdp_point_13">13</div>
+                <div class="shape pdp_point" data-shape="Circle" title="14" data-point-id="14" id="pdp_point_14">14</div>
+                <div class="shape pdp_point" data-shape="Circle" title="15" data-point-id="15" id="pdp_point_15">15</div>
+                <div class="shape pdp_point" data-shape="Circle" title="16" data-point-id="16" id="pdp_point_16">16</div>
+                <div class="shape pdp_point" data-shape="Circle" title="17" data-point-id="17" id="pdp_point_17">17</div>
+                <div class="shape pdp_point" data-shape="Circle" title="18" data-point-id="18" id="pdp_point_18">18</div>
+                <div class="shape pdp_point" data-shape="Circle" title="19" data-point-id="19" id="pdp_point_19">19</div> -->
+           </div>
             <script>
                 jsPlumb.ready(function() {
                      // GLOBAL DEF
                     _pointsContainer = jsPlumb.getInstance({
                         Connector:"StateMachine",
-                        PaintStyle:{ lineWidth:3, strokeStyle:"#ffa500"},
-                        Endpoint:[ "Dot", { radius:3 } ],
+                        PaintStyle:{ lineWidth:1, strokeStyle:"#ffa500"},
+                        Endpoint:[ "Dot", { radius:1 } ],
                         EndpointStyle:{ fillStyle:"#ffa500" },
                         Container:"points_container"
                     });
@@ -315,6 +480,9 @@
                 }
 
                 refreshAllPdpPoints(this.getData());
+
+                //reattach events
+                attachHighlightEvents();
               }
 
             });
@@ -499,32 +667,6 @@
     </script>
 
     <script>
-        $("#pdp_pairs_number").spinner({
-            min: 2,
-            change: function (event, ui) {
-                var pairCount = parseInt($("#pdp_pairs_number").spinner().spinner("value"));
-                updateTablePairCount(_hot, pairCount);
-            }
-        });
-
-
-        $( ".pickup" ).mouseover(function() {
-            getPdpPoint(parseInt($(this).data("point-id")) + Math.floor(_hot.countRows()/2)).css({'background-color':'yellow'});
-            $(this).css({'background-color':'yellow'});
-        });
-        $( ".pickup" ).mouseleave(function() {
-            $( ".delivery" ).css({'background-color':'green'});
-            $(this).css({'background-color':'white'});
-        });
-
-        $( ".delivery" ).mouseover(function() {
-            getPdpPoint(parseInt($(this).data("point-id")) - Math.floor(_hot.countRows()/2)).css({'background-color':'yellow'});
-            $(this).css({'background-color':'yellow'});
-        });
-        $( ".delivery" ).mouseleave(function() {
-            $( ".pickup" ).css({'background-color':'white'});
-            $(this).css({'background-color':'green'});
-        });
 
         $(function() {
             // fill spinner with initial pair count
@@ -533,6 +675,16 @@
             for (var i = 0; i < (_initialPairCount * 2); i++) {
                 fillTableRowWithRandomValues(_hot, i, (i >= _initialPairCount));
             };
+
+            $("#pdp_pairs_number").spinner({
+                min: 2,
+                change: function (event, ui) {
+                    var pairCount = parseInt($("#pdp_pairs_number").spinner().spinner("value"));
+                    updateTablePairCount(_hot, pairCount);
+                }
+            });
+
+            attachHighlightEvents();
         });
         //_pointsContainer.detachEveryConnection();
         // var path=[3,4,8,9]; for (var i=0; i < 3; i++) {_pointsContainer.connect({source:pdpPoints[path[i]],target:pdpPoints[path[i+1]],connector:"Straight"});}
@@ -542,7 +694,7 @@
             pointsContainer.detachEveryConnection();
             // var pdpPoints = jsPlumb.getSelector(".shape");
             var container = document.getElementById(pointsContainerId);
-            for (var i=0; i < 3; i++) {
+            for (var i=0; i < path.length-1; i++) {
                 pointsContainer.connect({
                     source: getPdpPoint(path[i]),
                     target: getPdpPoint(path[i+1]),
@@ -556,14 +708,14 @@
         $('.solve_button').on('click', function (e) {
             var solve_method = (e.target.id == 'solve_gen') ? 'gen' : 'branch_bound';
 
-            $("#solution_result").text
+            $("#console").text
             $.ajax({
                 url: "solve.php",
                 type: "POST",
                 data: JSON.stringify({method: solve_method, data: _hot.getData()}),
                 dataType: "json",
                 success: function(result){
-                    $("#solution_result").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost);
+                    $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost);
                     drawPath(_pointsContainer, "points_container",  result.path);
                 }
             });

@@ -66,9 +66,10 @@ body, html
     /** SHAPES **/
 
     [data-shape=Circle] {
-        width: 30px; height: 30px; -moz-border-radius: 15px; -webkit-border-radius: 15px; border-radius: 15px;
-        left:100px;
-        top:100px;
+        width: 16px; height: 16px; -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius: 8px;
+        left:0px;
+        top:0px;
+        font-size: 10px;
         /*line-height: 150px;*/
         /*background-image:url(circle.png);*/
     }
