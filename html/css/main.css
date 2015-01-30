@@ -5,9 +5,12 @@ body, html
 }
 .container
 {
-    margin:20px;
+    margin:10px;
 }
-
+.sidebar
+{
+    overflow-y: scroll;
+}
 .inline
 {
     display:inline-block;
@@ -34,11 +37,20 @@ body, html
     background: green;
 }
 
+.highlighted
+{
+    background: magenta;
+}
+
 .hidden_until_file_choose
 {
     display:none;
 }
 
+.currentRow
+{
+    background-color: magenta !important;
+}
 /**/
 .link-menu {
   font-size: 2.2rem; }

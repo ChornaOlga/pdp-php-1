@@ -77,53 +77,51 @@
     // GLOBAL DEF
     _initialPairCount = 4;
 
-        function attachHighlightEvents() {
-            var pickupColor = 'white';
-            var deliveryColor = 'green';
-            var highlightColor = 'magenta';
-            $( ".pickup" ).on({
-                mouseover: function() {
-                    getPdpPoint(parseInt($(this).data("point-id")) + Math.floor(_hot.countRows()/2)).css({'background-color':highlightColor});
-                    $(this).css({'background-color':highlightColor});
-                },
-                mouseout: function() {
-                    $( ".delivery" ).css({'background-color':deliveryColor});
-                    $(this).css({'background-color':pickupColor});
-                }
-            });
+    // _pickupColor    = 'white';
+    // _deliveryColor  = 'green';
+    // _highlightColor = 'magenta';
+    function attachHighlightEvents() {
+        $( ".pickup" ).on({
+            mouseover: function() {
+                getPdpPoint(parseInt($(this).data("point-id")) + Math.floor(_hot.countRows()/2)).addClass('highlighted');
+                $(this).addClass('highlighted');
+            },
+            mouseout: function() {
+                $( ".delivery" ).removeClass('highlighted');
+                $(this).removeClass('highlighted');
+            }
+        });
 
-            $( ".delivery" ).on({
-                mouseover: function() {
-                    getPdpPoint(parseInt($(this).data("point-id")) - Math.floor(_hot.countRows()/2)).css({'background-color':highlightColor});
-                    $(this).css({'background-color':highlightColor});
-                },
-                mouseout: function() {
-                    $( ".pickup" ).css({'background-color':pickupColor});
-                    $(this).css({'background-color':deliveryColor});
-                }
-            });
-        };
+        $( ".delivery" ).on({
+            mouseover: function() {
+                getPdpPoint(parseInt($(this).data("point-id")) - Math.floor(_hot.countRows()/2)).addClass('highlighted');
+                $(this).addClass('highlighted');
+            },
+            mouseout: function() {
+                $( ".pickup" ).removeClass('highlighted');
+                $(this).removeClass('highlighted');
+            }
+        });
+    };
 </script>
 
 <div class="jsc-sidebar-content jsc-sidebar-pulled sidebar" style="z-index:999">
     <nav>
         <a href="#" class="icon-menu link-menu jsc-sidebar-trigger"></a>
-        <h1 class="inline">Welcome to online PDP solver!</h1>
+        <b style="font-size:20px" class="inline">Welcome to online PDP solver!</b>
     </nav>
-    <section>
-        <div id="content_container" class="container">
-            <p>
-              <input type="file" id="pdp_points_filename" />
+    <section class="container">
+        <div id="header_container" >
+            <input type="file" id="pdp_points_filename" />
 
-              <button name="load" id="load">Load</button>
-              <button name="save" id="save">Save</button>
-              <button name="solve_gen" class="solve_button" id="solve_gen">Solve using generation</button>
-              <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button>
-              <div id="console" style="display:inline-block;">
+            <button name="load" id="load">Load</button>
+            <button name="save" id="save">Save</button>
+            <button name="solve_gen" class="solve_button" id="solve_gen">Solve using generation</button>
+            <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button>
+            <div id="console">
                 Choose file and click "Load" to load data from server. Or type data by yourself
-              </div>
-            </p>
-
+            </div>
+        </div>
             <div class="demo points_container" id="points_container">
                 <div class="shape pdp_point" data-shape="Circle" title="1"  data-point-id="1"  id="pdp_point_1" >1</div>
                 <div class="shape pdp_point" data-shape="Circle" title="2"  data-point-id="2"  id="pdp_point_2" >2</div>
@@ -290,32 +288,6 @@
                     });
 
                     var pdpPoints = jsPlumb.getSelector(".shape");
-                    // make everything draggable
-                    // _pointsContainer.draggable(pdpPoints);
-
-                    // suspend drawing and initialise.
-                    _pointsContainer.doWhileSuspended(function() {
-
-                        // var min = 100;
-                        // var max = 400;
-                        // loop through them and connect each one to each other one.
-                        for (var i = 0; i < pdpPoints.length; i++) {
-                            // $(pdpPoints[i]).css({'top':min + (max - min) * Math.random()});
-                            // $(pdpPoints[i]).css({'left':min + (max - min) * Math.random()});
-                            // for (var j = i + 1; j < pdpPoints.length; j++) {
-                            //     _pointsContainer.connect({
-                            //         source:pdpPoints[i],  // just pass in the current node in the selector for source
-                            //         target:pdpPoints[j],
-                            //         // here we supply a different anchor for source and for target, and we get the element's "data-shape"
-                            //         // attribute to tell us what shape we should use, as well as, optionally, a rotation value.
-                            //         anchors:[
-                            //             [ "Perimeter", { shape:pdpPoints[i].getAttribute("data-shape"), rotation:pdpPoints[i].getAttribute("data-rotation") }],
-                            //             [ "Perimeter", { shape:pdpPoints[j].getAttribute( "data-shape"), rotation:pdpPoints[j].getAttribute("data-rotation") }]
-                            //         ]
-                            //     });
-                            // }
-                        }
-                    });
 
                     jsPlumb.fire("jsPlumbDemoLoaded", _pointsContainer);
                 });
@@ -329,16 +301,6 @@
                 function getAllPdpPoints() {
                     return $("#points_container .shape");
                 }
-
-                // function updatePdpPointPositions(positions)
-                // {
-                //     for(var i = 0; i < positions.length; i++)
-                //     {
-                //         point = getPdpPoint(positions[i].point_id);
-                //         if (typeof positions[i].top  !== 'undefined') point.css({'top': positions[i].top});
-                //         if (typeof positions[i].left !== 'undefined') point.css({'left':positions[i].left});
-                //     }
-                // }
 
                 function refreshAllPdpPoints(tableData)
                 {
@@ -363,10 +325,6 @@
         </div>
 
     </section>
-
-<!--     <section  style="background-color:blue">
-    dsfadsfbr <br>  dfsd
-    </section> -->
 
 </div>
 
@@ -412,6 +370,7 @@
               rowHeaders: true,
               colHeaders: true,
               minSpareRows: 0,
+              currentRowClassName: 'currentRow',
               colHeaders: ['X', 'Y', 'box x', 'box y', 'box z', 'box weight'],
               columnSorting: true,
               // contextMenu: true,
@@ -466,10 +425,6 @@
                         $("#pdp_pairs_number").spinner().spinner("value", newPairCount);
                     }
 
-                    // var positions = getPointPositionsFromTableDataChanges(changes);
-                    // if (positions.length) {
-                    //     updatePdpPointPositions(positions);
-                    // }
                 }
               },
               afterLoadData: function () {
@@ -483,6 +438,10 @@
 
                 //reattach events
                 attachHighlightEvents();
+              },
+              afterSelectionEndByProp: function (row, col) {
+                getAllPdpPoints().removeClass('highlighted');
+                getPdpPoint(getPointIdFromRowNumber(row)).addClass('highlighted');
               }
 
             });
@@ -519,8 +478,6 @@
             });
 
             Handsontable.Dom.addEvent(save, 'click', function() {
-                // table.alter('insert_row', 2, 1);
-                // table.loadData([['', '', '', '', '', '']]);
               // // save all cell's data
               ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
                 var response = JSON.parse(res.response);
@@ -685,11 +642,9 @@
             });
 
             attachHighlightEvents();
+            $("#points_container").height(window.innerHeight - 140);
         });
-        //_pointsContainer.detachEveryConnection();
-        // var path=[3,4,8,9]; for (var i=0; i < 3; i++) {_pointsContainer.connect({source:pdpPoints[path[i]],target:pdpPoints[path[i+1]],connector:"Straight"});}
-        //
-        //
+
         function drawPath(pointsContainer, pointsContainerId,  path) {
             pointsContainer.detachEveryConnection();
             // var pdpPoints = jsPlumb.getSelector(".shape");
@@ -708,7 +663,7 @@
         $('.solve_button').on('click', function (e) {
             var solve_method = (e.target.id == 'solve_gen') ? 'gen' : 'branch_bound';
 
-            $("#console").text
+            $("#console").text('Please, wait for solution ...');
             $.ajax({
                 url: "solve.php",
                 type: "POST",
@@ -719,10 +674,6 @@
                     drawPath(_pointsContainer, "points_container",  result.path);
                 }
             });
-          //   ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
-          //   var response = JSON.parse(res.response);
-          //   alert(response);
-          // });
         });
     </script>
 </body>
