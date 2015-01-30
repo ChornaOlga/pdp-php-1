@@ -17,10 +17,12 @@ body, html
 {
 
 }
-.points_container
+#points_container
 {
     /*height:100%;*/
     background-color: lightgray;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .pickup

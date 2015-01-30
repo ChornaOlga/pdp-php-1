@@ -1,17 +1,17 @@
 /*
  * jsPlumb
- * 
+ *
  * Title:jsPlumb 1.7.2
- * 
- * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
- * 
+ *
+ * Provides a way to visually connect elements on an HTML page, using SVG or VML.
+ *
  * This file contains the code for the Bezier connector type.
  *
  * Copyright (c) 2010 - 2014 Simon Porritt (simon@jsplumbtoolkit.com)
- * 
+ *
  * http://jsplumbtoolkit.com
  * http://github.com/sporritt/jsplumb
- * 
+ *
  * Dual licensed under the MIT and GPL2 licenses.
  */
 ;(function() {
@@ -28,7 +28,7 @@
 		this.getCurviness = function() { return majorAnchor; };
 
 		this._findControlPoint = function(point, sourceAnchorPosition, targetAnchorPosition, sourceEndpoint, targetEndpoint) {
-			// determine if the two anchors are perpendicular to each other in their orientation.  we swap the control 
+			// determine if the two anchors are perpendicular to each other in their orientation.  we swap the control
 			// points around if so (code could be tightened up)
 			var soo = sourceEndpoint.anchor.getOrientation(sourceEndpoint),
 				too = targetEndpoint.anchor.getOrientation(targetEndpoint),

@@ -87,34 +87,39 @@
         <div id="content_container" class="container">
             <p>
               <input type="file" id="pdp_points_filename" />
-
-              <button name="load" id="load" class="hidden_until_file_choose">Load</button>
-              <button name="save" id="save" class="whidden_until_file_choose">Save</button>
-            </p>
-
-            <div id="console" >
+              <div id="console">
                 Click "Load" to load data from server
             </div>
 
-            <div class="demo points_container">
-                <div class="shape pdp_point" data-shape="Circle" title="1" id="1">1</div>
-                <div class="shape pdp_point" data-shape="Circle" title="2" id="2">2</div>
-                <div class="shape pdp_point" data-shape="Circle" title="3" id="3">3</div>
-                <div class="shape pdp_point" data-shape="Circle" title="4" id="4">4</div>
-                <div class="shape pdp_point" data-shape="Circle" title="5" id="5">5</div>
-                <div class="shape pdp_point" data-shape="Circle" title="6" id="6">6</div>
-                <div class="shape pdp_point" data-shape="Circle" title="7" id="7">7</div>
-                <div class="shape pdp_point" data-shape="Circle" title="8" id="8">8</div>
-                <div class="shape pdp_point" data-shape="Circle" title="9" id="9">9</div>
-                <div class="shape pdp_point" data-shape="Circle" title="10" id="10">10</div>
+              <button name="load" id="load">Load</button>
+              <button name="save" id="save">Save</button>
+              <button name="solve_gen" class="solve_button" id="solve_gen">Solve using generation</button>
+              <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button>
+            </p>
+
+            <p>
+                <div id="solution_result">&nbsp;</div>
+            </p>
+
+            <div class="demo points_container" id="points_container">
+                <div class="shape pdp_point" data-shape="Circle" title="1" data-point-id="1" id="pdp_point_1">1</div>
+                <div class="shape pdp_point" data-shape="Circle" title="2" data-point-id="2" id="pdp_point_2">2</div>
+                <div class="shape pdp_point" data-shape="Circle" title="3" data-point-id="3" id="pdp_point_3">3</div>
+                <div class="shape pdp_point" data-shape="Circle" title="4" data-point-id="4" id="pdp_point_4">4</div>
+                <div class="shape pdp_point" data-shape="Circle" title="5" data-point-id="5" id="pdp_point_5">5</div>
+                <div class="shape pdp_point" data-shape="Circle" title="6" data-point-id="6" id="pdp_point_6">6</div>
+                <div class="shape pdp_point" data-shape="Circle" title="7" data-point-id="7" id="pdp_point_7">7</div>
+                <div class="shape pdp_point" data-shape="Circle" title="8" data-point-id="8" id="pdp_point_8">8</div>
+                <div class="shape pdp_point" data-shape="Circle" title="9" data-point-id="9" id="pdp_point_9">9</div>
+                <div class="shape pdp_point" data-shape="Circle" title="10" data-point-id="10" id="pdp_point_10">10</div>
             </div>
             <script>
                 jsPlumb.ready(function() {
                      // GLOBAL DEF
                     _pointsContainer = jsPlumb.getInstance({
                         Connector:"StateMachine",
-                        PaintStyle:{ lineWidth:3, strokeStyle:"#ffa500", "dashstyle":"2 4" },
-                        Endpoint:[ "Dot", { radius:5 } ],
+                        PaintStyle:{ lineWidth:3, strokeStyle:"#ffa500"},
+                        Endpoint:[ "Dot", { radius:3 } ],
                         EndpointStyle:{ fillStyle:"#ffa500" },
                         Container:"points_container"
                     });
@@ -151,11 +156,13 @@
                 });
 
                 function getPdpPoint(point_id) {
-                    return $(".points_container .shape#" + point_id);
+                    var result = $("#points_container .shape#pdp_point_" + point_id);
+                    if (result.length === 0) { console.log ('Cannot get point #' + point_id)};
+                    return result;
                 }
 
                 function getAllPdpPoints() {
-                    return $(".points_container .shape");
+                    return $("#points_container .shape");
                 }
 
                 // function updatePdpPointPositions(positions)
@@ -176,8 +183,8 @@
                     for(var i = 0; i < tableData.length; i++)
                     {
                         point = getPdpPoint(getPointIdFromRowNumber(i));
-                        if (typeof tableData[i][0] !== 'undefined') point.css({ 'top': Math.floor(parseFloat(tableData[i][0])) });
-                        if (typeof tableData[i][1] !== 'undefined') point.css({ 'left':Math.floor(parseFloat(tableData[i][1])) });
+                        if (typeof tableData[i][1] !== 'undefined') point.css({ 'left':Math.floor(parseFloat(tableData[i][0])) });
+                        if (typeof tableData[i][0] !== 'undefined') point.css({ 'top': Math.floor(parseFloat(tableData[i][1])) });
 
                         point.removeClass('pickup');
                         point.removeClass('delivery');
@@ -217,7 +224,7 @@
             autosave = get('autosave'),
             load = get('load'),
             save = get('save');
-            filenameContainer = get('pdp_points_filename');
+            _filenameContainer = get('pdp_points_filename');
 
             pickupRenderer = function(instance, td, row, col, prop, value, cellProperties) {
               Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -282,6 +289,10 @@
               },
               afterChange: function (changes, source) {
                 refreshAllPdpPoints(this.getData());
+                if (typeof _pointsContainer !== "undefined") {
+                    _pointsContainer.detachEveryConnection();
+                }
+
                 if (changes)
                 {
                     var newPairCount = Math.floor(this.getData().length/2);
@@ -331,33 +342,28 @@
                 }
             };
 
-            loadJsonFromFileContainer = function(table){
-                loadJsonToTable(table, filenameContainer.files[0]);
-                $('.hidden_until_file_choose').show();
-            };
-
             loadJsonFromFileContainerToMainTable = function(){
-                loadJsonFromFileContainer(_hot);
+                loadJsonToTable(_hot, _filenameContainer.files[0]);
             };
 
             Handsontable.Dom.addEvent(load, 'click', function(){
                 loadJsonFromFileContainerToMainTable();
             });
 
-            Handsontable.Dom.addEvent(save, 'click', function(table) {
+            Handsontable.Dom.addEvent(save, 'click', function() {
                 // table.alter('insert_row', 2, 1);
                 // table.loadData([['', '', '', '', '', '']]);
               // // save all cell's data
-              // ajax('json/save.json', 'GET', JSON.stringify({data: table.getData()}), function (res) {
-              //   var response = JSON.parse(res.response);
+              ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
+                var response = JSON.parse(res.response);
 
-              //   if (response.result === 'ok') {
-              //     exampleConsole.innerHTML = 'Data saved';
-              //   }
-              //   else {
-              //     exampleConsole.innerHTML = 'Save error';
-              //   }
-              // });
+                if (response.result === 'ok') {
+                  exampleConsole.innerHTML = 'Data saved';
+                }
+                else {
+                  exampleConsole.innerHTML = 'Save error';
+                }
+              });
             });
 
             function getPointIdFromRowNumber (rowNumber) {
@@ -394,8 +400,6 @@
                 var minRandomBoxWeight = 1;
                 var maxRandomBoxWeight = 20;
 
-console.log(rowNumber);
-console.log(fillOnlyCoords);
                 // coords
                 table.setDataAtCell(rowNumber, 0, getRandomBetween(minRandomCoord,maxRandomCoord).toFixed(2) );
                 table.setDataAtCell(rowNumber, 1, getRandomBetween(minRandomCoord,maxRandomCoord).toFixed(2) );
@@ -441,10 +445,16 @@ console.log(fillOnlyCoords);
                         for (var i = oldPairCount; i < (oldPairCount + diff); i++) {
                             // if pair 'i' (BOTH pickup and delivery) loaded, restore them to table
                             var useLoadedDataForNewRows = ((typeof data[i] !== 'undefined') && (typeof data[data.length/2 + i] !== 'undefined'));
-                            for (var j = 0; j < table.countCols(); j++) {
-                                table.setDataAtCell(i, j, (useLoadedDataForNewRows) ? data[i][j] : getRandomBetween(10,500).toFixed(2) );
-                                table.setDataAtCell(newPairCount + i, j, (useLoadedDataForNewRows) ? data[data.length/2 + i][j] : getRandomBetween(10,500).toFixed(2) );
-                            };
+                            if (useLoadedDataForNewRows) {
+                                for (var j = 0; j < table.countCols(); j++) {
+                                    table.setDataAtCell(i, j, data[i][j]);
+                                    table.setDataAtCell(newPairCount + i, j, data[data.length/2 + i][j]);
+                                }
+                            }
+                            else {
+                                fillTableRowWithRandomValues(table, i);
+                                fillTableRowWithRandomValues(table, newPairCount + i);
+                            }
                         }
                 }
                 //refresh table to redraw cells
@@ -497,9 +507,9 @@ console.log(fillOnlyCoords);
             }
         });
 
-        // highlight
+
         $( ".pickup" ).mouseover(function() {
-            getPdpPoint(parseInt(this.id) + Math.floor(_hot.countRows()/2)).css({'background-color':'yellow'});
+            getPdpPoint(parseInt($(this).data("point-id")) + Math.floor(_hot.countRows()/2)).css({'background-color':'yellow'});
             $(this).css({'background-color':'yellow'});
         });
         $( ".pickup" ).mouseleave(function() {
@@ -508,7 +518,7 @@ console.log(fillOnlyCoords);
         });
 
         $( ".delivery" ).mouseover(function() {
-            getPdpPoint(parseInt(this.id) - Math.floor(_hot.countRows()/2)).css({'background-color':'yellow'});
+            getPdpPoint(parseInt($(this).data("point-id")) - Math.floor(_hot.countRows()/2)).css({'background-color':'yellow'});
             $(this).css({'background-color':'yellow'});
         });
         $( ".delivery" ).mouseleave(function() {
@@ -523,6 +533,44 @@ console.log(fillOnlyCoords);
             for (var i = 0; i < (_initialPairCount * 2); i++) {
                 fillTableRowWithRandomValues(_hot, i, (i >= _initialPairCount));
             };
+        });
+        //_pointsContainer.detachEveryConnection();
+        // var path=[3,4,8,9]; for (var i=0; i < 3; i++) {_pointsContainer.connect({source:pdpPoints[path[i]],target:pdpPoints[path[i+1]],connector:"Straight"});}
+        //
+        //
+        function drawPath(pointsContainer, pointsContainerId,  path) {
+            pointsContainer.detachEveryConnection();
+            // var pdpPoints = jsPlumb.getSelector(".shape");
+            var container = document.getElementById(pointsContainerId);
+            for (var i=0; i < 3; i++) {
+                pointsContainer.connect({
+                    source: getPdpPoint(path[i]),
+                    target: getPdpPoint(path[i+1]),
+                    connector:"Straight",
+                    overlays:["Arrow"]
+                });
+            };
+            pointsContainer.repaintEverything();
+        };
+
+        $('.solve_button').on('click', function (e) {
+            var solve_method = (e.target.id == 'solve_gen') ? 'gen' : 'branch_bound';
+
+            $("#solution_result").text
+            $.ajax({
+                url: "solve.php",
+                type: "POST",
+                data: JSON.stringify({method: solve_method, data: _hot.getData()}),
+                dataType: "json",
+                success: function(result){
+                    $("#solution_result").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost);
+                    drawPath(_pointsContainer, "points_container",  result.path);
+                }
+            });
+          //   ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
+          //   var response = JSON.parse(res.response);
+          //   alert(response);
+          // });
         });
     </script>
 </body>
