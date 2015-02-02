@@ -668,7 +668,7 @@
                 url: "solve.php",
                 type: "POST",
                 data: 'params=' + JSON.stringify({method: solve_method, data: _hot.getData()}),
-                // dataType: "json",
+                dataType: "json",
                 success: function(result){
                     $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost);
                     drawPath(_pointsContainer, "points_container",  result.path);
