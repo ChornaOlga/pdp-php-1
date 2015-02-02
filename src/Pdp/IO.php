@@ -10,7 +10,7 @@ class IO
 
         if (file_exists($filename))
         {
-            $pointData = explode("\r\n", file_get_contents($filename));
+            $pointData = preg_split("/\\r\\n|\\r|\\n/", file_get_contents($filename));
             $count = (int) $pointData[0];
             unset($pointData[0]);
 

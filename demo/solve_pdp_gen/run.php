@@ -29,9 +29,11 @@ try
 {
     App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->start();
     $bestPath = $solver->getSolution();
-    printf('Solution was obtained in %.4F seconds', App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart());
+    $solutionTime = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart();
+    printf('Solution was obtained in %.4F seconds', $solutionTime);
 
-    echo "\n\ntotal paths generated:" .  count($solver->getGeneratedPointSequences()) . "\n";
+    $totalGeneratedPaths = count($solver->getGeneratedPointSequences());
+    echo "\n\ntotal paths generated:" .  $totalGeneratedPaths . "\n";
     App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->start();
 
     if ($pdpConfig['log_solution'] && $solutionLogFile)
@@ -67,6 +69,15 @@ try
 
 
     printf('All other operations took %.4F seconds', App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart());
+
+    echo PHP_EOL . json_encode([
+        'path'      => $bestPath->getPointIds(),
+        'path_cost' => $solver->_getCost($bestPath),
+        'info'      => [
+            'total_generated_paths' => $totalGeneratedPaths,
+            'solution_time'         => $solutionTime
+        ]
+    ]);
 }
 catch (\Exception $e)
 {

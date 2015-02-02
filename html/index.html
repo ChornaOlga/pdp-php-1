@@ -670,7 +670,7 @@
                 data: 'params=' + JSON.stringify({method: solve_method, data: _hot.getData()}),
                 dataType: "json",
                 success: function(result){
-                    $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost);
+                    $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. Additional info:' + JSON.stringify(result.info));
                     drawPath(_pointsContainer, "points_container",  result.path);
                 }
             });
