@@ -65,17 +65,18 @@ try
     //     echo IO::getReadableStepInfo($stepInfo, ++$i);
     // }
 
-    echo "\n\nfinal path: " . IO::getPathAsText($bestPath) . " with cost " . $solver->_getCost($bestPath) . "\n";
+    $bestCost = $solver->_getCost($bestPath);
+    echo "\n\nfinal path: " . IO::getPathAsText($bestPath) . " with cost " . $bestCost . "\n";
 
 
     printf('All other operations took %.4F seconds', App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart());
 
     echo PHP_EOL . json_encode([
-        'path'      => $bestPath->getPointIds(),
-        'path_cost' => $solver->_getCost($bestPath),
+        'path'          => $bestPath->getPointIds(),
+        'path_cost'     => $bestCost,
+        'solution_time' => $solutionTime,
         'info'      => [
             'total_generated_paths' => $totalGeneratedPaths,
-            'solution_time'         => $solutionTime
         ]
     ]);
 }

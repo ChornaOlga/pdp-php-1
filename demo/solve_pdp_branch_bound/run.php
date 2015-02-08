@@ -24,9 +24,11 @@ try
 {
 
     App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->start();
-    $bestNode = $solver->getSolution();
-    $bestPath = $bestNode->getContent();
-    printf('Solution was obtained in %.4F seconds', App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart());
+    $bestNode     = $solver->getSolution();
+    $bestPath     = $bestNode->getContent();
+    $solutionTime = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart();
+
+    printf('Solution was obtained in %.4F seconds', $solutionTime);
 
     App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->start();
 
@@ -43,6 +45,15 @@ try
     }
 
     echo "\n\nfinal path: " . IO::getPathAsText($bestPath) . " with cost " . $bestNode->getOptimisticBound() . "\n";
+
+    echo PHP_EOL . json_encode([
+        'path'          => $bestPath->getPointIds(),
+        'path_cost'     => $bestNode->getOptimisticBound(),
+        'solution_time' => $solutionTime,
+        'info'      => [
+            'total_branchings' => count($stepInfo),
+        ]
+    ]);
 }
 catch (\Exception $e)
 {
