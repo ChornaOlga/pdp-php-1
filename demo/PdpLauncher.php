@@ -33,10 +33,10 @@ class PdpLauncher extends Litvinenko\Common\Object
   {
     $minRandomCoord     = 10;
     $maxRandomCoord     = 500;
-    $minRandomBoxSize   = 1;
-    $maxRandomBoxSize   = 20;
+    $minRandomBoxSize   = 10;
+    $maxRandomBoxSize   = 10;
     $minRandomBoxWeight = 1;
-    $maxRandomBoxWeight = 20;
+    $maxRandomBoxWeight = 1;
 
     $result = [];
     for ($i = 0; $i < ($pairCount*2); $i++)
@@ -156,8 +156,9 @@ function write_php_ini($array, $file)
 
 function getIniValue($value)
 {
+  if ($value === "1") return 'yes';
+  if ($value === "") return 'no';
   if (is_numeric($value)) return $value;
-  if (is_bool($value)) return ($value) ? 'yes' : 'no';
   return '"'.$value.'"';
 }
 function safefilerewrite($fileName, $dataToSave)

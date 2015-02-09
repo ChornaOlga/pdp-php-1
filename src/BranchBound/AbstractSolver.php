@@ -46,7 +46,7 @@ abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
                 // if new node is better (or has better evaluation) than current best node
                 if ($this->_compareNodes($newNode, $currentBestFullNode) > -1)
                 {
-                    if ($this->_nodeIsCompleteSolution($newNode))
+                    if ($this->_nodeIsCompleteSolution($newNode) && $this->_nodeIsCorrect($newNode))
                     {
                         $currentBestFullNode = $newNode;
                     }
@@ -64,6 +64,8 @@ abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
             // get active nodes
             //  taking into account that nodes that were activated on previous steps (when they had best evaluation that solution on that step)
             //   CAN BECAME INACTIVE (due to solution on this step is better than their evaluations)
+            //
+            //   also we deactivate them if they don't satisfy some special node limitations (for PDP they are 3D loading constraints)
             $activeNodes = [];
             foreach ($rootNode->getActiveChildrenRecursive() as $node)
             {
@@ -86,6 +88,11 @@ abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
     protected function _getActiveChildrenNodesBetterThan($rootNode, $currentBestNode)
     {
         return ($rootNode->getActiveChildrenRecursive());
+    }
+
+    protected function _nodeIsCorrect($node)
+    {
+        return true;
     }
 
     protected function _getBestNodeFrom($nodes)

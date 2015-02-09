@@ -100,7 +100,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
                 ]);
             $generator->validate();
 
-            $points            = Helper::getGeneratorDataFromPoints($pointSequence);
+            $points = Helper::getGeneratorDataFromPoints($pointSequence);
             $result = Helper::getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
         }
 
@@ -112,9 +112,9 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         $pointSequence = $node->getContent()->getPoints();
 
         // + 2 because at the begin and end of path should be depot
-        $nodeHasAllPoints = (count($pointSequence) == (2 + count($this->getPoints())));
+        $nodeHasAllPoints = (count($pointSequence) >= (2 + count($this->getPoints())));
 
-        return ($nodeHasAllPoints && $this->canLoad($pointSequence));
+        return ($nodeHasAllPoints);
     }
 
 
@@ -176,5 +176,10 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         }
 
         return $result;
+    }
+
+    protected function _nodeIsCorrect($node)
+    {
+        return $this->canLoad($node->getContent()->getPoints());
     }
 }

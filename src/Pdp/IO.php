@@ -25,8 +25,8 @@ class IO
                         'id'                  => $id,
                         'x'                   => floatval($pointInfo[1]),
                         'y'                   => floatval($pointInfo[2]),
-                        'box_weight'          => isset($pointInfo[3]) ? floatval($pointInfo[3]) : null,
-                        'box_dimensions'      => isset($pointInfo[4]) ? ['x' => floatval($pointInfo[4]) , 'y' => floatval($pointInfo[5]), 'z' => floatval($pointInfo[6])] : null,
+                        'box_dimensions'      => isset($pointInfo[3]) ? ['x' => floatval($pointInfo[3]) , 'y' => floatval($pointInfo[4]), 'z' => floatval($pointInfo[5])] : null,
+                        'box_weight'          => isset($pointInfo[6]) ? floatval($pointInfo[6]) : null,
                         'combinatorial_value' => $id,
                     ]);
 
@@ -167,6 +167,18 @@ class IO
     public static function getBoxesTextForExternalPdpHelper($points)
     {
         $result = "\n";
+      
+        // sort points by id. it's neccessary because pdp_points.py gets box number from string ordinality number (it ignores 'from A to B' string)
+        usort($points, function ($a, $b) {
+            if ($a->getId() == $b->getId()) {
+                return 0;
+            } else if ($a->getId() < $b->getId()) {
+                return -1;
+            } else {
+                return 1;
+            }
+        });
+        
         foreach ($points as $point)
         {
             if ($point->isPickup())
