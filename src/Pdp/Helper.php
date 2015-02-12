@@ -132,7 +132,12 @@ class Helper extends \Litvinenko\Common\Object
         return (count( self::removeDepotFromPointSequence($pointSequence) ) == count( self::removeDepotFromPointSequence($allPoints)) ) ;
     }
 
-    public function canLoad($pointSequence, $checkLoadingCommandPrefix, $loadArea, $weightCapacity)
+    public static function getPickupsAndDeliveriesCount($pointSequence)
+    {
+        return (count( self::removeDepotFromPointSequence($pointSequence) )) ;
+    }
+
+    public function canLoad($pointSequence, $checkLoadingCommandPrefix, $loadArea, $weightCapacity, $allPoints)
     {
         $result = false;
 
@@ -141,13 +146,13 @@ class Helper extends \Litvinenko\Common\Object
 
         if (!$this->getBoxesFileIsFilled())
         {
-            file_put_contents($boxFileName, IO::getBoxesTextForExternalPdpHelper($points));
+            file_put_contents($boxFileName, IO::getBoxesTextForExternalPdpHelper($allPoints));
             $this->setBoxesFileIsFilled(true);
         }
 
         $cmdString = "{$checkLoadingCommandPrefix}" .
                         " -b {$boxFileName}" .
-                        " -n "   . (int)(count($points)/2) .
+                        " -n "   . (int)(count($allPoints)/2) .
                         " -c \"" . implode(' ', $loadArea) . ' ' . $weightCapacity . "\"" .
                         " -r \""  . implode(' ', Point::getPointIds($points)) . "  1\"";
         $cmdResult = exec($cmdString);
@@ -155,5 +160,10 @@ class Helper extends \Litvinenko\Common\Object
         $result = ($cmdResult == 'True');
 
         return $result;
+    }
+
+    public static function getLoadAreaVolume($loadArea)
+    {
+        return floatval($loadArea['x']) * floatval($loadArea['y']) * floatval($loadArea['z']);
     }
 }

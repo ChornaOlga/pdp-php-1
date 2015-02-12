@@ -13,6 +13,7 @@ class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generator
         // PDP specific params
         'current_path'    => 'required|object:\Litvinenko\Combinatorics\Pdp\Path', // current PDP path
         'weight_capacity' => 'required|float_strict',                              // vehicle weight capacity
+        'load_area'       => 'required|array',                              // vehicle load area
     );
 
     protected function _getSuccessiveElements($tuple)
@@ -29,7 +30,7 @@ class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generator
             if (!$currentPath->doesContain($point))
             {
                      // add pickup point if whether vehicle can take box at this point
-                if ( $point->isPickup()   && (($currentPath->getCurrentWeight() + $point->getBoxWeight()) <= $this->getWeightCapacity())
+                if ( $point->isPickup() && (($currentPath->getCurrentWeight() + $point->getBoxWeight()) <= $this->getWeightCapacity())  && ( ($currentPath->getCurrentVolume() + $point->getBoxVolume()) <= Helper::getLoadAreaVolume($this->getLoadArea()) )
                      ||
                      // add delivery point if corresponding pickup ALREADY exists in current path
                      $point->isDelivery() && $currentPath->doesContain($point->getPairId())

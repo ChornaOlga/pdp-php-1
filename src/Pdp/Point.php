@@ -67,4 +67,9 @@ class Point extends \Litvinenko\Common\Object
     {
         return ($this->getType() == self::TYPE_DEPOT);
     }
+
+    public function getBoxVolume()
+    {
+        return ($box = $this->getBoxDimensions()) ? (floatval($box['x']) * floatval($box['y']) * floatval($box['z'])) : 0;
+    }
 }

@@ -34,13 +34,28 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
     {
         parent::_construct();
 
-        $optimisticBound = ($this->getMaximizeCost()) ? 0 : PHP_INT_MAX;
+        $initialOptimisticBound = ($this->getMaximizeCost()) ? 0 : PHP_INT_MAX;
+        $initialPath = new Path(['points' => [$this->getDepot()] ]);
 
-        $this->setInitialNodeContent(new Path(['points' => [$this->getDepot()] ]));
-        $this->setInitialNodeOptimisticBound($optimisticBound);
+        $this->setInitialNodeContent($initialPath);
+        $this->setInitialNodeOptimisticBound($initialOptimisticBound);
 
         $this->setHelper(new Helper);
     }
+
+    // /**
+    //  * Returns some initial bound from some real path
+    //  *
+    //  * @return float
+    //  */
+    // protected function _getInitialBound()
+    // {
+    //     $initialPath = new Path([
+    //         'points' => array_merge( [$this->getDepot()], $this->getPoints(), [$this->getDepot()] )
+    //         ]);
+
+    //     return $this->getEvaluator()->getBound($initialPath, Evaluator::BOUND_TYPE_OPTIMISTIC);
+    // }
 
     public function getSolution()
     {
@@ -65,16 +80,14 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
             foreach ($newPointSequences as $newPointSequence)
             {
+
                 $check = $this->getCheckLoadingForEveryNewNode();
                 if (!$check || ($check && $this->canLoad($newPointSequence)))
                 {
                     $path    = new Path(['points'  => $newPointSequence]);
                     $newNode = new Node(['content' => $path]);
 
-                    $newNode->setOptimisticBound($this->getEvaluator()->getBound($path, Evaluator::BOUND_TYPE_OPTIMISTIC , [
-                        'parent_node'       => $node,
-                        'total_point_count' => count($this->getPoints())
-                        ]));
+                    $newNode->setOptimisticBound($this->getEvaluator()->getBound($path, Evaluator::BOUND_TYPE_OPTIMISTIC));
                     $result[] = $newNode;
                 }
             }
@@ -85,23 +98,29 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
     protected function _generateNestedPointSequences($node)
     {
         $pointSequence = $node->getContent()->getPoints();
-        $nodeHasAllPointsExceptOfDepot = Helper::pointSequenceIncludesAllPickupsAndDeliveries($pointSequence, $this->getPoints());
-        if ($nodeHasAllPointsExceptOfDepot)
-        {
-            $result = [array_merge($pointSequence, [$this->getDepot()])];
-        }
-        else
-        {
-            $generator = new Generator([
-                'tuple_length'        => Point::getPointCount($this->getPoints()),
-                'generating_elements' => Helper::getGeneratorDataFromPoints($this->getPoints()),
-                'current_path'        => $node->getContent(),
-                'weight_capacity'     => $this->getWeightCapacity()
-                ]);
-            $generator->validate();
+        $generator = new Generator([
+            'tuple_length'        => Point::getPointCount($this->getPoints()),
+            'generating_elements' => Helper::getGeneratorDataFromPoints($this->getPoints()),
+            'current_path'        => $node->getContent(),
+            'weight_capacity'     => $this->getWeightCapacity(),
+            'load_area'           => $this->getLoadArea()
+            ]);
+        $generator->validate();
 
-            $points = Helper::getGeneratorDataFromPoints($pointSequence);
-            $result = Helper::getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
+        $points = Helper::getGeneratorDataFromPoints($pointSequence);
+        $result = Helper::getPointSequencesFromGeneratorData($generator->generateNextObjects($points));
+
+        if ($result)
+        {
+            // hack: if all PDP points except of depot are present, add depot
+            $nodeHasAllPointsExceptOfDepot = Helper::pointSequenceIncludesAllPickupsAndDeliveries(reset($result), $this->getPoints());
+            if ($nodeHasAllPointsExceptOfDepot)
+            {
+                foreach ($result as &$resultPointSequence)
+                {
+                    $resultPointSequence = array_merge($resultPointSequence, [$this->getDepot()]);
+                }
+            }
         }
 
         return $result;
@@ -166,7 +185,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         $result = true;
         if ($this->getCheckLoading())
         {
-            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity());
+            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity(), $this->getPoints());
             if (!$canLoad)
             {
                 $this->_logEvent('cant_load', ['point_sequence' => $pointSequence]);
@@ -180,6 +199,13 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
     protected function _nodeIsCorrect($node)
     {
-        return $this->canLoad($node->getContent()->getPoints());
+        if ($this->_nodeIsCompleteSolution($node))
+        {
+            return $this->canLoad($node->getContent()->getPoints());
+        }
+        else
+        {
+            return true;
+        }
     }
 }

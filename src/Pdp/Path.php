@@ -36,7 +36,7 @@ class Path extends \Litvinenko\Common\Object
     }
 
     /**
-     * Returns array of ids of path points
+     * Returns total weight of currently loaded boxes
      *
      * @return array
      */
@@ -47,6 +47,23 @@ class Path extends \Litvinenko\Common\Object
         foreach ($this->getPoints() as $point)
         {
             $result += $point->getBoxWeight();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns total volume of currently loaded boxes
+     *
+     * @return array
+     */
+    public function getCurrentVolume()
+    {
+        $result = 0;
+
+        foreach ($this->getPoints() as $point)
+        {
+            $result += $point->getBoxVolume();
         }
 
         return $result;

@@ -1,9 +1,8 @@
 <?php
-include '../vendor/autoload.php';
+require_once '../vendor/autoload.php';
 include 'PdpLauncher.php';
 
-
-$pairCountToTest     = [2];
+$pairCountToTest     = [3];
 $repeatEachTestNmber = 1;
 
 $genPrecises = [
@@ -18,7 +17,8 @@ $genPrecises = [
 
 // ];
 $launcher = new PdpLauncher;
-$result = "sep =,\npair count,test#,cost,time,total_branchings,path,errors,precise,cost,time,total_generated_paths,path,errors,data\n";
+$newLine = "sep =,\npair count,test#,cost,time,total_branchings,path,errors,precise,cost,time,total_generated_paths,path,errors,data\n";
+file_put_contents('result.csv', $newLine);
 foreach ($pairCountToTest as $pairCount)
 {
   for ($testNum = 1; $testNum <= $repeatEachTestNmber; $testNum++)
@@ -39,14 +39,14 @@ foreach ($pairCountToTest as $pairCount)
     {
       $genSolution = $launcher->getSolution('gen', $data, ['precise' => $precise]);
 
-      $result .= $prefix. "{$precise}, {$genSolution['path_cost']},{$genSolution['solution_time']},{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\"";
-      $result .= ",\"" . json_encode($data) . "\"\n";
+      $newLine = $prefix. "{$precise}, {$genSolution['path_cost']},{$genSolution['solution_time']},{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\"";
+      $newLine .= ",\"" . json_encode($data) . "\"\n";
 
       $prefix = preg_replace("/[^,]+/", "", $prefix);
-    }
 
+      file_put_contents('result.csv', $newLine, FILE_APPEND);
+    }
 
   }
 }
-
-file_put_contents('result.csv', $result);
+// file_put_contents('result.csv', $newLine, FILE_APPEND);

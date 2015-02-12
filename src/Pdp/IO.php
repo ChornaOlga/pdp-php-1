@@ -160,7 +160,7 @@ class IO
                 $result .= IO::getPathAsText($node->getContent()) . ' with bound ' . $node->getOptimisticBound() . "\n";
 
         }
-
+        $result .= "\n\n -------------- End of step " . $stepNo . "-------------- \n\n";
         return $result;
     }
 

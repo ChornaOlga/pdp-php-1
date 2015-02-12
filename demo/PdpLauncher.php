@@ -32,10 +32,10 @@ class PdpLauncher extends Litvinenko\Common\Object
   public function generateRandomData($pairCount)
   {
     $minRandomCoord     = 10;
-    $maxRandomCoord     = 500;
-    $minRandomBoxSize   = 10;
-    $maxRandomBoxSize   = 10;
-    $minRandomBoxWeight = 1;
+    $maxRandomCoord     = 50000;
+    $minRandomBoxSize   = 1;
+    $maxRandomBoxSize   = 15;
+    $minRandomBoxWeight = 100;
     $maxRandomBoxWeight = 1;
 
     $result = [];
@@ -115,7 +115,7 @@ class PdpLauncher extends Litvinenko\Common\Object
           }
           else
           {
-             $result['errors'][] = "Internal error. Cannot run solution script or its output is incorrect";
+             $result['errors'][] = "Internal error. Cannot run solution script or its output is incorrect. raw response is: $cmdResult";
           }
       }
       else

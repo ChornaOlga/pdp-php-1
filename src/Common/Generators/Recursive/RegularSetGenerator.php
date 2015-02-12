@@ -38,9 +38,13 @@ abstract class RegularSetGenerator extends AbstractGenerator
     public function generateNextObjects($tuple)
     {
         $result = [];
-        foreach ($this->_getSuccessiveElements($tuple) as $newElement)
+        foreach ($this->_getSuccessiveElements($tuple) as $newElements)
         {
-            $result[] = array_merge($tuple, [$newElement]);
+            // _getSuccessiveElements method can return 1 or more elements. If it return 1 element, pack in into array
+            $newTuplePart = is_array(reset($newElements)) ? $newElements : [$newElements];
+
+            // add new tuple part to end of current tuple
+            $result[] = array_merge($tuple, $newTuplePart);
         }
 
         return $result;

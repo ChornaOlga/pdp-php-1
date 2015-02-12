@@ -28,8 +28,14 @@ abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
 
         $activeNodes         = [$initialNode];
         $currentBestFullNode = $initialNode;
+        $i = 0;
         while ($activeNodes)
         {
+            $i++;
+            if ($i == 202)
+            {
+                $a = 2;
+            }
             $this->_logEvent('step_begin', ['root_node' => $rootNode, 'active_nodes' => $activeNodes, 'current_best_full_node' => $currentBestFullNode]);
 
             $branchingNode = $this->_getBestNodeFrom($activeNodes);
@@ -44,9 +50,9 @@ abstract class AbstractSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
             foreach ($branchingNode->getChildren() as $newNode)
             {
                 // if new node is better (or has better evaluation) than current best node
-                if ($this->_compareNodes($newNode, $currentBestFullNode) > -1)
+                if (($this->_compareNodes($newNode, $currentBestFullNode) > -1) && $this->_nodeIsCorrect($newNode))
                 {
-                    if ($this->_nodeIsCompleteSolution($newNode) && $this->_nodeIsCorrect($newNode))
+                    if ($this->_nodeIsCompleteSolution($newNode))
                     {
                         $currentBestFullNode = $newNode;
                     }
