@@ -10,8 +10,8 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
         'initial_object'      => 'not_null|array',
 
         // PDP specific params
-        'weight_capacity' => 'required|float_strict',                              // vehicle weight capacity
-
+        'weight_capacity' => 'required|float_strict',                       // vehicle weight capacity
+        'load_area'       => 'required|array',                              // vehicle load area
         // this class specific params
         'precise' => 'required|float_strict',
         'metrics' => 'required|object:\Litvinenko\Combinatorics\Pdp\Metrics\AbstractMetric',

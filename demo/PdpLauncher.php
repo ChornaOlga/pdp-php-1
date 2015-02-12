@@ -31,10 +31,10 @@ class PdpLauncher extends Litvinenko\Common\Object
 
   public function generateRandomData($pairCount)
   {
-    $minRandomCoord     = 10;
-    $maxRandomCoord     = 50000;
-    $minRandomBoxSize   = 1;
-    $maxRandomBoxSize   = 15;
+    $minRandomCoord     = 1;
+    $maxRandomCoord     = 500000;
+    $minRandomBoxSize   = 50;
+    $maxRandomBoxSize   = 50;
     $minRandomBoxWeight = 100;
     $maxRandomBoxWeight = 1;
 
@@ -92,12 +92,15 @@ class PdpLauncher extends Litvinenko\Common\Object
           $this->writePdpPointsContent($this->getPdppointsFile(), $data);
 
           // for GEN method, we write precise to PDP config file
-          if (($method == 'gen') && isset($specialParams['precise']))
+          if (($method == 'gen') && $specialParams)
           {
             $filename = $this->getPdpconfigFile();
             if ($ini = parse_ini_file($filename, true))
             {
-              $ini['general']['precise'] = $specialParams['precise'];
+              if ($specialParams['precise'])         $ini['general']['precise']      = $specialParams['precise'];
+              if ($specialParams['weight_capacity']) $ini['load']['weight_capacity'] = $specialParams['weight_capacity'];
+              if ($specialParams['load_area'])       $ini['load']['load_area']       = $specialParams['load_area'];
+
               write_php_ini($ini, $filename);
             }
             else
@@ -115,7 +118,7 @@ class PdpLauncher extends Litvinenko\Common\Object
           }
           else
           {
-             $result['errors'][] = "Internal error. Cannot run solution script or its output is incorrect. raw response is: $cmdResult";
+             $result['errors'][] = "Internal error. Cannot run solution script or its output is incorrect. raw response is: $cmdResultRaw";
           }
       }
       else

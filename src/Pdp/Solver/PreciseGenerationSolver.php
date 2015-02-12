@@ -48,6 +48,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
             'tuple_length'        => Point::getPointCount($this->getPoints()),
             'generating_elements' => Helper::getGeneratorDataFromPoints($this->getPoints()),
             'weight_capacity'     => $this->getWeightCapacity(),
+           'load_area'           => $this->getLoadArea(),
 
             'precise'             => $this->getPrecise(),
             'metrics'             => $this->getEvaluator()->getMetrics(),
@@ -85,7 +86,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         $result = true;
         if ($this->getCheckLoading())
         {
-            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity());
+            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity(), $this->getPoints());
             if (!$canLoad)
             {
                 App::dispatchEvent('cant_load', ['point_sequence' => $pointSequence]);
