@@ -63,7 +63,15 @@ class Path extends \Litvinenko\Common\Object
 
         foreach ($this->getPoints() as $point)
         {
-            $result += $point->getBoxVolume();
+            if ($point->isPickup())
+            {
+                $result += $point->getBoxVolume();    
+            }
+            elseif ($point->isDelivery())
+            {
+                $result += $point->getBoxVolume();    
+            }
+            
         }
 
         return $result;

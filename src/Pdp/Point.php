@@ -70,6 +70,8 @@ class Point extends \Litvinenko\Common\Object
 
     public function getBoxVolume()
     {
-        return ($box = $this->getBoxDimensions()) ? (floatval($box['x']) * floatval($box['y']) * floatval($box['z'])) : 0;
+        $box = $this->getBoxDimensions();
+        $volume = floatval($box['x']) * floatval($box['y']) * floatval($box['z']);
+        return ($this->isPickup()) ? $volume : (-$volume);
     }
 }

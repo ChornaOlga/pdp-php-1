@@ -33,7 +33,7 @@ class IO
                     if ($id == Point::DEPOT_ID)
                     {
                         $newPoint->setType(Point::TYPE_DEPOT);
-                        $newPoint->setpairId(Point::DEPOT_ID);
+                        $newPoint->setPairId(Point::DEPOT_ID);
                         $newPoint->setBoxWeight(0);
                         $depot = $newPoint;
                     }
@@ -41,8 +41,8 @@ class IO
                     {
                         $isPickup = ($id <= $count/2);
                         $newPoint->addData([
-                            'type'    => $isPickup ? Point::TYPE_PICKUP                          : Point::TYPE_DELIVERY,
-                            'pair_id' => $isPickup ? ($id + $count/2)                            : ($id - $count/2),
+                            'type'    => $isPickup ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY,
+                            'pair_id' => $isPickup ? ($id + $count/2)   : ($id - $count/2),
                             ]);
 
                         $points[$id] = $newPoint;
@@ -61,6 +61,7 @@ class IO
                 if ($point->getType() == Point::TYPE_DELIVERY)
                 {
                     $point->setBoxWeight(- $points[$point->getPairId()]->getBoxWeight());
+                    $point->setBoxDimensions($points[$point->getPairId()]->getBoxDimensions());
                 }
 
                 if ($point->isInvalid())
@@ -167,7 +168,7 @@ class IO
     public static function getBoxesTextForExternalPdpHelper($points)
     {
         $result = "\n";
-      
+
         // sort points by id. it's neccessary because pdp_points.py gets box number from string ordinality number (it ignores 'from A to B' string)
         usort($points, function ($a, $b) {
             if ($a->getId() == $b->getId()) {
@@ -178,7 +179,7 @@ class IO
                 return 1;
             }
         });
-        
+
         foreach ($points as $point)
         {
             if ($point->isPickup())
