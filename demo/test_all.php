@@ -3,7 +3,7 @@ require_once '../vendor/autoload.php';
 include 'PdpLauncher.php';
 
 $pairCountToTest     = [2];
-$repeatEachTestNmber = 2;
+$repeatEachTestCount = 10;
 
 $genPrecises = [
 // pair count => all precices to try
@@ -14,9 +14,9 @@ $genPrecises = [
 ];
 
 $allLoadParams = [
-['weight_capacity' => 10000, 'load_area' => ['x' => 20, 'y' => 20, 'z' => 20]],
-  ['weight_capacity' => 10000, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
-  ['weight_capacity' => 10050, 'load_area' => ['x' => 200, 'y' => 200, 'z' => 200]],
+// ['weight_capacity' => 10000, 'load_area' => ['x' => 20, 'y' => 20, 'z' => 20]],
+  // ['weight_capacity' => 100, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
+  // ['weight_capacity' => 150, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 200, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 300, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 400, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
@@ -33,38 +33,35 @@ $allLoadParams = [
   // ['weight_capacity' => 150, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
   // ['weight_capacity' => 200, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
   // ['weight_capacity' => 300, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70], 'test_count' => 4],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 150, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 200, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 300, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 100, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 150, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 200, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 300, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
-  // ['weight_capacity' => 150, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
-  // ['weight_capacity' => 200, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
-  // ['weight_capacity' => 300, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 100, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 150, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 200, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 300, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 150, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 200, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 300, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 100, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 150, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 200, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 300, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 10, 'y' => 10, 'z' => 10]],
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 10, 'y' => 10, 'z' => 10]],
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 10, 'y' => 10, 'z' => 10]],
 ];
 
 $launcher = new PdpLauncher;
 
-file_put_contents('result.csv', "sep =,\n");
+// file_put_contents('result.csv', "sep =,\n");
 foreach ($pairCountToTest as $pairCount)
 {
   file_put_contents('result.csv', "\n\n--------- {$pairCount} pairs --------\n", FILE_APPEND);
@@ -75,7 +72,8 @@ foreach ($pairCountToTest as $pairCount)
     $newLine = "pair count,test#,cost,time,total_branchings,path,errors,precise,cost,time,total_generated_paths,path,errors,data,pdp_points.txt\n";
     file_put_contents('result.csv', $newLine, FILE_APPEND);
 
-    for ($testNum = 1; $testNum <= $repeatEachTestNmber; $testNum++)
+    $testCount = isset($loadParams['test_count']) ? $loadParams['test_count'] : $repeatEachTestCount;
+    for ($testNum = 1; $testNum <= $testCount; $testNum++)
     {
       unset($launcher);
       $launcher = new PdpLauncher;

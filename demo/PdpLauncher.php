@@ -34,7 +34,7 @@ class PdpLauncher extends Litvinenko\Common\Object
     $minRandomCoord     = 1;
     $maxRandomCoord     = 500000;
     $minRandomBoxSize   = 50;
-    $maxRandomBoxSize   = 50;
+    $maxRandomBoxSize   = 1;
     $minRandomBoxWeight = 100;
     $maxRandomBoxWeight = 1;
 

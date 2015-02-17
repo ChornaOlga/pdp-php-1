@@ -12,14 +12,14 @@ best full node at the begin: <0> (load 0) with bound 9223372036854775807
 branching node: <0> (load 0) with bound 9223372036854775807
 
 generated children: 
-<0-1> (load 58) with bound 467053.71681317
-<0-2> (load 42) with bound 523334.63679944
+<0-1> (load 95) with bound 644177.88284681
+<0-2> (load 3) with bound 282003.31342912
 
 best full node at the end: <0> (load 0) with bound 9223372036854775807
 
 active nodes at the end: 
-<0-1> (load 58) with bound 467053.71681317
-<0-2> (load 42) with bound 523334.63679944
+<0-1> (load 95) with bound 644177.88284681
+<0-2> (load 3) with bound 282003.31342912
 
 
  -------------- End of step 1-------------- 
@@ -30,23 +30,23 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-1> (load 58) with bound 467053.71681317
-<0-2> (load 42) with bound 523334.63679944
+<0-1> (load 95) with bound 644177.88284681
+<0-2> (load 3) with bound 282003.31342912
 
 best full node at the begin: <0> (load 0) with bound 9223372036854775807
 
-branching node: <0-1> (load 58) with bound 467053.71681317
+branching node: <0-2> (load 3) with bound 282003.31342912
 
 generated children: 
-<0-1-2> (load 100) with bound 668668.32742709
-<0-1-3> (load 0) with bound 675077.80676912
+<0-2-1> (load 98) with bound 660497.79749196
+<0-2-4> (load 0) with bound 580388.55557926
 
 best full node at the end: <0> (load 0) with bound 9223372036854775807
 
 active nodes at the end: 
-<0-1-2> (load 100) with bound 668668.32742709
-<0-1-3> (load 0) with bound 675077.80676912
-<0-2> (load 42) with bound 523334.63679944
+<0-1> (load 95) with bound 644177.88284681
+<0-2-1> (load 98) with bound 660497.79749196
+<0-2-4> (load 0) with bound 580388.55557926
 
 
  -------------- End of step 2-------------- 
@@ -57,25 +57,23 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-1-2> (load 100) with bound 668668.32742709
-<0-1-3> (load 0) with bound 675077.80676912
-<0-2> (load 42) with bound 523334.63679944
+<0-1> (load 95) with bound 644177.88284681
+<0-2-1> (load 98) with bound 660497.79749196
+<0-2-4> (load 0) with bound 580388.55557926
 
 best full node at the begin: <0> (load 0) with bound 9223372036854775807
 
-branching node: <0-2> (load 42) with bound 523334.63679944
+branching node: <0-2-4> (load 0) with bound 580388.55557926
 
 generated children: 
-<0-2-1> (load 100) with bound 724949.24741335
-<0-2-4> (load 0) with bound 701772.28756295
+<0-2-4-1> (load 95) with bound 983214.43909843
 
 best full node at the end: <0> (load 0) with bound 9223372036854775807
 
 active nodes at the end: 
-<0-1-2> (load 100) with bound 668668.32742709
-<0-1-3> (load 0) with bound 675077.80676912
-<0-2-1> (load 100) with bound 724949.24741335
-<0-2-4> (load 0) with bound 701772.28756295
+<0-1> (load 95) with bound 644177.88284681
+<0-2-1> (load 98) with bound 660497.79749196
+<0-2-4-1> (load 95) with bound 983214.43909843
 
 
  -------------- End of step 3-------------- 
@@ -86,27 +84,25 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-1-2> (load 100) with bound 668668.32742709
-<0-1-3> (load 0) with bound 675077.80676912
-<0-2-1> (load 100) with bound 724949.24741335
-<0-2-4> (load 0) with bound 701772.28756295
+<0-1> (load 95) with bound 644177.88284681
+<0-2-1> (load 98) with bound 660497.79749196
+<0-2-4-1> (load 95) with bound 983214.43909843
 
 best full node at the begin: <0> (load 0) with bound 9223372036854775807
 
-branching node: <0-1-2> (load 100) with bound 668668.32742709
+branching node: <0-1> (load 95) with bound 644177.88284681
 
 generated children: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-2-4> (load 58) with bound 847105.9781906
+<0-1-2> (load 98) with bound 1022672.3669097
+<0-1-3> (load 0) with bound 1086461.2087478
 
 best full node at the end: <0> (load 0) with bound 9223372036854775807
 
 active nodes at the end: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-2-4> (load 58) with bound 847105.9781906
-<0-1-3> (load 0) with bound 675077.80676912
-<0-2-1> (load 100) with bound 724949.24741335
-<0-2-4> (load 0) with bound 701772.28756295
+<0-1-2> (load 98) with bound 1022672.3669097
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1> (load 98) with bound 660497.79749196
+<0-2-4-1> (load 95) with bound 983214.43909843
 
 
  -------------- End of step 4-------------- 
@@ -117,27 +113,27 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-2-4> (load 58) with bound 847105.9781906
-<0-1-3> (load 0) with bound 675077.80676912
-<0-2-1> (load 100) with bound 724949.24741335
-<0-2-4> (load 0) with bound 701772.28756295
+<0-1-2> (load 98) with bound 1022672.3669097
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1> (load 98) with bound 660497.79749196
+<0-2-4-1> (load 95) with bound 983214.43909843
 
 best full node at the begin: <0> (load 0) with bound 9223372036854775807
 
-branching node: <0-1-3> (load 0) with bound 675077.80676912
+branching node: <0-2-1> (load 98) with bound 660497.79749196
 
 generated children: 
-<0-1-3-2> (load 42) with bound 885190.63666059
+<0-2-1-3> (load 3) with bound 1102781.1233929
+<0-2-1-4> (load 95) with bound 1063323.6810111
 
 best full node at the end: <0> (load 0) with bound 9223372036854775807
 
 active nodes at the end: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-2-4> (load 58) with bound 847105.9781906
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1> (load 100) with bound 724949.24741335
-<0-2-4> (load 0) with bound 701772.28756295
+<0-1-2> (load 98) with bound 1022672.3669097
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1-3> (load 3) with bound 1102781.1233929
+<0-2-1-4> (load 95) with bound 1063323.6810111
+<0-2-4-1> (load 95) with bound 983214.43909843
 
 
  -------------- End of step 5-------------- 
@@ -148,27 +144,26 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-2-4> (load 58) with bound 847105.9781906
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1> (load 100) with bound 724949.24741335
-<0-2-4> (load 0) with bound 701772.28756295
+<0-1-2> (load 98) with bound 1022672.3669097
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1-3> (load 3) with bound 1102781.1233929
+<0-2-1-4> (load 95) with bound 1063323.6810111
+<0-2-4-1> (load 95) with bound 983214.43909843
 
 best full node at the begin: <0> (load 0) with bound 9223372036854775807
 
-branching node: <0-2-4> (load 0) with bound 701772.28756295
+branching node: <0-2-4-1> (load 95) with bound 983214.43909843
 
 generated children: 
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-2-4-1-3-0> (load 0) with bound 1677624.7531244
 
-best full node at the end: <0> (load 0) with bound 9223372036854775807
+best full node at the end: <0-2-4-1-3-0> (load 0) with bound 1677624.7531244
 
 active nodes at the end: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-2-4> (load 58) with bound 847105.9781906
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1> (load 100) with bound 724949.24741335
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2> (load 98) with bound 1022672.3669097
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1-3> (load 3) with bound 1102781.1233929
+<0-2-1-4> (load 95) with bound 1063323.6810111
 
 
  -------------- End of step 6-------------- 
@@ -179,29 +174,27 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-2-4> (load 58) with bound 847105.9781906
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1> (load 100) with bound 724949.24741335
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2> (load 98) with bound 1022672.3669097
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1-3> (load 3) with bound 1102781.1233929
+<0-2-1-4> (load 95) with bound 1063323.6810111
 
-best full node at the begin: <0> (load 0) with bound 9223372036854775807
+best full node at the begin: <0-2-4-1-3-0> (load 0) with bound 1677624.7531244
 
-branching node: <0-2-1> (load 100) with bound 724949.24741335
+branching node: <0-1-2> (load 98) with bound 1022672.3669097
 
 generated children: 
-<0-2-1-3> (load 42) with bound 932973.3373693
-<0-2-1-4> (load 58) with bound 982918.06546119
+<0-1-2-3> (load 3) with bound 1096757.6744139
+<0-1-2-4> (load 95) with bound 1321057.6090598
 
-best full node at the end: <0> (load 0) with bound 9223372036854775807
+best full node at the end: <0-2-4-1-3-0> (load 0) with bound 1677624.7531244
 
 active nodes at the end: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-2-4> (load 58) with bound 847105.9781906
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1-3> (load 42) with bound 932973.3373693
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-3> (load 3) with bound 1096757.6744139
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1-3> (load 3) with bound 1102781.1233929
+<0-2-1-4> (load 95) with bound 1063323.6810111
 
 
  -------------- End of step 7-------------- 
@@ -212,28 +205,26 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-2-4> (load 58) with bound 847105.9781906
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1-3> (load 42) with bound 932973.3373693
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-3> (load 3) with bound 1096757.6744139
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1-3> (load 3) with bound 1102781.1233929
+<0-2-1-4> (load 95) with bound 1063323.6810111
 
-best full node at the begin: <0> (load 0) with bound 9223372036854775807
+best full node at the begin: <0-2-4-1-3-0> (load 0) with bound 1677624.7531244
 
-branching node: <0-1-2-4> (load 58) with bound 847105.9781906
+branching node: <0-2-1-4> (load 95) with bound 1063323.6810111
 
 generated children: 
-<0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+<0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
-best full node at the end: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the end: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
 active nodes at the end: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1-3> (load 42) with bound 932973.3373693
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-3> (load 3) with bound 1096757.6744139
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1-3> (load 3) with bound 1102781.1233929
 
 
  -------------- End of step 8-------------- 
@@ -244,26 +235,25 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-1-2-3> (load 42) with bound 878781.15731855
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1-3> (load 42) with bound 932973.3373693
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-3> (load 3) with bound 1096757.6744139
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3> (load 0) with bound 1086461.2087478
+<0-2-1-3> (load 3) with bound 1102781.1233929
 
-best full node at the begin: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the begin: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
-branching node: <0-1-2-3> (load 42) with bound 878781.15731855
+branching node: <0-1-3> (load 0) with bound 1086461.2087478
 
 generated children: 
-<0-1-2-3-4-0> (load 0) with bound 1332009.9159832
+<0-1-3-2> (load 3) with bound 1160546.516252
 
-best full node at the end: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the end: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
 active nodes at the end: 
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1-3> (load 42) with bound 932973.3373693
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-3> (load 3) with bound 1096757.6744139
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3-2> (load 3) with bound 1160546.516252
+<0-2-1-3> (load 3) with bound 1102781.1233929
 
 
  -------------- End of step 9-------------- 
@@ -274,24 +264,24 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-1-3-2> (load 42) with bound 885190.63666059
-<0-2-1-3> (load 42) with bound 932973.3373693
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-3> (load 3) with bound 1096757.6744139
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3-2> (load 3) with bound 1160546.516252
+<0-2-1-3> (load 3) with bound 1102781.1233929
 
-best full node at the begin: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the begin: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
-branching node: <0-1-3-2> (load 42) with bound 885190.63666059
+branching node: <0-1-2-3> (load 3) with bound 1096757.6744139
 
 generated children: 
-<0-1-3-2-4-0> (load 0) with bound 1428455.8648466
+<0-1-2-3-4-0> (load 0) with bound 1837938.0715879
 
-best full node at the end: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the end: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
 active nodes at the end: 
-<0-2-1-3> (load 42) with bound 932973.3373693
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3-2> (load 3) with bound 1160546.516252
+<0-2-1-3> (load 3) with bound 1102781.1233929
 
 
  -------------- End of step 10-------------- 
@@ -302,22 +292,22 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-2-1-3> (load 42) with bound 932973.3373693
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3-2> (load 3) with bound 1160546.516252
+<0-2-1-3> (load 3) with bound 1102781.1233929
 
-best full node at the begin: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the begin: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
-branching node: <0-2-1-3> (load 42) with bound 932973.3373693
+branching node: <0-2-1-3> (load 3) with bound 1102781.1233929
 
 generated children: 
-<0-2-1-3-4-0> (load 0) with bound 1386202.0960339
+<0-2-1-3-4-0> (load 0) with bound 1843961.5205669
 
-best full node at the end: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the end: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
 active nodes at the end: 
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3-2> (load 3) with bound 1160546.516252
 
 
  -------------- End of step 11-------------- 
@@ -328,20 +318,20 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-2-1-4> (load 58) with bound 982918.06546119
-<0-2-4-1> (load 58) with bound 959741.10561079
+<0-1-2-4> (load 95) with bound 1321057.6090598
+<0-1-3-2> (load 3) with bound 1160546.516252
 
-best full node at the begin: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the begin: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
-branching node: <0-2-4-1> (load 58) with bound 959741.10561079
+branching node: <0-1-3-2> (load 3) with bound 1160546.516252
 
 generated children: 
-<0-2-4-1-3-0> (load 0) with bound 1481238.1001008
+<0-1-3-2-4-0> (load 0) with bound 1840862.0116082
 
-best full node at the end: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the end: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
 active nodes at the end: 
-<0-2-1-4> (load 58) with bound 982918.06546119
+<0-1-2-4> (load 95) with bound 1321057.6090598
 
 
  -------------- End of step 12-------------- 
@@ -352,16 +342,16 @@ active nodes at the end:
 
 
 active nodes at the begin: 
-<0-2-1-4> (load 58) with bound 982918.06546119
+<0-1-2-4> (load 95) with bound 1321057.6090598
 
-best full node at the begin: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the begin: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
-branching node: <0-2-1-4> (load 58) with bound 982918.06546119
+branching node: <0-1-2-4> (load 95) with bound 1321057.6090598
 
 generated children: 
-<0-2-1-4-3-0> (load 0) with bound 1384792.1512373
+<0-1-2-4-3-0> (load 0) with bound 1932434.7411528
 
-best full node at the end: <0-1-2-4-3-0> (load 0) with bound 1248980.0639667
+best full node at the end: <0-2-1-4-3-0> (load 0) with bound 1674700.8131041
 
 active nodes at the end: 
 
