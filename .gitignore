@@ -1,2 +1,10 @@
 vendor/**
 composer.lock
+
+demo/log.txt
+demo/pdp_points.txt
+demo/solve_pdp_branch_bound/boxes.txt
+demo/solve_pdp_branch_bound/output.txt
+demo/solve_pdp_branch_bound/solution_process.log
+demo/solve_pdp_gen/boxes.txt
+demo/solve_pdp_gen/output.txt

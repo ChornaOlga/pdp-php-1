@@ -2,7 +2,7 @@
 require_once '../vendor/autoload.php';
 include 'PdpLauncher.php';
 
-$pairCountToTest     = [3];
+$pairCountToTest     = [2,3];
 $repeatEachTestCount = 2;
 
 $genPrecises = [
@@ -68,7 +68,7 @@ foreach ($pairCountToTest as $pairCount)
   {
     file_put_contents('result.csv', "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
 
-    $newLine = "pair count,test#,cost,time,total_branchings,path,errors,precise,cost,time,total_generated_paths,path,errors,data,pdp_points.txt\n";
+    $newLine = "pair count,test#,cost,time,total_branchings,path,errors,precise,cost,time,total_generated_paths,cost_increase,path,errors,data,pdp_points.txt\n";
     file_put_contents('result.csv', $newLine, FILE_APPEND);
 
     $testCount = isset($loadParams['test_count']) ? $loadParams['test_count'] : $repeatEachTestCount;
@@ -81,7 +81,7 @@ foreach ($pairCountToTest as $pairCount)
 
       // $data       = json_decode();
 
-     $bbSolution = $launcher->getSolution('branch_bound', $data);
+    $bbSolution = $launcher->getSolution('branch_bound', $data);
 
 
       $begin_and_branch_bound_info = "$pairCount,$testNum,";
@@ -94,7 +94,8 @@ foreach ($pairCountToTest as $pairCount)
       {
         $genSolution = $launcher->getSolution('gen', $data, [ 'precise' => $precise, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
 
-        $newLine = $prefix . "{$precise}, {$genSolution['path_cost']},{$genSolution['solution_time']},{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\"" . $postfix . "\n";
+        $costIncrease = (floatval($bbSolution['path_cost']) > 0) ? ($genSolution['path_cost']-$bbSolution['path_cost'])/$bbSolution['path_cost'] : '';
+        $newLine = $prefix . "{$precise}, {$genSolution['path_cost']},{$genSolution['solution_time']},{$genSolution['info']['total_generated_paths']},{$costIncrease},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\"" . $postfix . "\n";
 
         $prefix  = preg_replace("/[^,]+/", "", $prefix);
         $postfix = preg_replace("/[^,]+/", "", $postfix);
