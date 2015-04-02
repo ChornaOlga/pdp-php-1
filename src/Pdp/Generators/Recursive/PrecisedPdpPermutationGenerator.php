@@ -9,6 +9,8 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
         'tuple_length'        => 'required|integer_strict',
         'initial_object'      => 'not_null|array',
 
+        'enable_logs' => 'boolean',
+
         // PDP specific params
         'weight_capacity' => 'required|float_strict',                       // vehicle weight capacity
         'load_area'       => 'required|array',                              // vehicle load area

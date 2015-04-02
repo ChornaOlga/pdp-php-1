@@ -6,7 +6,9 @@ abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Genera
 {
     protected $dataRules = array(
         'generating_elements' => 'required|array',
-        'initial_object'      => 'not_null'
+        'initial_object'      => 'not_null',
+
+        'enable_logs' => 'boolean'
     );
 
     /**
@@ -35,7 +37,10 @@ abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Genera
     protected function _generateAll()
     {
         $this->_data['generatedObjects'] = [];
+
+        $this->_beforeGenerateBegin();
         $this->_generate($this->getInitialObject());
+        $this->_afterGenerateEnd();
 
         return $this->_data['generatedObjects'];
     }
@@ -45,6 +50,7 @@ abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Genera
         if ($this->objectIsComplete($object))
         {
             $this->_data['generatedObjects'][] = $object;
+            $this->_afterObjectGenerate($object);
         }
         else
         {
@@ -53,5 +59,20 @@ abstract class AbstractGenerator extends \Litvinenko\Combinatorics\Common\Genera
                 $this->_generate($nextObject);
             }
         }
+    }
+
+    protected function _afterObjectGenerate($object)
+    {
+        //
+    }
+
+    protected function _beforeGenerateBegin()
+    {
+        //
+    }
+
+    protected function _afterGenerateEnd()
+    {
+        //
     }
 }

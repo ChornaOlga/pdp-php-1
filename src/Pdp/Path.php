@@ -65,13 +65,13 @@ class Path extends \Litvinenko\Common\Object
         {
             if ($point->isPickup())
             {
-                $result += $point->getBoxVolume();    
+                $result += $point->getBoxVolume();
             }
             elseif ($point->isDelivery())
             {
-                $result += $point->getBoxVolume();    
+                $result += $point->getBoxVolume();
             }
-            
+
         }
 
         return $result;
@@ -112,6 +112,10 @@ class Path extends \Litvinenko\Common\Object
         return $result;
     }
 
+    public function __toString()
+    {
+        return implode(' ', $this->getPointIds());
+    }
     // public function addItem($obj, $key = null) {
     // }
 

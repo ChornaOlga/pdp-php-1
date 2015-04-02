@@ -10,6 +10,8 @@ class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generator
         'tuple_length'        => 'required|integer_strict',
         'initial_object'      => 'not_null|array',
 
+        'enable_logs' => 'boolean',
+
         // PDP specific params
         'current_path'    => 'required|object:\Litvinenko\Combinatorics\Pdp\Path', // current PDP path
         'weight_capacity' => 'required|float_strict',                              // vehicle weight capacity
@@ -47,7 +49,7 @@ class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generator
     protected function _getCurrentPath($tuple)
     {
         $result = null;
-        if (!($result = $this->getCurrentPath()))
+        //if (!($result = $this->getCurrentPath())) !!! Bug. Cache is not up to date!
         {
             $result = new Path(['points' => array_column($tuple, 'value')]);
         }

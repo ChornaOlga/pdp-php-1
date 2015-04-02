@@ -1,3 +1,4 @@
 
-from 1 to 3 39 26 27 95
-from 2 to 4 21 50 15 3
+from 1 to 4 21 11 18 81
+from 2 to 5 5 40 31 43
+from 3 to 6 6 37 23 30
