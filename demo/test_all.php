@@ -2,26 +2,26 @@
 require_once '../vendor/autoload.php';
 include 'PdpLauncher.php';
 
-$pairCountToTest     = [2,3];
-$repeatEachTestCount = 2;
+$pairCountToTest     = [3];
+$repeatEachTestCount = 1;
 
 $genPrecises = [
 // pair count => all precices to try
 2 => [25,50,100],
-3 => [25,50,100],
+3 => [/*25,50,*/100],
 4 => [40,60,80],
 5 => [40,50,60/*30,40,50*/]
 ];
 
 $allLoadParams = [
-  ['weight_capacity' => 1000, 'load_area' => ['x' => 500, 'y' => 500, 'z' => 500]],
+  // ['weight_capacity' => 1000, 'load_area' => ['x' => 500, 'y' => 500, 'z' => 500]],
   // ['weight_capacity' => 150, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 200, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 300, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 400, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 500, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
+  ['weight_capacity' => 100, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
   // ['weight_capacity' => 150, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
   // ['weight_capacity' => 200, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
   // ['weight_capacity' => 300, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],

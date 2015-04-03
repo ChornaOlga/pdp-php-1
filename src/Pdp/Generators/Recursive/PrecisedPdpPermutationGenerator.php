@@ -75,45 +75,17 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
         $allElements = array_combine(array_column($allElements, 'id'), array_values($allElements));
         foreach ($allElements as $elementId => $element)
         {
-            $distancesToTarget[$elementId] = $metrics->getDistanceBetweenPoints($element['value'], $targetElement['value']);
+            $distancesToTarget[strval($elementId)] = $metrics->getDistanceBetweenPoints($element['value'], $targetElement['value']);
+            // we keep string indexes in array because we want to sort array with PHP functuion asort which clears numeric keys but oreserve string ones
         }
 
+        asort($distancesToTarget); // sort element ids by distance
         $result = [];
-        foreach ($this->_getKeysOfNMinArrayElements($distancesToTarget, $n) as $elementId)
+        foreach (array_slice($distancesToTarget, 0, $n, true) as $elementIdString => $distance)
         {
-            $result[] = $allElements[$elementId];
+            $result[] = $allElements[intval($elementIdString)];
         }
 
         return $result;
     }
-
-    protected function _getKeysOfNMinArrayElements($arr, $n)
-    {
-        $keys  = array_keys($arr);
-        $point = $arr[$keys[0]];
-
-        $result = [];
-        for ($i = 0; $i < $n; ++$i)
-        {
-            $min    = null;
-            $minKey = null;
-
-            for($j = $i; $j < count($arr); ++$j)
-            {
-                if (null === $min || $arr[$keys[$j]] < $min)
-                {
-                    $minKey = $keys[$j];
-                    $min    = $arr[$keys[$j]];
-                }
-            }
-
-            $arr[$minKey] = $arr[$keys[$i]];
-            $arr[$keys[$i]] = $min;
-
-            $result[] = $minKey;
-        }
-
-        return $result;
-    }
-
 }
