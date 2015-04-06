@@ -21,16 +21,12 @@ parser.add_option("-r", "--route", dest="route",
                   help="the route data")
 parser.add_option("-c", "--container", dest="container",
                   help="the route data")
-parser.add_option("-p", "--partial-route", action="store_true", dest="is_partial_route",
-                  help="specifies whether the route is partial")
-
 
 
 def pack_boxes(boxes, container,
                container_select_func=stable_non_blocking_container_selector,
                packer=orthogonal_packer, # allows rotations
                allowed_rotation_axes=(1, 0, 1), # allows rotation only by X and Z axes
-               is_partial_route=False,
                **kwargs):
     """
     Packs the defined sequence (as string) of nodes to visit.
@@ -47,8 +43,8 @@ def pack_boxes(boxes, container,
                              packer=packer,
                              allowed_rotation_axes=allowed_rotation_axes,
                              **kwargs)
-    return is_packing_successful(result, params, boxes, container, is_partial_route), result, params
- 
+    return is_packing_successful(result, params, boxes, container), result, params
+
 
 def read_korobki_file(box_number, korobki_file):
     """
@@ -74,7 +70,7 @@ def parse_container_data(container_string):
                weight=float(m.replace(',', '.')))
 
 
-def pack_route(boxes_dict, route, cont, is_partial_route, **kwargs):
+def pack_route(boxes_dict, route, cont, **kwargs):
     """
     Packs the boxes to the containers according the defined route data.
 
@@ -96,7 +92,7 @@ def pack_route(boxes_dict, route, cont, is_partial_route, **kwargs):
             # add unpack
             box_sequence['route'].append(Box(name=boxes_dict[box_index - box_number].name, kind="unpack"))
 
-    return pack_boxes(box_sequence['route'], cont, is_partial_route=is_partial_route, **kwargs)
+    return pack_boxes(box_sequence['route'], cont, **kwargs)
 
 
 def pack_from_files(box_number,
@@ -148,15 +144,13 @@ def pack_from_files(box_number,
             return bb['price'], packed_boxes, params, container
 
 
-def is_packing_successful(packing_results, packing_params, boxes_to_pack, container, is_partial_route):
+def is_packing_successful(packing_results, packing_params, boxes_to_pack, container):
     """
     Checks whether the packing was successful and all the boxes were delivered.
     """
-    if not is_partial_route:
-        return len(packing_results) == 0 and len(packing_params['actions']) == len(boxes_to_pack) and all(
-            container.weight >= w for w in packing_params['weights'])
-    else:
-        return len(packing_params['actions']) == len(boxes_to_pack)
+    return len(packing_results) == 0 and len(packing_params['actions']) == len(boxes_to_pack) and all(
+        container.weight >= w for w in packing_params['weights'])
+
 
 #def draw_results(result, params, container):
 #    BoxDrawer.show_packing_results(result, params, (container,))
@@ -173,9 +167,7 @@ if __name__ == "__main__":
     # read the korobki file first
     boxes = read_korobki_file(options.boxes_count, options.boxes_filename)
     container = parse_container_data(options.container)
-    res = pack_route(boxes, options.route, container, 
-                     place_axes=(1, 0, 2), 
-                     is_partial_route=options.is_partial_route)
+    res = pack_route(boxes, options.route, container, place_axes=(1, 0, 2))
     print res[0]
 
     # saving to file

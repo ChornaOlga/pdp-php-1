@@ -19,6 +19,15 @@
                 </solutioninfocollector_cant_load>
             </observers>
         </cant_load>
+        <point_add_before>
+            <observers>
+                <precise_generation_solver_point_add_before>
+                    <class>\Litvinenko\Combinatorics\Pdp\Solver\PreciseGenerationSolver</class>
+                    <method>canLoadObserver</method>
+                    <singleton>1</singleton>
+                </precise_generation_solver_point_add_before>
+            </observers>
+        </point_add_before>
      </events>
     <developer_mode>1</developer_mode>
 </config>

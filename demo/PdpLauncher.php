@@ -109,17 +109,20 @@ class PdpLauncher extends Litvinenko\Common\Object
             }
           }
           $solutionCmdCommand = $this->getAvaliableMethods()[$method];
+
+          $start = microtime(true);
           if (($cmdResultRaw = exec($solutionCmdCommand)) &&  ($cmdResult = json_decode($cmdResultRaw)) && ($cmdResult instanceof stdClass))
           {
              $result['path']          = $cmdResult->path;
              $result['path_cost']     = $cmdResult->path_cost;
-             $result['solution_time'] = $cmdResult->solution_time;
+             $result['solution_time'] = $cmdResult->solution_time; // this time is running time of solution method (can differ from real run time)
              $result['info']          = (array) $cmdResult->info;
           }
           else
           {
              $result['errors'][] = "Internal error. Cannot run solution script or its output is incorrect. raw response is: $cmdResultRaw";
           }
+          $result['exec_time'] = microtime(true) - $start;// this time is REAL running time of script
       }
       else
       {

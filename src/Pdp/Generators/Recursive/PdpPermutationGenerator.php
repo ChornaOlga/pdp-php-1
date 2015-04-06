@@ -3,6 +3,9 @@ namespace Litvinenko\Combinatorics\Pdp\Generators\Recursive;
 
 use Litvinenko\Combinatorics\Pdp\Helper;
 use Litvinenko\Combinatorics\Pdp\Path;
+use Litvinenko\Common\App;
+use Litvinenko\Common\Object;
+
 class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generators\Recursive\RegularSetGenerator
 {
     protected $dataRules = array(
@@ -38,7 +41,13 @@ class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generator
                      $point->isDelivery() && $currentPath->doesContain($point->getPairId())
                    )
                 {
-                    $result[] = $element;
+                    $resultContainer = new \stdClass(); // event observers will write info to this object
+                    App::dispatchEvent('point_add_before', ['point' => $point, 'point_sequence' => $tuple, 'result_container' => $resultContainer]);
+
+                    if (!isset($resultContainer->result) || isset($resultContainer->result) && ($resultContainer->result !== false))
+                    {
+                        $result[] = $element;
+                    }
                 }
             }
         }

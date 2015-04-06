@@ -83,17 +83,23 @@ class Helper extends \Litvinenko\Common\Object
         return $result;
     }
 
+    public static function getPointSequenceFromTuple($tuple)
+    {
+        return array_column($tuple, 'value');
+    }
+
     public static function getPointSequencesFromGeneratorData($generatorData)
     {
         $result = [];
-        foreach ($generatorData as $pointSequence)
+        foreach ($generatorData as $tuple)
         {
             $sequence = [];
-            foreach ($pointSequence as $point)
-            {
-                $sequence[] = $point['value'];
-            }
-            $result[] = $sequence;
+            $result[] = self::getPointSequenceFromTuple($tuple);//array_column($tuple, 'value');
+            // foreach ($tuple as $point)
+            // {
+            //     $sequence[] = $point['value'];
+            // }
+            // $result[] = $sequence;
         }
 
         return $result;
@@ -154,7 +160,8 @@ class Helper extends \Litvinenko\Common\Object
                         " -b {$boxFileName}" .
                         " -n "   . (int)(count($allPoints)/2) .
                         " -c \"" . implode(' ', $loadArea) . ' ' . $weightCapacity . "\"" .
-                        " -r \""  . implode(' ', Point::getPointIds($points)) . "  1\"";
+                        " -r \""  . implode(' ', Point::getPointIds($points)) . "  1\"" . 
+                        " -p";
         $cmdResult = exec($cmdString);
       //  echo $cmdResult . "\n";
         $result = ($cmdResult == 'True');

@@ -24,7 +24,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         'weight_capacity'                  => 'required|float_strict',
         'load_area'                        => 'required|array',
         'check_loading'                    => 'required|boolean',
-        'check_loading_for_every_new_node' => 'required|boolean',
+        'check_loading_for_every_new_node' => 'required|boolean', // TODO: delete it in future
         'check_loading_command_prefix'     => 'required',
 
         'evaluator' => 'required|object:\Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator'
@@ -71,6 +71,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         return ($this->_compareCosts($firstNode->getOptimisticBound(), $secondNode->getOptimisticBound()));
     }
 
+
     protected function _generateChildrenOf($node)
     {
         $result = [];
@@ -80,9 +81,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
             foreach ($newPointSequences as $newPointSequence)
             {
-
-                $check = $this->getCheckLoadingForEveryNewNode();
-                if (!$check || ($check && $this->canLoad($newPointSequence)))
+                if ($this->canLoad($newPointSequence))
                 {
                     $path    = new Path(['points'  => $newPointSequence]);
                     $newNode = new Node(['content' => $path]);

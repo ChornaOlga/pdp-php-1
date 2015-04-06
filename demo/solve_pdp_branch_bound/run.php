@@ -35,14 +35,14 @@ try
     $stepInfo = App::getSingleton('\SolutionInfoCollector')->getStepsInfo();
     echo "\n\ntotal branchings made:" .  count($stepInfo) . "\n";
 
-    if ($pdpConfig['log_solution'])
-    {
-        $i = 0;
-        foreach ($stepInfo as $stepInfo)
-        {
-            echo IO::getReadableStepInfo($stepInfo, ++$i);
-        }
-    }
+    // if ($pdpConfig['log_solution'])
+    // {
+    //     $i = 0;
+    //     foreach ($stepInfo as $stepInfo)
+    //     {
+    //         echo IO::getReadableStepInfo($stepInfo, ++$i);
+    //     }
+    // }
 
     echo "\n\nfinal path: " . IO::getPathAsText($bestPath) . " with cost " . $bestNode->getOptimisticBound() . "\n";
 

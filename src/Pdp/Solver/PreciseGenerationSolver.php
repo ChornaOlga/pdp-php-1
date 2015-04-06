@@ -48,7 +48,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
             'tuple_length'        => Point::getPointCount($this->getPoints()),
             'generating_elements' => Helper::getGeneratorDataFromPoints($this->getPoints()),
             'weight_capacity'     => $this->getWeightCapacity(),
-           'load_area'           => $this->getLoadArea(),
+            'load_area'           => $this->getLoadArea(),
 
             'precise'             => $this->getPrecise(),
             'metrics'             => $this->getEvaluator()->getMetrics(),
@@ -79,6 +79,16 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
     {
         $path = ($pointSequence instanceof Path) ? $pointSequence : (new Path(['points' => $pointSequence]));
         return $this->getEvaluator()->getBound($path, AbstractEvaluator::BOUND_TYPE_OPTIMISTIC);
+    }
+
+    public function canLoadObserver($event)
+    {
+        if (!($current_tuple = $event->getPointSequence())) throw new Exception ('Event ' . $event->getName() . 'does not have "point_sequence" param!');
+        if (!($candidate = $event->getPoint())) throw new Exception ('Event ' . $event->getName() . 'does not have "point_sequence" param!');
+
+
+        $pointSequence = array_merge(Helper::getPointSequenceFromTuple($current_tuple), [$candidate]);
+        $event->getResultContainer()->result = $this->canLoad($pointSequence);
     }
 
     protected function canLoad($pointSequence)

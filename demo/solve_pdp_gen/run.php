@@ -21,9 +21,13 @@ $pdpConfig = IO::readConfigFromIniFile($pdpConfigFile);
 // var_dump($pdpInfo);
 
 
-$solver = new $solverClass(array_merge($pointInfo, $pdpConfig, [
+$solver =  App::getSingleton($solverClass);
+$solver->_construct();
+$solver->addData(array_merge($pointInfo, $pdpConfig, [
     'evaluator' => new $evaluatorClass(['metrics'   => new $metricsClass])
-    ]));
+    ])
+);
+
 echo "<pre>\n";
 try
 {
