@@ -5,17 +5,17 @@
 
     Stefan Fischerländer <stefan@fischerlaender.de>, http://www.fischerlaender.net/php/phpa-norl
     original version: David Phillips <david@acz.org>, http://david.acz.org/phpa/
-    
-    
+
+
     2010/07/16 - register_shutdown_function
     2010/07/16 - now using PHP_EOL
     2010/07/16 - replaced deprecated split function
     2007/07/10 - CTRL-D now exits the script instead of entering an infinite loop
     2007/07/08 - initial version of phpa-norl published
-    
+
 */
-	register_shutdown_function('shutdown');
-	
+    register_shutdown_function('shutdown');
+
     __phpa__setup();
     __phpa__print_info();
 
@@ -103,7 +103,7 @@
                 $line = fgets($fh,1024);
             }
             if( !$line && strlen($line)==0 )        # this is true, when CTRL-D is pressed
-                die("\nUser pressed CTRL-D. phpa-norl quits.\n");
+            die("\nUser pressed CTRL-D. phpa-norl quits.\n");
             $line = rtrim($line);
             $line = rtrim($line, ';'); // strip last ";"
             $complete_line .= $line;
@@ -151,95 +151,95 @@
         foreach ($func["user"] as $i)
             if (substr($i, 0, strlen($s)) != $s)
                 $func["internal"][] = $i;
-        $func = $func["internal"];
+            $func = $func["internal"];
 
-        return array_merge($const, $var, $func);
-    }
+            return array_merge($const, $var, $func);
+        }
 
-    function __phpa__is_immediate($line)
-    {
-        $skip = array("class", "declare", "die", "echo", "exit", "for",
-                      "foreach", "function", "global", "if", "include",
-                      "include_once", "print", "require", "require_once",
-                      "return", "static", "switch", "while");
-        $okeq = array("===", "!==", "==", "!=", "<=", ">=");
-        $code = "";
-        $sq = false;
-        $dq = false;
-        for ($i = 0; $i < strlen($line); $i++)
+        function __phpa__is_immediate($line)
         {
-            $c = $line{$i};
-            if ($c == "'")
-                $sq = !$sq;
-            else if ($c == '"')
-                $dq = !$dq;
-            else if (($sq) || ($dq))
+            $skip = array("class", "declare", "die", "echo", "exit", "for",
+              "foreach", "function", "global", "if", "include",
+              "include_once", "print", "require", "require_once",
+              "return", "static", "switch", "while");
+            $okeq = array("===", "!==", "==", "!=", "<=", ">=");
+            $code = "";
+            $sq = false;
+            $dq = false;
+            for ($i = 0; $i < strlen($line); $i++)
             {
-                if ($c == "\\")
-                    $i++;
+                $c = $line{$i};
+                if ($c == "'")
+                    $sq = !$sq;
+                else if ($c == '"')
+                    $dq = !$dq;
+                else if (($sq) || ($dq))
+                {
+                    if ($c == "\\")
+                        $i++;
+                }
+                else
+                    $code .= $c;
             }
-            else
-                $code .= $c;
-        }
-        $code = str_replace($okeq, "", $code);
-        if (strcspn($code, ";{=") != strlen($code))
+            $code = str_replace($okeq, "", $code);
+            if (strcspn($code, ";{=") != strlen($code))
             return false;
-        $kw = preg_split("/[^A-Za-z0-9_]/", $code);
-        foreach ($kw as $i)
-            if (in_array($i, $skip))
-                return false;
-        return true;
-    }
+            $kw = preg_split("/[^A-Za-z0-9_]/", $code);
+            foreach ($kw as $i)
+                if (in_array($i, $skip))
+                    return false;
+                return true;
+            }
 
-    function __phpa__print_info()
-    {
-        $ver = phpversion();
-        $sapi = php_sapi_name();
-        $date = __phpa__build_date();
-        $os = PHP_OS;
-        echo "PHP $ver ($sapi) ($date) [$os]\n";
-    }
+            function __phpa__print_info()
+            {
+                $ver = phpversion();
+                $sapi = php_sapi_name();
+                $date = __phpa__build_date();
+                $os = PHP_OS;
+                echo "PHP $ver ($sapi) ($date) [$os]\n";
+            }
 
-    function __phpa__build_date()
-    {
-        ob_start();
-        phpinfo(INFO_GENERAL);
-        $x = ob_get_contents();
-        ob_end_clean();
-        $x = strip_tags($x);
-        $x = explode(PHP_EOL, $x);
-        $s = array("Build Date => ", "Build Date ");
-        foreach ($x as $i)
-            foreach ($s as $j)
-                if (substr($i, 0, strlen($j)) == $j)
-                    return trim(substr($i, strlen($j)));
-        return "???";
-    }
+            function __phpa__build_date()
+            {
+                ob_start();
+                phpinfo(INFO_GENERAL);
+                $x = ob_get_contents();
+                ob_end_clean();
+                $x = strip_tags($x);
+                $x = explode(PHP_EOL, $x);
+                $s = array("Build Date => ", "Build Date ");
+                foreach ($x as $i)
+                    foreach ($s as $j)
+                        if (substr($i, 0, strlen($j)) == $j)
+                            return trim(substr($i, strlen($j)));
+                        return "???";
+                    }
 
-    function __phpa__setup()
-    {
-        if (version_compare(phpversion(), "4.3.0", "<"))
-        {
-            echo "PHP 4.3.0 or above is required.\n";
-            exit(111);
-        }
-        error_reporting(E_ALL ^ E_NOTICE);
-        ini_set("html_errors", 0);
-        while (ob_get_level())
-            ob_end_clean();
-        ob_implicit_flush(true);
-    }
+                    function __phpa__setup()
+                    {
+                        if (version_compare(phpversion(), "4.3.0", "<"))
+                        {
+                            echo "PHP 4.3.0 or above is required.\n";
+                            exit(111);
+                        }
+                        error_reporting(E_ALL ^ E_NOTICE);
+                        ini_set("html_errors", 0);
+                        while (ob_get_level())
+                            ob_end_clean();
+                        ob_implicit_flush(true);
+                    }
 
 
 	// This is our shutdown function, in
 	// here we can do any last operations
 	// before the script is complete.
-	function shutdown() {
-		global $gEvalError, $gErrorScript;
-		if ( $gEvalError ) {
-			echo PHP_EOL;
-			echo PHP_EOL;
-			echo 'eval() error: ' . $gErrorScript, PHP_EOL;
-		}
-	}
-?>
+                    function shutdown() {
+                      global $gEvalError, $gErrorScript;
+                      if ( $gEvalError ) {
+                         echo PHP_EOL;
+                         echo PHP_EOL;
+                         echo 'eval() error: ' . $gErrorScript, PHP_EOL;
+                     }
+                 }
+                 ?>

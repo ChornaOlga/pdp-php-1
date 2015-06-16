@@ -2,13 +2,21 @@
 require_once '../vendor/autoload.php';
 include 'PdpLauncher.php';
 
-$pairCountToTest     = [2,3,4,5,6,7,8];
-$repeatEachTestCount = 1;
+$generateRandomData      = false;
+$dummyMode               = false;
+
+$dummyOutputCsvFile      = 'dummy.csv';
+$productionOutputCsvFile = 'result.csv';
+$outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
+
+$pairCountToTest         = [3,4,5,6,7,8];
+$repeatEachTestCount     = 1;
+
 
 $genPrecises = [
 // pair count => all precices to try
 2 => [25,50,100],
-3 => [25,30,40,50,60,70,100],
+3 => [25,30,40,100],
 4 => [5,10,20,30,40,50,60,70,80,100],
 5 => [5,10,20,30,40,50,60,70,80,100],
 6 => [5,10,20,30,40,50,60,100],7 => [5,10,20,30,100],8 => [5,10,20,30,100],
@@ -17,7 +25,7 @@ $genPrecises = [
 
 $allLoadParams = [
   // ['weight_capacity' => 1000, 'load_area' => ['x' => 500, 'y' => 500, 'z' => 500]],
-  ['weight_capacity' => 150, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
+  ['weight_capacity' => 150,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 200, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 300, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 400, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
@@ -62,16 +70,16 @@ $allLoadParams = [
 
 $launcher = new PdpLauncher;
 
-// file_put_contents('result.csv', "sep =,\n");
+// file_put_contents($outputCsvFile, "sep =,\n");
 foreach ($pairCountToTest as $pairCount)
 {
-  file_put_contents('result.csv', "\n\n--------- {$pairCount} pairs --------\n", FILE_APPEND);
+  file_put_contents($outputCsvFile, "\n\n--------- {$pairCount} pairs --------\n", FILE_APPEND);
   foreach ($allLoadParams as $loadParams)
   {
-    file_put_contents('result.csv', "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
+    file_put_contents($outputCsvFile, "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
 
     $newLine = "pair count,test#,cost,solution_time,exec_time,total_branchings,path,errors,precise,cost,solution_time,exec_time,total_generated_paths,cost_increase,path,errors,data,pdp_points.txt\n";
-    file_put_contents('result.csv', $newLine, FILE_APPEND);
+    file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
 
     $testCount = isset($loadParams['test_count']) ? $loadParams['test_count'] : $repeatEachTestCount;
     for ($testNum = 1; $testNum <= $testCount; $testNum++)
@@ -79,11 +87,9 @@ foreach ($pairCountToTest as $pairCount)
       unset($launcher);
       $launcher = new PdpLauncher;
 
-      $data    = $launcher->generateRandomData($pairCount);
+      $data = ($generateRandomData) ? $launcher->generateRandomData($pairCount) : [];
 
-      // $data       = json_decode();
-
-     $bbSolution = $launcher->getSolution('branch_bound', $data);
+      $bbSolution = $launcher->getSolution('branch_bound', $data);
 
       $begin_and_branch_bound_info = "$pairCount,$testNum,";
       $begin_and_branch_bound_info .= "{$bbSolution['path_cost']}, {$bbSolution['solution_time']}, {$bbSolution['exec_time']}, {$bbSolution['info']['total_branchings']},\"" . (isset($bbSolution['path']) ? implode(' ',$bbSolution['path']) : '-') . "\",\"" . (isset($bbSolution['errors']) ? implode(';',$bbSolution['errors']) : '') ."\",";
@@ -104,10 +110,8 @@ foreach ($pairCountToTest as $pairCount)
         $prefix  = preg_replace("/[^,]+/", "", $prefix);
         $postfix = preg_replace("/[^,]+/", "", $postfix);
 
-        file_put_contents('result.csv', $newLine, FILE_APPEND);
+        file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
       }
-
-
     }
   }
 }

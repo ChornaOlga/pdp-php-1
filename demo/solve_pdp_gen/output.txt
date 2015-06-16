@@ -1,3 +1,3 @@
-True
-[]
-{'loading': [0.020608, 0.063508, 0.0429, 0], 'weights': [17.0, 59.0, 42.0, 0], 'max_x': [23.0, 26.0, 26.0, 0], 'actions': [('pack', <box.Box object at 0x7f5c98d9df90>), ('pack', <box.Box object at 0x7f5c97a0a110>), ('unpack', <box.Box object at 0x7f5c98d9df90>), ('unpack', <box.Box object at 0x7f5c97a0a110>)]}
+False
+[<box.Box object at 0x7fdf8f3a8190>]
+{'loading': [0.607992, 0, 0.24], 'weights': [67.0, 0, 60.0], 'max_x': [47.0, 0, 12.0], 'actions': [('pack', <box.Box object at 0x7fdf8f3a8150>), ('unpack', <box.Box object at 0x7fdf8f3a8150>), ('pack', <box.Box object at 0x7fdf8f3a8190>)]}

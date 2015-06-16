@@ -84,12 +84,12 @@ class PdpLauncher extends Litvinenko\Common\Object
     }
   }
 
-  public function getSolution($method, $data, $specialParams = [])
+  public function getSolution($method, $data = [], $specialParams = [])
   {
       $result = [];
       if (in_array($method, array_keys($this->getAvaliableMethods())))
       {
-          $this->writePdpPointsContent($this->getPdppointsFile(), $data);
+          if ($data) $this->writePdpPointsContent($this->getPdppointsFile(), $data);
 
           // for GEN method, we write precise to PDP config file
           if (($method == 'gen') && $specialParams)
