@@ -89,7 +89,14 @@ foreach ($pairCountToTest as $pairCount)
 
       $data = ($generateRandomData) ? $launcher->generateRandomData($pairCount) : [];
 
-      $bbSolution = $launcher->getSolution('branch_bound', $data);
+      $bbSolution = $launcher->getSolution('branch_bound', $data, ['weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
+
+      // if branch_bound method crashed, launch gen method with v=100%;
+      if (empty($bbSolution['path_cost']) && (end($genPrecises[$pairCount]) != 100))
+      {
+          $bbSolution = $launcher->getSolution('gen', $data, ['precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
+          $bbSolution['errors'] = 'bb method crashed. Gen method with v=100% was launched';
+      } 
 
       $begin_and_branch_bound_info = "$pairCount,$testNum,";
       $begin_and_branch_bound_info .= "{$bbSolution['path_cost']}, {$bbSolution['solution_time']}, {$bbSolution['exec_time']}, {$bbSolution['info']['total_branchings']},\"" . (isset($bbSolution['path']) ? implode(' ',$bbSolution['path']) : '-') . "\",\"" . (isset($bbSolution['errors']) ? implode(';',$bbSolution['errors']) : '') ."\",";
@@ -98,8 +105,6 @@ foreach ($pairCountToTest as $pairCount)
       $prefix  = $begin_and_branch_bound_info;
       $postfix = ",\"" . json_encode($data) . "\",\"" . str_replace(PHP_EOL, "\\", file_get_contents('pdp_points.txt')) . "\"";
 
-      // if branch_bound method crashed, launch gen method with v=100%;
-      if (empty($bbSolution['path_cost']) && (end($genPrecises[$pairCount]) != 100)) $genPrecises[$pairCount][] = 100;
       foreach($genPrecises[$pairCount] as $precise)
       {
         $genSolution = $launcher->getSolution('gen', $data, [ 'precise' => $precise, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
