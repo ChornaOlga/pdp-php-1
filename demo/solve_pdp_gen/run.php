@@ -56,13 +56,13 @@ try
             $log .= IO::getPathAsText($pointSequence) . ' ' . $solver->_getCost($pointSequence) .   "\n";
         }
 
-        file_put_contents($solutionLogFile, $log);
+        // file_put_contents($solutionLogFile, $log);
 
     }
-    if ($generationLogFile)
-    {
-        file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
-    }
+    // if ($generationLogFile)
+    // {
+    //     file_put_contents('result.txt', App::getSingleton('\SolutionInfoCollector')->getLog());
+    // }
     // $i = 0;
     // foreach (App::getSingleton('\SolutionInfoCollector')->getStepsInfo() as $stepInfo)
     // {

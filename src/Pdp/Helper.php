@@ -23,12 +23,12 @@ class Helper extends \Litvinenko\Common\Object
 
     public static function log($message)
     {
-        file_put_contents(self::LOG_FILE, date("Y-m-d H:i:s") . ": $message\n", FILE_APPEND);
+        // file_put_contents(self::LOG_FILE, date("Y-m-d H:i:s") . ": $message\n", FILE_APPEND);
     }
 
     public static function logError($message)
     {
-        file_put_contents(self::ERROR_LOG_FILE, date("Y-m-d H:i:s") . " Error occured:\n$message\n", FILE_APPEND);
+        // file_put_contents(self::ERROR_LOG_FILE, date("Y-m-d H:i:s") . " Error occured:\n$message\n", FILE_APPEND);
     }
 
     public function validateObjects($objects)

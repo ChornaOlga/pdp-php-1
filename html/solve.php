@@ -1,4 +1,5 @@
 <?php
+require '../vendor/autoload.php';
 include '../demo/PdpLauncher.php';
 
 $launcher = new PdpLauncher;

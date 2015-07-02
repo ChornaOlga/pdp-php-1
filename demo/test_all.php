@@ -2,29 +2,29 @@
 require_once '../vendor/autoload.php';
 include 'PdpLauncher.php';
 
-$generateRandomData      = false;
+$generateRandomData      = true;
 $dummyMode               = false;
 
 $dummyOutputCsvFile      = 'dummy.csv';
 $productionOutputCsvFile = 'result.csv';
 $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
 
-$pairCountToTest         = [3,4,5,6,7,8];
-$repeatEachTestCount     = 1;
+$pairCountToTest         = [/*3,*/4,5,6,7,8];
+$repeatEachTestCount     = 5;
 
 
 $genPrecises = [
 // pair count => all precices to try
 2 => [25,50,100],
-3 => [25,30,40,100],
-4 => [5,10,20,30,40,50,60,70,80,100],
-5 => [5,10,20,30,40,50,60,70,80,100],
-6 => [5,10,20,30,40,50,60,100],7 => [5,10,20,30,100],8 => [5,10,20,30,100],
+3 => [20,40,60,80,100],
+4 => [5,10,20,40,60,80,100],
+5 => [5,10,20,40,60,100],
+6 => [5,10,20,40,60,100],7 => [5,10,20,30,100],8 => [5,10,20,30,100],
 
 ];
 
 $allLoadParams = [
-  // ['weight_capacity' => 1000, 'load_area' => ['x' => 500, 'y' => 500, 'z' => 500]],
+  ['weight_capacity' => 100,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 150,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 200, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 300, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
@@ -76,6 +76,9 @@ foreach ($pairCountToTest as $pairCount)
   file_put_contents($outputCsvFile, "\n\n--------- {$pairCount} pairs --------\n", FILE_APPEND);
   foreach ($allLoadParams as $loadParams)
   {
+    if (($pairCount == 4) && $loadParams['load_area']['x'] < 70 ) continue; //temp hardcode
+    if (($pairCount == 4) && ($loadParams['load_area']['x'] == 70) && $loadParams['weight_capacity'] == 100 ) continue; //temp hardcode
+
     file_put_contents($outputCsvFile, "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
 
     $newLine = "pair count,test#,cost,solution_time,exec_time,total_branchings,path,errors,precise,cost,solution_time,exec_time,total_generated_paths,cost_increase,path,errors,data,pdp_points.txt\n";
@@ -95,7 +98,7 @@ foreach ($pairCountToTest as $pairCount)
       if (empty($bbSolution['path_cost']) && (end($genPrecises[$pairCount]) != 100))
       {
           $bbSolution = $launcher->getSolution('gen', $data, ['precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
-          $bbSolution['errors'] = 'bb method crashed. Gen method with v=100% was launched';
+          $bbSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
       } 
 
       $begin_and_branch_bound_info = "$pairCount,$testNum,";

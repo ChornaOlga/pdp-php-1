@@ -1,3 +1,0 @@
-False
-[<box.Box object at 0x027488B0>, <box.Box object at 0x02748950>, <box.Box object at 0x02748890>]
-{'loading': [0.0128, 0.020456, 0.043336], 'weights': [58.0, 128.0, 221.0], 'max_x': [8.0, 8.0, 20.0], 'actions': [('pack', <box.Box object at 0x027488B0>), ('pack', <box.Box object at 0x02748950>), ('pack', <box.Box object at 0x02748890>)]}

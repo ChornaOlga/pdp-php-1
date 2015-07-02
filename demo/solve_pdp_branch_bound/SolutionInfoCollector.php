@@ -7,7 +7,7 @@ class SolutionInfoCollector extends \Litvinenko\Common\Object
     {
         $this->setStepsInfo([]);
         $this->setCurrentStepNo(-1);
-        file_put_contents(self::LOG_FILE, 'begin solution' . PHP_EOL);
+        // file_put_contents(self::LOG_FILE, 'begin solution' . PHP_EOL);
     }
 
     public function stepBegin($event)
@@ -49,7 +49,7 @@ class SolutionInfoCollector extends \Litvinenko\Common\Object
         $this->setStepsInfo($steps);
         
         $log = \Litvinenko\Combinatorics\Pdp\IO::getReadableStepInfo($stepInfo, count($steps));
-        file_put_contents(self::LOG_FILE, $log, FILE_APPEND);
+        // file_put_contents(self::LOG_FILE, $log, FILE_APPEND);
     }
 
     public function cantLoad($event)

@@ -58,16 +58,16 @@ abstract class RegularSetGenerator extends AbstractGenerator
 
     protected function _beforeGenerateBegin()
     {
-        /*if ($this->getEnableLogs())*/ file_put_contents('log.txt', date("Y-m-d H:i:s").PHP_EOL.PHP_EOL);
+        // /*if ($this->getEnableLogs())*/ file_put_contents('log.txt', date("Y-m-d H:i:s").PHP_EOL.PHP_EOL);
     }
 
     protected function _afterGenerateEnd()
     {
-        /*if ($this->getEnableLogs())*/ file_put_contents('log.txt', PHP_EOL.PHP_EOL.date("Y-m-d H:i:s"), FILE_APPEND);
+        // /*if ($this->getEnableLogs())*/ file_put_contents('log.txt', PHP_EOL.PHP_EOL.date("Y-m-d H:i:s"), FILE_APPEND);
     }
 
     protected function _afterObjectGenerate($object)
     {
-        /*if ($this->getEnableLogs())*/ file_put_contents('log.txt', implode(' ',var_export($object, true)/*array_column($object, 'combinatorial_value')*/).PHP_EOL, FILE_APPEND);
+        // /*if ($this->getEnableLogs())*/ file_put_contents('log.txt', implode(' ',var_export($object, true)/*array_column($object, 'combinatorial_value')*/).PHP_EOL, FILE_APPEND);
     }
 }
