@@ -9,24 +9,26 @@ $dummyOutputCsvFile      = 'dummy.csv';
 $productionOutputCsvFile = 'result.csv';
 $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
 
-$pairCountToTest         = [/*3,*/4,5,6,7,8];
+$pairCountToTest         = [/*3,4,*/5,6,7,8];
 $repeatEachTestCount     = 5;
 
+$pairCountToTest         = [5,6,7];
+$repeatEachTestCount     = 5;
 
 $genPrecises = [
 // pair count => all precices to try
-2 => [25,50,100],
-3 => [20,40,60,80,100],
+2 => [25,50/*,100*/],
+3 => [20/*,40,60,80*//*,100*/],
 4 => [5,10,20,40,60,80,100],
-5 => [5,10,20,40,60,100],
-6 => [5,10,20,40,60,100],7 => [5,10,20,30,100],8 => [5,10,20,30,100],
+5 => [5,10,20,40,60/*,100*/],
+6 => [5,10,20,40,60/*,100*/],7 => [5,10,20,30,100],8 => [5,10,20,30,100],
 
 ];
 
 $allLoadParams = [
-  ['weight_capacity' => 100,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
-  ['weight_capacity' => 150,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
-  ['weight_capacity' => 200, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
+//   // ['weight_capacity' => 100,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
+//   // ['weight_capacity' => 150,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
+  // ['weight_capacity' => 200, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 300, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 400, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 500, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
@@ -92,27 +94,32 @@ foreach ($pairCountToTest as $pairCount)
 
       $data = ($generateRandomData) ? $launcher->generateRandomData($pairCount) : [];
 
-      $bbSolution = $launcher->getSolution('branch_bound', $data, ['weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
+      $exact_solution_info = "$pairCount,$testNum,";
+      // $bbSolution = $launcher->getSolution('branch_bound', $data, ['weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
 
       // if branch_bound method crashed, launch gen method with v=100%;
-      if (empty($bbSolution['path_cost']) && (end($genPrecises[$pairCount]) != 100))
+      if (!isset($bbSolution) || empty($bbSolution['path_cost']))
       {
-          $bbSolution = $launcher->getSolution('gen', $data, ['precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
-          $bbSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
-      } 
-
-      $begin_and_branch_bound_info = "$pairCount,$testNum,";
-      $begin_and_branch_bound_info .= "{$bbSolution['path_cost']}, {$bbSolution['solution_time']}, {$bbSolution['exec_time']}, {$bbSolution['info']['total_branchings']},\"" . (isset($bbSolution['path']) ? implode(' ',$bbSolution['path']) : '-') . "\",\"" . (isset($bbSolution['errors']) ? implode(';',$bbSolution['errors']) : '') ."\",";
+          $genSolution = $launcher->getSolution('gen', $data, ['precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
+          $genSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
+          $exact_solution_info .=  "{$genSolution['path_cost']},{$genSolution['solution_time']}, {$genSolution['exec_time']},{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\",";
+          $exactSolution = $genSolution;
+      }
+      else
+      {
+        $exact_solution_info .= "{$bbSolution['path_cost']}, {$bbSolution['solution_time']}, {$bbSolution['exec_time']}, {$bbSolution['info']['total_branchings']},\"" . (isset($bbSolution['path']) ? implode(' ',$bbSolution['path']) : '-') . "\",\"" . (isset($bbSolution['errors']) ? implode(';',$bbSolution['errors']) : '') ."\",";
+        $exactSolution = $bbSolution;
+      }
 
       // solve with GEN method with different precises
-      $prefix  = $begin_and_branch_bound_info;
+      $prefix  = $exact_solution_info;
       $postfix = ",\"" . json_encode($data) . "\",\"" . str_replace(PHP_EOL, "\\", file_get_contents('pdp_points.txt')) . "\"";
 
       foreach($genPrecises[$pairCount] as $precise)
       {
         $genSolution = $launcher->getSolution('gen', $data, [ 'precise' => $precise, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
 
-        $costIncrease = (floatval($bbSolution['path_cost']) > 0) ? ($genSolution['path_cost']-$bbSolution['path_cost'])/$bbSolution['path_cost'] : '';
+        $costIncrease = (floatval($exactSolution['path_cost']) > 0) ? ($genSolution['path_cost']-$exactSolution['path_cost'])/$exactSolution['path_cost'] : '';
         $newLine = $prefix . "{$precise}, {$genSolution['path_cost']},{$genSolution['solution_time']}, {$genSolution['exec_time']},{$genSolution['info']['total_generated_paths']},{$costIncrease},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\"" . $postfix . "\n";
 
         $prefix  = preg_replace("/[^,]+/", "", $prefix);
