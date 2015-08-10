@@ -3,13 +3,14 @@ require_once '../vendor/autoload.php';
 include 'PdpLauncher.php';
 
 $generateRandomData      = true;
-$dummyMode               = true;
+$dummyMode               = false;
 
 $dummyOutputCsvFile      = 'dummy.csv';
 $productionOutputCsvFile = 'result.csv';
 $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
 
-$pairCountToTest         = [2/*3,4,5,6,7,8*/];
+$testSuiteComment        = 'продолжаю тест сюит 8';
+$pairCountToTest         = [5,6,7,8];
 $repeatEachTestCount     = 5;
 
 // $pairCountToTest         = [35,6,7];
@@ -75,7 +76,7 @@ try {$dbh = new PDO('mysql:host=localhost;dbname=pdp', 'root', 'adMiN8910');} ca
 
 $launcher = new PdpLauncher;
 $params = str_replace("'","",var_export(compact('generateRandomData', 'dummyMode', 'pairCountToTest', 'repeatEachTestCount', 'genPrecises', 'allLoadParams'), true));
-if (!$dummyMode) {if (!$dbh->query("INSERT INTO test_suites(start_time,params) VALUES (NOW(),'$params')")) print_r($dbh->errorInfo());}
+if (!$dummyMode) {if (!$dbh->query("INSERT INTO test_suites(start_time,params,comment) VALUES (NOW(),'$params','$testSuiteComment')")) print_r($dbh->errorInfo());}
 
 // file_put_contents($outputCsvFile, "sep =,\n");
 foreach ($pairCountToTest as $pairCount)
@@ -83,8 +84,9 @@ foreach ($pairCountToTest as $pairCount)
   file_put_contents($outputCsvFile, "\n\n--------- {$pairCount} pairs --------\n", FILE_APPEND);
   foreach ($allLoadParams as $loadParams)
   {
-    // if (($pairCount == 4) && $loadParams['load_area']['x'] < 70 ) continue; //temp hardcode
-    // if (($pairCount == 4) && ($loadParams['load_area']['x'] == 70) && $loadParams['weight_capacity'] == 100 ) continue; //temp hardcode
+    // if (($pairCount == 5) && $loadParams['load_area']['x'] < 70 ) continue; //temp hardcode
+    if (($pairCount == 5) && ($loadParams['load_area']['x'] == 50) && $loadParams['weight_capacity'] == 100 ) continue; //temp hardcode
+    if (($pairCount == 5) && ($loadParams['load_area']['x'] == 50) && $loadParams['weight_capacity'] == 150 ) continue; //temp hardcode
 
     file_put_contents($outputCsvFile, "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
 
@@ -137,10 +139,10 @@ foreach ($pairCountToTest as $pairCount)
 
         file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
 
-        if (!$dummyMode) {if (!$dbh->query("INSERT INTO results(test_id,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),{$genSolution['solution_time']},$precise,{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r($dbh->errorInfo());}
+        if (!$dummyMode) {if (!$dbh->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$genSolution['solution_time']},$precise,{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r($dbh->errorInfo());}
       }
 
-      if (!$dummyMode) {if (!$dbh->query("INSERT INTO results(test_id,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),{$exactSolution['solution_time']},100,{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r($dbh->errorInfo());}
+      if (!$dummyMode) {if (!$dbh->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$exactSolution['solution_time']},100,{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r($dbh->errorInfo());}
     }
   }
 }
@@ -149,8 +151,9 @@ if (!$dummyMode) {if (!$dbh->query("set @id = (select max(id) from test_suites);
 $dbh = null;
 
 /* SQL to view results:
-select s.id as suite_id,s.start_time,s.end_time,t.id as test_id,t.pair_count,t.load_area_size,t.weight_capacity,r.time,r.cost,r.precise,r.cost_increase,t.data,t.pdp_points_txt from test_suites s, tests t, results r
+select s.id as suite_id,s.start_time,s.end_time,t.id as test_id,t.pair_count,t.load_area_size,t.weight_capacity,r.start_time,r.time,r.cost,r.precise,r.cost_increase,t.data,t.pdp_points_txt from test_suites s, tests t, results r
 where s.id=t.test_suite_id and t.id=r.test_id
+and s.id = (select max(id) from test_suites)
 order by s.id,t.pair_count,t.load_area_size,t.weight_capacity
 */
 
@@ -170,6 +173,7 @@ order by s.id,t.pair_count,t.load_area_size,t.weight_capacity
 //   `id` int(11) NOT NULL AUTO_INCREMENT,
 //   `test_id` int(11) DEFAULT NULL,
 //   `time` float NOT NULL DEFAULT '0',
+//   `start_time` DATETIME NULL DEFAULT NULL,
 //   `cost` float NOT NULL DEFAULT '0',
 //   `precise` tinyint(4) NOT NULL DEFAULT '0',
 //   `cost_increase` float NOT NULL DEFAULT '0',
@@ -201,6 +205,7 @@ order by s.id,t.pair_count,t.load_area_size,t.weight_capacity
 //   `start_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 //   `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 //   `params` mediumtext NOT NULL,
+//   `comment` VARCHAR(500) NULL DEFAULT NULL,
 //   PRIMARY KEY (`id`)
 // ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
