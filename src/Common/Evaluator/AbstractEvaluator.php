@@ -17,7 +17,7 @@ abstract class AbstractEvaluator extends \Litvinenko\Common\Object
 
     public function getBound($object, $boundType, array $additionalInfo = array())
     {
-        $this->validate();
+        // $this->validate();
         if (in_array($boundType, $this->getAvaliableBoundTypes()))
         {
             return $this->_calculateBound($object, $boundType, $additionalInfo);

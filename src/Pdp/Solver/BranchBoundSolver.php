@@ -59,8 +59,8 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
 
     public function getSolution()
     {
-        $this->getHelper()->validate($this);
-        $this->getHelper()->validateObjects($this->getPoints());
+        // $this->getHelper()->validate($this);
+        // $this->getHelper()->validateObjects($this->getPoints());
 
         return parent::getSolution();
     }
@@ -104,7 +104,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
             'weight_capacity'     => $this->getWeightCapacity(),
             'load_area'           => $this->getLoadArea()
             ]);
-        $generator->validate();
+        // $generator->validate();
 
         $points = Helper::getGeneratorDataFromPoints($pointSequence);
         $result = Helper::getPointSequencesFromGeneratorData($generator->generateNextObjects($points));

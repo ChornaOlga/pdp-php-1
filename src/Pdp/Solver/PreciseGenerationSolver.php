@@ -41,8 +41,8 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
 
     public function getSolution()
     {
-        $this->validate();
-        $this->getHelper()->validateObjects($this->getPoints());
+        // $this->validate();
+        // $this->getHelper()->validateObjects($this->getPoints());
 
         $generator = new Generator([
             'tuple_length'        => Point::getPointCount($this->getPoints()),

@@ -11,10 +11,10 @@ abstract class AbstractGenerator extends \Litvinenko\Common\Object
 
     public function generateAll()
     {
-        if ($this->validate())
-        {
+        // if ($this->validate())
+        // {
             return $this->_generateAll();
-        }
+        // }
     }
 
     abstract protected function _generateAll();

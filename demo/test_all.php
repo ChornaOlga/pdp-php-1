@@ -3,13 +3,13 @@ require_once '../vendor/autoload.php';
 include 'PdpLauncher.php';
 
 $generateRandomData      = true;
-$dummyMode               = false;
+$dummyMode               = true;
 
 $dummyOutputCsvFile      = 'dummy.csv';
 $productionOutputCsvFile = 'result.csv';
 $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
 
-$pairCountToTest         = [/*3,4,*/5,6,7,8];
+$pairCountToTest         = [2/*3,4,5,6,7,8*/];
 $repeatEachTestCount     = 5;
 
 // $pairCountToTest         = [35,6,7];
@@ -18,10 +18,10 @@ $repeatEachTestCount     = 5;
 $genPrecises = [
 // pair count => all precices to try
 2 => [25,50/*,100*/],
-3 => [20/*,40,60,80*//*,100*/],
-4 => [5,10,20,40,60,80,100],
-5 => [5,10,20,40,60/*,100*/],
-6 => [5,10,20,40,60/*,100*/],7 => [5,10,20,30,100],8 => [5,10,20,30,100],
+3 => [20,40,60,80],
+4 => [5,20,40,60],
+5 => [5,20,40,60/*,100*/],
+6 => [5,20,40,60/*,100*/],7 => [5,20,30],8 => [5,20,30],
 
 ];
 
@@ -30,43 +30,43 @@ $allLoadParams = [
   ['weight_capacity' => 150,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 200, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 300, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
-  // ['weight_capacity' => 150, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
-  // ['weight_capacity' => 200, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
-  // ['weight_capacity' => 300, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
+  ['weight_capacity' => 100, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
+  ['weight_capacity' => 150, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
+  ['weight_capacity' => 200, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
+  ['weight_capacity' => 300, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 60, 'y' => 60, 'z' => 60]],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
-  // ['weight_capacity' => 150, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
-  // ['weight_capacity' => 200, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
-  // ['weight_capacity' => 300, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
+  ['weight_capacity' => 100, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
+  ['weight_capacity' => 150, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
+  ['weight_capacity' => 200, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
+  ['weight_capacity' => 300, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 70, 'y' => 70, 'z' => 70]],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 150, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 200, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 300, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 100, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 150, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 200, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 300, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 80, 'y' => 80, 'z' => 80]],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
-  // ['weight_capacity' => 150, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
-  // ['weight_capacity' => 200, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
-  // ['weight_capacity' => 300, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]/*, 'test_count' => 5*/],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 100, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 150, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 200, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 300, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]/*, 'test_count' => 5*/],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 90, 'y' => 90, 'z' => 90]],
 
-  // ['weight_capacity' => 100, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 150, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 200, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 300, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 400, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 100, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 150, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 200, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 300, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 400, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
 
 ];
 
@@ -75,7 +75,7 @@ try {$dbh = new PDO('mysql:host=localhost;dbname=pdp', 'root', 'adMiN8910');} ca
 
 $launcher = new PdpLauncher;
 $params = str_replace("'","",var_export(compact('generateRandomData', 'dummyMode', 'pairCountToTest', 'repeatEachTestCount', 'genPrecises', 'allLoadParams'), true));
-if (!$dbh->query("INSERT INTO test_suites(start_time,params) VALUES (NOW(),'$params')")) print_r($dbh->errorInfo());
+if (!$dummyMode) {if (!$dbh->query("INSERT INTO test_suites(start_time,params) VALUES (NOW(),'$params')")) print_r($dbh->errorInfo());}
 
 // file_put_contents($outputCsvFile, "sep =,\n");
 foreach ($pairCountToTest as $pairCount)
@@ -102,7 +102,7 @@ foreach ($pairCountToTest as $pairCount)
       $pdpPointsPrepared = str_replace(PHP_EOL, "!", file_get_contents('pdp_points.txt'));
       $dataPrepared      = json_encode($data);
 
-      if (!$dbh->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']}, '$dataPrepared', '$pdpPointsPrepared')")) print_r($dbh->errorInfo());
+      if (!$dummyMode) {if (!$dbh->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']}, '$dataPrepared', '$pdpPointsPrepared')")) print_r($dbh->errorInfo());}
 
       $exact_solution_info = "$pairCount,$testNum,";
       // $bbSolution = $launcher->getSolution('branch_bound', $data, ['weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
@@ -137,15 +137,15 @@ foreach ($pairCountToTest as $pairCount)
 
         file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
 
-        if (!$dbh->query("INSERT INTO results(test_id,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),{$genSolution['solution_time']},$precise,{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r($dbh->errorInfo());
+        if (!$dummyMode) {if (!$dbh->query("INSERT INTO results(test_id,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),{$genSolution['solution_time']},$precise,{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r($dbh->errorInfo());}
       }
 
-      if (!$dbh->query("INSERT INTO results(test_id,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),{$exactSolution['solution_time']},100,{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r($dbh->errorInfo());
+      if (!$dummyMode) {if (!$dbh->query("INSERT INTO results(test_id,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),{$exactSolution['solution_time']},100,{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r($dbh->errorInfo());}
     }
   }
 }
 
-if (!$dbh->query("set @id = (select max(id) from test_suites); UPDATE test_suites SET end_time=NOW() WHERE id=@id")) print_r($dbh->errorInfo());
+if (!$dummyMode) {if (!$dbh->query("set @id = (select max(id) from test_suites); UPDATE test_suites SET end_time=NOW() WHERE id=@id")) print_r($dbh->errorInfo());}
 $dbh = null;
 
 /* SQL to view results:

@@ -64,17 +64,17 @@ class IO
                     $point->setBoxDimensions($points[$point->getPairId()]->getBoxDimensions());
                 }
 
-                if ($point->isInvalid())
-                {
-                    throw new \Exception ("Point #" . $point->getId() . " is invalid: " . print_r($point->getValidationErrors(), true));
-                }
+                // if ($point->isInvalid())
+                // {
+                //     throw new \Exception ("Point #" . $point->getId() . " is invalid: " . print_r($point->getValidationErrors(), true));
+                // }
             }
 
             // validate depot
-            if ($depot->isInvalid())
-            {
-                throw new \Exception ("Depot is invalid: " . print_r($depot->getValidationErrors(), true));
-            }
+            // if ($depot->isInvalid())
+            // {
+            //     throw new \Exception ("Depot is invalid: " . print_r($depot->getValidationErrors(), true));
+            // }
 
             return [
                 'points' => $points,
