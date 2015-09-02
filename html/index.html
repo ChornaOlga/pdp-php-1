@@ -662,12 +662,17 @@
 
         $('.solve_button').on('click', function (e) {
             var solve_method = (e.target.id == 'solve_gen') ? 'gen' : 'branch_bound';
+            var specialParams = {
+              precise:5,
+              weight_capacity:1000,
+              load_area:{x:80, y:80, z:80}
+            };
 
             $("#console").text('Please, wait for solution ...');
             $.ajax({
-                url: "solve.php",
+                url: "../demo/solve.php",
                 type: "POST",
-                data: 'params=' + JSON.stringify({method: solve_method, data: _hot.getData()}),
+                data: 'params=' + JSON.stringify({method: solve_method, data: _hot.getData(), specialParams:specialParams }),
                 dataType: "json",
                 success: function(result){
                   if (result.path)

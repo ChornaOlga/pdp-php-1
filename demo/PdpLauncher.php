@@ -1,5 +1,6 @@
 <?php
 
+// uses APP_ROOT_FOLDER const!
 class PdpLauncher extends Litvinenko\Common\Object
 {
   protected function _construct()
@@ -14,12 +15,12 @@ class PdpLauncher extends Litvinenko\Common\Object
 
     if (!$this->hasData('pdppoints_file'))
     {
-      $this->setData('pdppoints_file', 'pdp_points.txt');
+      $this->setData('pdppoints_file', APP_ROOT_FOLDER.'demo/pdp_points.txt');
     }
 
     if (!$this->hasData('pdpconfig_file'))
     {
-      $this->setData('pdpconfig_file', 'pdp_config.ini');
+      $this->setData('pdpconfig_file', APP_ROOT_FOLDER.'demo/pdp_config.ini');
     }
 
 
@@ -89,7 +90,12 @@ class PdpLauncher extends Litvinenko\Common\Object
       $result = [];
       if (in_array($method, array_keys($this->getAvaliableMethods())))
       {
-          if ($data) $this->writePdpPointsContent($this->getPdppointsFile(), $data);
+          if ($data) {
+            if (!$this->writePdpPointsContent($this->getPdppointsFile(), $data)){
+                $result['errors'][] = "Write PDP points to file failed!";
+                return $result;
+            }
+          }
 
           // for GEN method, we write precise to PDP config file
           if (($method == 'gen') && $specialParams)
