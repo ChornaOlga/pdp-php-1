@@ -9,9 +9,9 @@ $dummyOutputCsvFile      = 'dummy.csv';
 $productionOutputCsvFile = 'result.csv';
 $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
 
-$testSuiteComment        = 'продолжаю тест сюит 8';
+$testSuiteComment        = 'continuing test suite 8. testCount=1';
 $pairCountToTest         = [5,6,7,8];
-$repeatEachTestCount     = 5;
+$repeatEachTestCount     = 1;
 
 // $pairCountToTest         = [35,6,7];
 // $repeatEachTestCount     = 5;
@@ -30,7 +30,7 @@ $allLoadParams = [
   ['weight_capacity' => 100,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 150,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 200, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
-  ['weight_capacity' => 300, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
+  ['weight_capacity' => 300, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]/*, 'test_count' => 4*/],
   ['weight_capacity' => 400, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   ['weight_capacity' => 500, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
 
@@ -85,8 +85,8 @@ foreach ($pairCountToTest as $pairCount)
   foreach ($allLoadParams as $loadParams)
   {
     // if (($pairCount == 5) && $loadParams['load_area']['x'] < 70 ) continue; //temp hardcode
-    if (($pairCount == 5) && ($loadParams['load_area']['x'] == 50) && $loadParams['weight_capacity'] == 100 ) continue; //temp hardcode
-    if (($pairCount == 5) && ($loadParams['load_area']['x'] == 50) && $loadParams['weight_capacity'] == 150 ) continue; //temp hardcode
+    if (($pairCount == 5) && ($loadParams['load_area']['x'] < 70)) continue; //temp hardcode
+    if (($pairCount == 5) && ($loadParams['load_area']['x'] == 70) && $loadParams['weight_capacity'] < 200 ) continue; //temp hardcode
 
     file_put_contents($outputCsvFile, "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
 
@@ -103,7 +103,7 @@ foreach ($pairCountToTest as $pairCount)
 
       $pdpPointsPrepared = str_replace(PHP_EOL, "!", file_get_contents('pdp_points.txt'));
       $dataPrepared      = json_encode($data);
-
+$dbh = null;$dbh = new PDO('mysql:host=localhost;dbname=pdp', 'root', 'adMiN8910');
       if (!$dummyMode) {if (!$dbh->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']}, '$dataPrepared', '$pdpPointsPrepared')")) print_r($dbh->errorInfo());}
 
       $exact_solution_info = "$pairCount,$testNum,";
@@ -138,15 +138,15 @@ foreach ($pairCountToTest as $pairCount)
         $postfix = preg_replace("/[^,]+/", "", $postfix);
 
         file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
-
+$dbh = null;$dbh = new PDO('mysql:host=localhost;dbname=pdp', 'root', 'adMiN8910');
         if (!$dummyMode) {if (!$dbh->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$genSolution['solution_time']},$precise,{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r($dbh->errorInfo());}
       }
-
+$dbh = null;$dbh = new PDO('mysql:host=localhost;dbname=pdp', 'root', 'adMiN8910');
       if (!$dummyMode) {if (!$dbh->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$exactSolution['solution_time']},100,{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r($dbh->errorInfo());}
     }
   }
 }
-
+$dbh = null;$dbh = new PDO('mysql:host=localhost;dbname=pdp', 'root', 'adMiN8910');
 if (!$dummyMode) {if (!$dbh->query("set @id = (select max(id) from test_suites); UPDATE test_suites SET end_time=NOW() WHERE id=@id")) print_r($dbh->errorInfo());}
 $dbh = null;
 
