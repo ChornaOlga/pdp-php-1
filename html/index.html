@@ -81,6 +81,10 @@
         x:200,
         y:200
     };
+
+    _default_weight_capacity = 1000;
+    _default_load_area       = {x:100, y:100, z:100};
+    _default_precise         = 5;
 </script>
 
 <div class="jsc-sidebar-content jsc-sidebar-pulled sidebar" style="z-index:999">
@@ -95,7 +99,7 @@
             <button name="load" id="load">Load</button>
             <button name="save" id="save">Save</button>
             <button name="solve_gen" class="solve_button" id="solve_gen">Solve using generation</button>
-            <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button>
+            <!-- <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button> -->
             <div id="console">
                 Choose file and click "Load" to load data from server. Or type data by yourself
             </div>
@@ -220,17 +224,33 @@
 
     <nav class="sidebar jsc-sidebar" id="jsi-nav" data-sidebar-options="">
         <div id="sidebar_container" class="container">
-            <h1>Solution data</h1>
-           <p>
-             <label for="pdp_pairs_number">Pdp pairs:</label>
-             <input id="pdp_pairs_number" class="numbersOnly" size="5">
-          </p>
-           <p>
-             <label>Depot</label>
-             X: <input id="depot_x" class="numbersOnly" size="3">
-             Y:<input id="depot_y" class="numbersOnly" size="3">
-          </p>
-          <div id="pdp_table"></div>
+            <form action="" id="input_params">
+                <h1>Solution data</h1>
+                <p>
+                    <label for="pdp_pairs_number">Pdp pairs:</label>
+                    <input id="pdp_pairs_number" name="pdp_pairs_number" size="5">
+                </p>
+                <p>
+                    <label>Precise, %</label>
+                    <input id="precise" size="5">
+                </p>
+                <p>
+                    <label>Weight capacity</label>
+                    <input id="weight_capacity" size="5">
+                </p>
+                <p>
+                    <label>Load area</label>
+                    x: <input id="load_area_x" size="3">
+                    y: <input id="load_area_y" size="3">
+                    z: <input id="load_area_z" size="3">
+                </p>
+                <p>
+                    <label>Depot</label>
+                    X: <input id="depot_x" size="3">
+                    Y: <input id="depot_y" size="3">
+                </p>
+            </form>
+            <div id="pdp_table"></div>
 
           <script>
             // var
@@ -508,9 +528,9 @@
 
     <script>
         // remove all non-numbers from all elements with class 'numbersOnly'
-        jQuery('.htInvalid').keyup(function () {
-            this.value = this.value.replace(/[^0-9\.]/g,'');
-        });
+        // jQuery('.htInvalid').keyup(function () {
+        //     this.value = this.value.replace(/[^0-9\.]/g,'');
+        // });
 
         $('#pdp_points_filename').on("change", function(){ loadJsonFromFileContainerToMainTable(); });
     </script>
@@ -557,7 +577,6 @@
 
             $("#points_container").height(window.innerHeight - 140);
 
-
             $('#depot_x').change(function() {
                 refreshDepot($(this).val(),undefined);
             });
@@ -570,6 +589,11 @@
             $('#depot_x').trigger('change');
             $('#depot_y').trigger('change');
 
+            $('#precise').val(_default_precise);
+            $('#weight_capacity').val(_default_weight_capacity);
+            $('#load_area_x').val(_default_load_area.x);
+            $('#load_area_y').val(_default_load_area.y);
+            $('#load_area_z').val(_default_load_area.z);
         });
 
         function drawPath(pointsContainer, pointsContainerId,  path) {
@@ -590,9 +614,13 @@
         $('.solve_button').on('click', function (e) {
             var solve_method = (e.target.id == 'solve_gen') ? 'gen' : 'branch_bound';
             var specialParams = {
-              precise:5,
-              weight_capacity:1000,
-              load_area:{x:80, y:80, z:80}
+              precise: $('#precise').val(),
+              weight_capacity: $('#weight_capacity').val(),
+              load_area: {
+                x: $('#load_area_x').val(),
+                y: $('#load_area_y').val(),
+                z: $('#load_area_z').val()
+              }
             };
 
             $("#console").text('Please, wait for solution ...');
