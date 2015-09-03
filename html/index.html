@@ -632,7 +632,7 @@
                 success: function(result){
                   if (result.path)
                   {
-                    $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. Additional info:' + JSON.stringify(result.info));
+                    $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. solution time: ' +result.solution_time.toFixed(2) + ' sec. Additional info:' + JSON.stringify(result.info));
                     drawPath(_pointsContainer, "points_container",  result.path);
                   }
                   else
