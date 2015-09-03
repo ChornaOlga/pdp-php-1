@@ -37,6 +37,21 @@ body, html
     background: green;
 }
 
+.depot
+{
+    background: red;
+}
+
+[data-shape=Circle].depot {
+        width: 30px; height: 30px; -moz-border-radius: 15px; -webkit-border-radius: 15px; border-radius: 15px;
+        left:0px;
+        top:0px;
+        font-size: 20px;
+        /*line-height: 150px;*/
+        /*background-image:url(circle.png);*/
+}
+
+
 .highlighted
 {
     background: magenta;
