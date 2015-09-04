@@ -625,7 +625,7 @@
 
             $("#console").text('Please, wait for solution ...');
             $.ajax({
-                url: "../demo/solve.php",
+                url: "../api/solve.php",
                 type: "POST",
                 data: 'params=' + JSON.stringify({method: solve_method, data: _hot.getData(), specialParams:specialParams }),
                 dataType: "json",
@@ -639,6 +639,9 @@
                   {
                     $("#console").text("Error: " + JSON.stringify(result));
                   }
+                },
+                error: function (request, status, error) {
+                   $("#console").text('Technical error '+ request.status +':'+ error);
                 }
             });
         });

@@ -8,8 +8,8 @@ class PdpLauncher extends Litvinenko\Common\Object
     if (!$this->hasData('avaliable_methods'))
     {
       $this->setData('avaliable_methods', [
-      'gen'          => 'cd solve_pdp_gen && php run.php',
-      'branch_bound' => 'cd solve_pdp_branch_bound && php run.php'
+      'gen'          => 'cd ../demo/solve_pdp_gen && php run.php',
+      'branch_bound' => 'cd ../demo/solve_pdp_branch_bound && php run.php'
       ]);
     }
 

@@ -10,6 +10,6 @@
         },
         "autoload": {
             "psr-4": {"Litvinenko\\Combinatorics\\": "src", "Litvinenko\\PdpApp\\": "app"},
-            "files": ["src/Lib/functions.php"]
+            "files": ["src/Lib/functions.php","src/Lib/KMeans/KMeans.php"]
         }
 }
