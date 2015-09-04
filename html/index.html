@@ -75,7 +75,7 @@
 
 <script>
     // GLOBAL DEF
-    _initialPairCount = 4;
+    _initialPairCount = 10;
 
     _default_depot_coords = {
         x:200,
@@ -85,6 +85,8 @@
     _default_weight_capacity = 1000;
     _default_load_area       = {x:100, y:100, z:100};
     _default_precise         = 5;
+
+    _default_vehicle_count   = 3;
 </script>
 
 <div class="jsc-sidebar-content jsc-sidebar-pulled sidebar" style="z-index:999">
@@ -98,7 +100,8 @@
 
             <button name="load" id="load">Load</button>
             <button name="save" id="save">Save</button>
-            <button name="solve_gen" class="solve_button" id="solve_gen">Solve using generation</button>
+            <button id="clusterize_button">Clusterize</button>
+            <button id="solve_gen">Solve using generation</button>
             <!-- <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button> -->
             <div id="console">
                 Choose file and click "Load" to load data from server. Or type data by yourself
@@ -227,8 +230,8 @@
             <form action="" id="input_params">
                 <h1>Solution data</h1>
                 <p>
-                    <label for="pdp_pairs_number">Pdp pairs:</label>
-                    <input id="pdp_pairs_number" name="pdp_pairs_number" size="5">
+                    <label>Vehicle count</label>
+                    <input id="vehicle_count" size="1">
                 </p>
                 <p>
                     <label>Precise, %</label>
@@ -248,6 +251,10 @@
                     <label>Depot</label>
                     X: <input id="depot_x" size="3">
                     Y: <input id="depot_y" size="3">
+                </p>
+                <p>
+                    <label for="pdp_pairs_number">Pdp pairs:</label>
+                    <input id="pdp_pairs_number" name="pdp_pairs_number" size="5">
                 </p>
             </form>
             <div id="pdp_table"></div>
@@ -406,6 +413,10 @@
             function getPointIdFromRowNumber (rowNumber) {
                 return rowNumber + 1;
             };
+
+            // function getRowNumberFromPointId (pointId) {
+            //     return pointId - 1;
+            // };
 
             function getPointPositionsFromTableDataChanges(changes) {
                 var positions = [];
@@ -594,6 +605,8 @@
             $('#load_area_x').val(_default_load_area.x);
             $('#load_area_y').val(_default_load_area.y);
             $('#load_area_z').val(_default_load_area.z);
+
+            $("#vehicle_count").val(_default_vehicle_count);
         });
 
         function drawPath(pointsContainer, pointsContainerId,  path) {
@@ -611,7 +624,7 @@
             pointsContainer.repaintEverything();
         };
 
-        $('.solve_button').on('click', function (e) {
+        $('#solve_gen').on('click', function (e) {
             var solve_method = (e.target.id == 'solve_gen') ? 'gen' : 'branch_bound';
             var specialParams = {
               precise: $('#precise').val(),
@@ -634,6 +647,47 @@
                   {
                     $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. solution time: ' +result.solution_time.toFixed(2) + ' sec. Additional info:' + JSON.stringify(result.info));
                     drawPath(_pointsContainer, "points_container",  result.path);
+                  }
+                  else
+                  {
+                    $("#console").text("Error: " + JSON.stringify(result));
+                  }
+                },
+                error: function (request, status, error) {
+                   $("#console").text('Technical error '+ request.status +':'+ error);
+                }
+            });
+        });
+
+        $('#clusterize_button').click(function () {
+            $("#console").text('Please, wait for solution ...');
+
+            getAllPdpPoints().removeClass('cluster1').removeClass('cluster2').removeClass('cluster0');
+
+            $.ajax({
+                url: "../api/clusterize.php",
+                type: "POST",
+                data: 'params=' + JSON.stringify({cluster_count: $("#vehicle_count").val(), points: _hot.getData()}),
+                dataType: "json",
+                success: function(result){
+                  if (result.clusters)
+                  {
+                    var text = '';
+                    result.clusters.forEach(function (cluster, cluster_index) {
+                      /* PHP returns point ids from 0. We convert them to fronend point ids (from 1)*/
+                      cluster.forEach(function (elem, point_index) {
+                        var pointId = getPointIdFromRowNumber(cluster[point_index]);
+                        getPdpPoint(pointId).addClass('cluster'+cluster_index);
+                        cluster[point_index] = pointId;
+                      });
+
+                      // numerize clusters from 1
+                      text += 'Cluster ' + (cluster_index+1) + ': points ' + cluster.join(',') + ' . ';
+                    });
+
+                    $("#console").text(text);
+                    // $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. solution time: ' +result.solution_time.toFixed(2) + ' sec. Additional info:' + JSON.stringify(result.info));
+                    // drawPath(_pointsContainer, "points_container",  result.path);
                   }
                   else
                   {

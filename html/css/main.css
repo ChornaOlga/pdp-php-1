@@ -57,6 +57,26 @@ body, html
     background: magenta;
 }
 
+.cluster0
+{
+    background: red !important;
+}
+
+.cluster2
+{
+    background: yellow !important;
+}
+
+.cluster3
+{
+    background: magenta !important;
+}
+
+.cluster1
+{
+    background: blue !important;
+}
+
 .hidden_until_file_choose
 {
     display:none;

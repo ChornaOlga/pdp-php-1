@@ -10,4 +10,5 @@ return array(
     $vendorDir . '/litvinenko/object/src/Lib/Varien_Object.php',
     $vendorDir . '/litvinenko/object/bootstrap.php',
     $baseDir . '/src/Lib/functions.php',
+    $baseDir . '/src/Lib/KMeans/KMeans.php',
 );
