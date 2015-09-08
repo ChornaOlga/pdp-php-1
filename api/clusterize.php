@@ -1,9 +1,5 @@
 <?php
-define('APP_ROOT_FOLDER',__DIR__.'/../');
-
-require APP_ROOT_FOLDER.'/vendor/autoload.php';
-require APP_ROOT_FOLDER.'/src/Lib/functions.php';
-
+require_once '../vendor/autoload.php';
 $response = [];
 
 // $_REQUEST['params'] = '{

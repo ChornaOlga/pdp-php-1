@@ -21,7 +21,7 @@ $pdpConfig = IO::readConfigFromIniFile($pdpConfigFile);
 // var_dump($pdpInfo);
 
 
-$solver =  App::getSingleton($solverClass);
+$solver = App::getSingleton($solverClass);
 $solver->_construct();
 $solver->addData(array_merge($pointInfo, $pdpConfig, [
     'evaluator' => new $evaluatorClass(['metrics'   => new $metricsClass])

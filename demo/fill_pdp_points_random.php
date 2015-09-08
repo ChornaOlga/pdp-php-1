@@ -3,9 +3,9 @@
 // php fill_pdp_points_random.php PAIR_COUNT [OUTPUT_FILENAME]
 
 include '../vendor/autoload.php';
-include 'PdpLauncher.php';
+// include 'PdpLauncher.php';
 
-$launcher = new PdpLauncher;
-$filename = empty($argv[2]) ? 'pdp_points.txt' : $argv[2];
+$launcher = new \Litvinenko\Combinatorics\Pdp\Pdp;
+$filename = empty($argv[2]) ? __DIR__.'/data/pdp_points.txt' : $argv[2];
 $data     = $launcher->generateRandomData($argv[1]);
-$launcher->writePdpPointsContent($filename, $data);
+$launcher->writePdpDataToFile($data, $filename);

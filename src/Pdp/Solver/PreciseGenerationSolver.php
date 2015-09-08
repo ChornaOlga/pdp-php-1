@@ -19,12 +19,12 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         'maximize_cost'        => 'required|boolean',
 
         // specifically data rules for this class
-        'depot'                => 'required|object:\Litvinenko\Combinatorics\Pdp\Point',
-        'points'               => 'required|array',
-        'weight_capacity'      => 'required|float_strict',
-        'load_area'            => 'required|array',
-        'check_loading'        => 'required|boolean',
-        'check_loading_command_prefix' => 'required',
+        'depot'           => 'required|object:\Litvinenko\Combinatorics\Pdp\Point',
+        'points'          => 'required|array',
+        'weight_capacity' => 'required|float_strict',
+        'load_area'       => 'required|array',
+        'check_loading'   => 'required|boolean',
+        'python_file'     => 'required',
 
         'evaluator' => 'required|object:\Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator',
 
@@ -96,7 +96,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         $result = true;
         if ($this->getCheckLoading())
         {
-            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity(), $this->getPoints());
+            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getPythonFile(), $this->getLoadArea(), $this->getWeightCapacity(), $this->getPoints());
             if (!$canLoad)
             {
                 App::dispatchEvent('cant_load', ['point_sequence' => $pointSequence]);

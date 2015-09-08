@@ -25,7 +25,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         'load_area'                        => 'required|array',
         'check_loading'                    => 'required|boolean',
         'check_loading_for_every_new_node' => 'required|boolean', // TODO: delete it in future
-        'check_loading_command_prefix'     => 'required',
+        'python_file'                      => 'required',
 
         'evaluator' => 'required|object:\Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator'
     );
@@ -184,7 +184,7 @@ class BranchBoundSolver extends \Litvinenko\Combinatorics\BranchBound\AbstractSo
         $result = true;
         if ($this->getCheckLoading())
         {
-            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity(), $this->getPoints());
+            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getPythonFile(), $this->getLoadArea(), $this->getWeightCapacity(), $this->getPoints());
             if (!$canLoad)
             {
                 $this->_logEvent('cant_load', ['point_sequence' => $pointSequence]);

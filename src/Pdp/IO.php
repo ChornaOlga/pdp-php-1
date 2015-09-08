@@ -4,6 +4,7 @@ namespace Litvinenko\Combinatorics\Pdp;
 use \Litvinenko\Common\Object;
 class IO
 {
+    /* deprecated. for old file format*/
     public static function readPointsFromFile($filename)
     {
         $points = [];
@@ -95,7 +96,7 @@ class IO
         {
             $result = [
                 'check_loading'                    => isset($config['general']['check_loading'])        ? (bool)$config['general']['check_loading']  : null,
-                'check_loading_command_prefix'     => isset($config['general']['check_loading_command_prefix']) ? $config['general']['check_loading_command_prefix'] : null,
+                'python_file'                      => isset($config['general']['python_file'])          ? $config['general']['python_file'] : null,
                 'check_loading_for_every_new_node' => isset($config['general']['check_loading_for_every_new_node']) ? (bool)$config['general']['check_loading_for_every_new_node'] : null,
                 'maximize_cost'                    => isset($config['general']['maximize_cost'])        ?(bool)$config['general']['maximize_cost']   : null,
                 'precise'                          => isset($config['general']['precise'])              ? (float)$config['general']['precise']       : null,
@@ -105,6 +106,10 @@ class IO
                 'weight_capacity'      => isset($config['load']['weight_capacity'])         ? (float)($config['load']['weight_capacity'])  : null,
                 'load_area'            => isset($config['load']['load_area'])               ? $config['load']['load_area']               : null,
                 ];
+        }
+        else
+        {
+            throw new Exception("Cannot read INI from file $filename");
         }
 
         return $result;
@@ -165,7 +170,7 @@ class IO
         return $result;
     }
 
-    public static function getBoxesTextForExternalPdpHelper($points)
+    public static function getBoxesTextForExternalPdpHelper(array $points)
     {
         $result = "\n";
 

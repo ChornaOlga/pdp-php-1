@@ -43,7 +43,7 @@ body, html
 }
 
 [data-shape=Circle].depot {
-        width: 30px; height: 30px; -moz-border-radius: 15px; -webkit-border-radius: 15px; border-radius: 15px;
+        width: 30px; height: 30px;/*  -moz-border-radius: 15px; -webkit-border-radius: 15px; border-radius: 15px; */
         left:0px;
         top:0px;
         font-size: 20px;
@@ -54,28 +54,30 @@ body, html
 
 .highlighted
 {
-    background: magenta;
+    width: 30px !important; height: 30px !important; -moz-border-radius: 15px !important; -webkit-border-radius: 15px !important; border-radius: 15px !important;
+    font-size: 20px !important;
+    z-index:999 !important;
 }
 
 .cluster0
 {
+    color:white;
     background: red !important;
 }
-
+.cluster1
+{
+    color:white;
+    background: blue !important;
+}
 .cluster2
 {
     background: yellow !important;
 }
-
 .cluster3
 {
     background: magenta !important;
 }
 
-.cluster1
-{
-    background: blue !important;
-}
 
 .hidden_until_file_choose
 {

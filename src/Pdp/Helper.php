@@ -143,7 +143,7 @@ class Helper extends \Litvinenko\Common\Object
         return (count( self::removeDepotFromPointSequence($pointSequence) )) ;
     }
 
-    public function canLoad($pointSequence, $checkLoadingCommandPrefix, $loadArea, $weightCapacity, $allPoints)
+    public function canLoad($pointSequence, $pythonFile, $loadArea, $weightCapacity, $allPoints)
     {
         $result = false;
 
@@ -156,11 +156,13 @@ class Helper extends \Litvinenko\Common\Object
             $this->setBoxesFileIsFilled(true);
         }
 
-        $cmdString = "{$checkLoadingCommandPrefix}" .
+        if (!file_exists($pythonFile)) throw new \Exception("Python file '$pythonFile' does not exist!");
+
+        $cmdString = "python $pythonFile" .
                         " -b {$boxFileName}" .
                         " -n "   . (int)(count($allPoints)/2) .
                         " -c \"" . implode(' ', $loadArea) . ' ' . $weightCapacity . "\"" .
-                        " -r \""  . implode(' ', Point::getPointIds($points)) . "  1\"" . 
+                        " -r \""  . implode(' ', Point::getPointIds($points)) . "  1\"" .
                         " -p";
         $cmdResult = exec($cmdString);
       //  echo $cmdResult . "\n";
