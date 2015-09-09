@@ -75,11 +75,12 @@ body, html
 #cluster_container li
 {
     padding-bottom: 10px;
+    font-size: .7em;
 }
 
-#cluster_container li .description
+#cluster_container li div
 {
-    font-size: .7em;
+    padding-bottom: 5px;
 }
 
 .cluster0

@@ -88,7 +88,6 @@
 
     _default_vehicle_count   = 3;
 
-    _currentPath = null;
 </script>
 
 <div class="jsc-sidebar-content jsc-sidebar-pulled sidebar" style="z-index:999">
@@ -105,9 +104,11 @@
             <button id="clusterize_button">Clusterize</button>
             <button id="reset_clusters_button">Reset clusters</button>
             <button id="solve_gen_all_button">Solve all clusters</button>
-            <button id="draw_all_paths_button">Draw all paths step by step</button>
+            <button id="draw_all_button">Draw all paths step by step</button>
+            <button id="clean_all_connections_button">Clean all connections</button>
+
             <!-- <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button> -->
-            <div id="console">
+            <div id="general_console">
                 Choose file and click "Load" to load data from server. Or type data by yourself
             </div>
         </div>
@@ -223,9 +224,17 @@
                     refreshDepot();
                 }
 
+                function _clearAllConnections() {
+                  _pointsContainer.detachEveryConnection();
+                }
+
                 function _resetClusters()
                 {
-                  _clusters = {0:Object.keys(_getPointsInfo())};
+                  _clusters = {0:{
+                    points:Object.keys(_getPointsInfo()).map(function(pointId) {
+                      return parseInt(pointId);
+                    })
+                  }};
                 }
 
                 function renderClusters(clusters)
@@ -238,14 +247,250 @@
 
                   for(var i=0;i<Object.keys(clusters).length;i++)
                   {
-                    clusters[i].forEach(function (pointId) {
+                    clusters[i].points.forEach(function (pointId) {
                       getPdpPoint(pointId).addClass('cluster'+i);
                     });
 
-                    $("#cluster_container li#cluster"+i+" label.description").text(clusters[i].join(','));
-                    $("#cluster_container li#cluster"+i).show();
+                    $("#cluster_container #cluster"+i+" .description").html('<b>Points</b>:' + clusters[i].points.join(','));
+
+                    if (_clusters[i].solution) {
+                      $("#cluster_container #cluster"+i+ ' .console').html(
+                        "<b>Best path</b>: "            + _clusters[i].solution.path.join(' ') +
+                        '<br/><b>Cost</b>:'             + _clusters[i].solution.path_cost +
+                        '<br/><b>Solution time</b>: '   +_clusters[i].solution.solution_time.toFixed(2) + ' sec' +
+                        '<br/><b>Additional info</b>:'  + JSON.stringify(_clusters[i].solution.info)
+                      );
+                    }
+
+                    $("#cluster_container #cluster"+i).show();
                   }
                 }
+
+                function getPointIdFromRowNumber (rowNumber) {
+                    return rowNumber + 1;
+                };
+
+                function getRowNumberFromPointId (pointId) {
+                    return pointId - 1;
+                };
+
+
+                function _getPointsInfo() {
+                  var data = _hot.getData();
+                  return data.reduce(function(array, value, i) {
+                    array[getPointIdFromRowNumber(i)] = value;
+                    return array;
+                  }, {});
+                }
+
+                function _getClusterPointsInfo(cluster_index) {
+                  if (!_clusters[cluster_index]) return false;
+
+                  var allPoints     = _getPointsInfo();
+                  var clusterPoints = _clusters[cluster_index].points;
+
+                  var result = {};
+                  for(var pointId in allPoints) {
+                    pointId = parseInt(pointId);
+                    if (clusterPoints.indexOf(pointId) != -1) result[pointId] = allPoints[pointId];
+                  }
+
+                  return result;
+                }
+
+                function _getDepotInfo() {
+                  return [$('#depot_x').val(), $('#depot_y').val()];
+                }
+
+                function _getConfigInfo() {
+                  return {
+                    precise: $('#precise').val(),
+                    weight_capacity: $('#weight_capacity').val(),
+                    load_area: {
+                      x: $('#load_area_x').val(),
+                      y: $('#load_area_y').val(),
+                      z: $('#load_area_z').val()
+                    }
+                  };
+                }
+
+                function _getSolveMethod() {
+                  return 'gen';
+                }
+
+                function getPointPositionsFromTableDataChanges(changes) {
+                    var positions = [];
+                    for (var i = 0; i < changes.length; i++) {
+                        // if column with point coordinates changed
+                        if ((changes[i][1] === 0) || (changes[i][1] === 1))
+                        {
+                            dimension = (changes[i][1] === 0) ? 'left' : 'top';
+                            positions[i] = {'point_id': getPointIdFromRowNumber(changes[i][0])};
+                            positions[i][dimension] = parseFloat(changes[i][3]);
+                        }
+                    }
+
+                    return positions;
+                };
+
+
+                function getRandomBetween(min, max)
+                {
+                    return Math.random() * (max - min) + min;
+                }
+
+                function fillTableRowWithRandomValues(table,rowNumber, fillOnlyCoords)
+                {
+                    var minRandomCoord     = 10;
+                    var maxRandomCoord     = 500;
+                    var minRandomBoxSize   = 1;
+                    var maxRandomBoxSize   = 20;
+                    var minRandomBoxWeight = 1;
+                    var maxRandomBoxWeight = 20;
+
+                    // coords
+                    table.setDataAtCell(rowNumber, 0, getRandomBetween(minRandomCoord,maxRandomCoord).toFixed(2) );
+                    table.setDataAtCell(rowNumber, 1, getRandomBetween(minRandomCoord,maxRandomCoord).toFixed(2) );
+
+                    if (!fillOnlyCoords) {
+                        // box dimensions
+                        table.setDataAtCell(rowNumber, 2, getRandomBetween(minRandomBoxSize,maxRandomBoxSize).toFixed(2) );
+                        table.setDataAtCell(rowNumber, 3, getRandomBetween(minRandomBoxSize,maxRandomBoxSize).toFixed(2) );
+                        table.setDataAtCell(rowNumber, 4, getRandomBetween(minRandomBoxSize,maxRandomBoxSize).toFixed(2) );
+
+                        // box weight
+                        table.setDataAtCell(rowNumber, 5, getRandomBetween(minRandomBoxWeight,maxRandomBoxWeight).toFixed(2) );
+                    }
+                }
+
+                // adds or removes rows according to pairCount (number of PDP point pairs)
+                function updateTablePairCount (table, newPairCount) {
+                    var rowCount     = table.countRows();
+                    var oldPairCount = Math.floor(rowCount / 2);
+                    var diff         = newPairCount - oldPairCount;
+
+                    if (diff === 0) {
+                       return;
+                    }
+
+                    if (diff < 0) {
+                        table.alter('remove_row', rowCount - Math.abs(diff), Math.abs(diff));
+                        table.alter('remove_row', newPairCount, Math.abs(diff));
+                    }
+                    if (diff > 0) {
+                        table.alter('insert_row', rowCount, diff);
+                        table.alter('insert_row', oldPairCount, diff);
+
+                        // if pair number increased, and we can fill cells with already loaded points, we do this
+                        // i.g., we:
+                        //  - loaded 5 point pairs
+                        //  - decreased number to 3
+                        //  - increased number to 7
+                        //  in this case, we want to add data about points 4 and 5 to table
+                        //
+                        // BUT we force new PDP points (points 6,7 from example above) to be empty. This is why we check 'data[data.length/2 + i]'
+                            var data = (typeof _lastLoadedData == 'undefined') ? [] : _lastLoadedData;
+                            for (var i = oldPairCount; i < (oldPairCount + diff); i++) {
+                                // if pair 'i' (BOTH pickup and delivery) loaded, restore them to table
+                                var useLoadedDataForNewRows = ((typeof data[i] !== 'undefined') && (typeof data[data.length/2 + i] !== 'undefined'));
+                                if (useLoadedDataForNewRows) {
+                                    for (var j = 0; j < table.countCols(); j++) {
+                                        table.setDataAtCell(i, j, data[i][j]);
+                                        table.setDataAtCell(newPairCount + i, j, data[data.length/2 + i][j]);
+                                    }
+                                }
+                                else {
+                                    fillTableRowWithRandomValues(table, i);
+                                    fillTableRowWithRandomValues(table, newPairCount + i);
+                                }
+                            }
+                    }
+                    //refresh table to redraw cells
+                    table.loadData(table.getData().slice(0));
+                }
+
+                function _sleep(milliSeconds){
+                  var resource;
+                  var response;
+                  if(typeof ActiveXObject == 'undefined'){
+                    resource = new XMLHttpRequest();
+                  }
+                  else{
+                    // IE
+                    resource = new ActiveXObject("Microsoft.XMLHTTP");
+                  }
+
+                  try{
+                    resource.open('GET', '../api/sleep.php?milliSeconds=' + milliSeconds, false);
+                    resource.send(null);
+                    response = resource.responseText; // JavaScript waits for response
+                  }
+                  catch(e){
+                    alert(e);
+                  }
+
+                  return true;
+                }
+
+                function drawPath(pointsContainer, pointsContainerId, path, color, drawIntervalMilliseconds) {
+                  drawIntervalMilliseconds = drawIntervalMilliseconds || 0;
+
+                  // var pdpPoints = jsPlumb.getSelector(".shape");
+                  var container = document.getElementById(pointsContainerId);
+
+                  _num = 0;
+                  for (var i=0; i < path.length-1; i++) {
+                        setTimeout(function(){
+                          pointsContainer.connect({
+                              source: getPdpPoint(path[_num]),
+                              target: getPdpPoint(path[_num+1]),
+                              connector:"Straight",
+                              overlays:["Arrow"],
+                              paintStyle:{ strokeStyle: color}
+                          });
+                          _num++;
+                          pointsContainer.repaintEverything();
+                        }, i*drawIntervalMilliseconds);
+                  }
+
+                }
+
+                function solveCluster(cluster_index)
+                {
+                    var params = {
+                      method: _getSolveMethod(),
+                      config: _getConfigInfo(),
+                      data: {
+                        depot: _getDepotInfo(),
+                        points:_getClusterPointsInfo(cluster_index)
+                      }
+                    };
+
+                    $("#cluster_container #cluster"+cluster_index+ ' .console').text('Please, wait for solution ...');
+                    $.ajax({
+                        url: "../api/solve.php",
+                        type: "POST",
+                        data: 'params=' + JSON.stringify(params),
+                        dataType: "json",
+                        success: function(result){
+                          if (result.path)
+                          {
+                            _clusters[cluster_index].solution = result;
+                            renderClusters(_clusters);
+                            drawPath(_pointsContainer, "points_container", _clusters[cluster_index].solution.path,$(".cluster"+cluster_index).css('backgroundColor'));
+                          }
+                          else
+                          {
+                            $("#cluster_container #cluster"+cluster_index+ ' .console').text("Error: " + JSON.stringify(result));
+                          }
+                        },
+                        error: function (request, status, error) {
+                          alert('Technical error '+ request.status +':'+ request.responseText);
+                          $("#cluster_container #cluster"+cluster_index+ ' .console').text('Technical error '+ request.status +':'+ request.responseText);
+                        }
+                    });
+                }
+
             </script>
 
         </div>
@@ -292,299 +537,132 @@
             <h1>Clusters</h1>
             <div id="cluster_container">
             <ul>
-              <li id="cluster0"><div  class="cluster0" data-shape="Circle">&nbsp;0</div><label   class="description"></label><hr></li>
-              <li id="cluster1"><div  class="cluster1" data-shape="Circle">&nbsp;1</div><label   class="description"></label><hr></li>
-              <li id="cluster2"><div  class="cluster2" data-shape="Circle">&nbsp;2</div><label   class="description"></label><hr></li>
-              <li id="cluster3"><div  class="cluster3" data-shape="Circle">&nbsp;3</div><label   class="description"></label><hr></li>
-              <li id="cluster4"><div  class="cluster4" data-shape="Circle">&nbsp;4</div><label   class="description"></label><hr></li>
-              <li id="cluster5"><div  class="cluster5" data-shape="Circle">&nbsp;5</div><label   class="description"></label><hr></li>
-              <li id="cluster6"><div  class="cluster6" data-shape="Circle">&nbsp;6</div><label   class="description"></label><hr></li>
-              <li id="cluster7"><div  class="cluster7" data-shape="Circle">&nbsp;7</div><label   class="description"></label><hr></li>
-              <li id="cluster8"><div  class="cluster8" data-shape="Circle">&nbsp;8</div><label   class="description"></label><hr></li>
-              <li id="cluster9"><div  class="cluster9" data-shape="Circle">&nbsp;9</div><label   class="description"></label><hr></li>
-              <li id="cluster10"><div class="cluster10" data-shape="Circle">&nbsp;10</div><label class="description"></label><hr></li>
+              <li id="cluster0">
+                <div>
+                  <span class="cluster0" data-shape="Circle">&nbsp;0</span>
+                  <button class="solve_cluster_button" data-cluster-id="0">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="0">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster1">
+                <div>
+                  <span class="cluster1" data-shape="Circle">&nbsp;1</span>
+                  <button class="solve_cluster_button" data-cluster-id="1">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="1">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster2">
+                <div>
+                  <span class="cluster2" data-shape="Circle">&nbsp;2</span>
+                  <button class="solve_cluster_button" data-cluster-id="2">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="2">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster3">
+                <div>
+                  <span class="cluster3" data-shape="Circle">&nbsp;3</span>
+                  <button class="solve_cluster_button" data-cluster-id="3">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="3">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster4">
+                <div>
+                  <span class="cluster4" data-shape="Circle">&nbsp;4</span>
+                  <button class="solve_cluster_button" data-cluster-id="4">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="4">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster5">
+                <div>
+                  <span class="cluster5" data-shape="Circle">&nbsp;5</span>
+                  <button class="solve_cluster_button" data-cluster-id="5">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="5">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster6">
+                <div>
+                  <span class="cluster6" data-shape="Circle">&nbsp;6</span>
+                  <button class="solve_cluster_button" data-cluster-id="6">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="6">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster7">
+                <div>
+                  <span class="cluster7" data-shape="Circle">&nbsp;7</span>
+                  <button class="solve_cluster_button" data-cluster-id="7">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="7">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster8">
+                <div>
+                  <span class="cluster8" data-shape="Circle">&nbsp;8</span>
+                  <button class="solve_cluster_button" data-cluster-id="8">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="8">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster9">
+                <div>
+                  <span class="cluster9" data-shape="Circle">&nbsp;9</span>
+                  <button class="solve_cluster_button" data-cluster-id="9">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="9">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
+              <li id="cluster10">
+                <div>
+                  <span class="cluster10" data-shape="Circle">&nbsp;10</span>
+                  <button class="solve_cluster_button" data-cluster-id="0">solve</button>
+                  <button class="draw_cluster_button" data-cluster-id="0">draw path</button>
+                </div>
+                <br/>
+                <div class="description"><b>Points</b>: </div>
+                <div class="console"></div>
+                <hr>
+              </li>
             </ul>
             </div>
         </div>
     </nav>
     <script>
-      // var
-      get = function(id) {
-        return document.getElementById(id);
-      },
-      container = get('pdp_table'),
-      exampleConsole = get('console'),
-      autosave = get('autosave'),
-      load = get('load'),
-      save = get('save');
-      _filenameContainer = get('pdp_points_filename');
-
-      pickupRenderer = function(instance, td, row, col, prop, value, cellProperties) {
-        Handsontable.renderers.TextRenderer.apply(this, arguments);
-        td.style.borderColor = 'green';
-        td.style.borderWidth = '2px';
-      };
-      deliveryRenderer = function(instance, td, row, col, prop, value, cellProperties) {
-        Handsontable.renderers.TextRenderer.apply(this, arguments);
-        td.style.backgroundColor = 'green';
-      };
-
-      disabledRenderer = function(instance, td, row, col, prop, value, cellProperties) {
-          Handsontable.renderers.TextRenderer.apply(this, arguments);
-          td.style.backgroundColor = 'grey';
-      }
-
-      _hot = new Handsontable(container, {
-        startRows: _pairCount * 2,
-        startCols: 6,
-        rowHeaders: true,
-        colHeaders: true,
-        minSpareRows: 0,
-        currentRowClassName: 'currentRow',
-        colHeaders: ['X', 'Y', 'box x', 'box y', 'box z', 'box weight'],
-        columnSorting: true,
-        // contextMenu: true,
-        contextMenuCopyPaste: {
-          swfPath: 'js/handsontable/zeroclipboard/ZeroClipboard.swf'
-        },
-        cells: function (row, col, prop) {
-          if (row < (this.instance.countRows() / 2) ) {
-            this.renderer = pickupRenderer;
-          }
-          else
-          {
-             this.renderer = deliveryRenderer;
-             if (col > 1)
-             {
-                var cellProperties = {};
-                cellProperties.readOnly = true;
-                cellProperties.renderer = disabledRenderer;
-                return cellProperties;
-             }
-          }
-        },
-        beforeChange: function (changes, source) {
-          //changes[i][0] - row number
-          //changes[i][1] - column number
-          //changes[i][3] - new value
-
-          // remove all non-number symbols
-           for (var i = changes.length - 1; i >= 0; i--) {
-              if (changes[i][3]) {
-                  changes[i][3] = changes[i][3].toString().replace(/[^0-9\.]/g,'');
-
-                  // don't allow to fill box fields for delivery points
-                  if ((changes[i][1] > 1) && changes[i][0] >= Math.floor(this.getData().length/2) ) // if changed cell column > 1 and this is delivery point, ..
-                  {
-                      changes[i][3] = '';
-                  }
-              }
-           }
-        },
-        afterChange: function (changes, source) {
-          refreshAllPdpPoints(this.getData());
-          if (typeof _pointsContainer !== "undefined") {
-              _pointsContainer.detachEveryConnection();
-          }
-
-          if (changes)
-          {
-              var newPairCount = Math.floor(this.getData().length/2);
-              var oldPairCount = $("#pdp_pairs_number").spinner().spinner("value" );
-              if (newPairCount != oldPairCount) {
-                  $("#pdp_pairs_number").spinner().spinner("value", newPairCount);
-              }
-
-          }
-        },
-        afterLoadData: function () {
-          var newPairCount = Math.floor(this.getData().length/2);
-          var oldPairCount = $("#pdp_pairs_number").spinner().spinner("value" );
-          if (newPairCount != oldPairCount) {
-              $("#pdp_pairs_number").spinner().spinner("value", newPairCount);
-          }
-
-          refreshAllPdpPoints(this.getData());
-        },
-        afterSelectionEndByProp: function (row, col) {
-          getAllPdpPoints().removeClass('highlighted');
-          getPdpPoint(getPointIdFromRowNumber(row)).addClass('highlighted');
-        }
-
-      });
-
-      loadJsonToTable = function(table, file) {
-        if (file) {
-          var reader = new FileReader();
-          reader.onload = function() {
-              try {
-                  var data = JSON.parse(this.result);
-
-                  // GLOBAL DEF
-                  _lastLoadedData = data.data;
-
-                  exampleConsole.innerHTML = 'Data loaded';
-                  // console.log(_lastLoadedData.slice(0));
-                  table.loadData(_lastLoadedData.slice(0));
-              }
-              catch (e) {
-                  exampleConsole.innerHTML = 'Data is incorrect. <br/>' + e;
-              }
-            };
-
-            reader.readAsText(file);
-          }
-      };
-
-      loadJsonFromFileContainerToMainTable = function(){
-          loadJsonToTable(_hot, _filenameContainer.files[0]);
-      };
-
-      Handsontable.Dom.addEvent(load, 'click', function(){
-          loadJsonFromFileContainerToMainTable();
-      });
-
-      Handsontable.Dom.addEvent(save, 'click', function() {
-        // // save all cell's data
-        ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
-          var response = JSON.parse(res.response);
-
-          if (response.result === 'ok') {
-            exampleConsole.innerHTML = 'Data saved';
-          }
-          else {
-            exampleConsole.innerHTML = 'Save error';
-          }
-        });
-      });
-
-      function getPointIdFromRowNumber (rowNumber) {
-          return rowNumber + 1;
-      };
-
-      function getRowNumberFromPointId (pointId) {
-          return pointId - 1;
-      };
-
-
-      function _getPointsInfo() {
-        var data = _hot.getData();
-        return data.reduce(function(array, value, i) {
-          array[getPointIdFromRowNumber(i)] = value;
-          return array;
-        }, {});
-      }
-
-      function _getDepotInfo() {
-        return [$('#depot_x').val(), $('#depot_y').val()];
-      }
-
-      function _getConfigInfo() {
-        return {
-          precise: $('#precise').val(),
-          weight_capacity: $('#weight_capacity').val(),
-          load_area: {
-            x: $('#load_area_x').val(),
-            y: $('#load_area_y').val(),
-            z: $('#load_area_z').val()
-          }
-        };
-      }
-
-      function _getSolveMethod() {
-        return 'gen';
-      }
-
-      function getPointPositionsFromTableDataChanges(changes) {
-          var positions = [];
-          for (var i = 0; i < changes.length; i++) {
-              // if column with point coordinates changed
-              if ((changes[i][1] === 0) || (changes[i][1] === 1))
-              {
-                  dimension = (changes[i][1] === 0) ? 'left' : 'top';
-                  positions[i] = {'point_id': getPointIdFromRowNumber(changes[i][0])};
-                  positions[i][dimension] = parseFloat(changes[i][3]);
-              }
-          }
-
-          return positions;
-      };
-
-
-      function getRandomBetween(min, max)
-      {
-          return Math.random() * (max - min) + min;
-      }
-
-      function fillTableRowWithRandomValues(table,rowNumber, fillOnlyCoords)
-      {
-          var minRandomCoord     = 10;
-          var maxRandomCoord     = 500;
-          var minRandomBoxSize   = 1;
-          var maxRandomBoxSize   = 20;
-          var minRandomBoxWeight = 1;
-          var maxRandomBoxWeight = 20;
-
-          // coords
-          table.setDataAtCell(rowNumber, 0, getRandomBetween(minRandomCoord,maxRandomCoord).toFixed(2) );
-          table.setDataAtCell(rowNumber, 1, getRandomBetween(minRandomCoord,maxRandomCoord).toFixed(2) );
-
-          if (!fillOnlyCoords) {
-              // box dimensions
-              table.setDataAtCell(rowNumber, 2, getRandomBetween(minRandomBoxSize,maxRandomBoxSize).toFixed(2) );
-              table.setDataAtCell(rowNumber, 3, getRandomBetween(minRandomBoxSize,maxRandomBoxSize).toFixed(2) );
-              table.setDataAtCell(rowNumber, 4, getRandomBetween(minRandomBoxSize,maxRandomBoxSize).toFixed(2) );
-
-              // box weight
-              table.setDataAtCell(rowNumber, 5, getRandomBetween(minRandomBoxWeight,maxRandomBoxWeight).toFixed(2) );
-          }
-      }
-
-      // adds or removes rows according to pairCount (number of PDP point pairs)
-      function updateTablePairCount (table, newPairCount) {
-          var rowCount     = table.countRows();
-          var oldPairCount = Math.floor(rowCount / 2);
-          var diff         = newPairCount - oldPairCount;
-
-          if (diff === 0) {
-             return;
-          }
-
-          if (diff < 0) {
-              table.alter('remove_row', rowCount - Math.abs(diff), Math.abs(diff));
-              table.alter('remove_row', newPairCount, Math.abs(diff));
-          }
-          if (diff > 0) {
-              table.alter('insert_row', rowCount, diff);
-              table.alter('insert_row', oldPairCount, diff);
-
-              // if pair number increased, and we can fill cells with already loaded points, we do this
-              // i.g., we:
-              //  - loaded 5 point pairs
-              //  - decreased number to 3
-              //  - increased number to 7
-              //  in this case, we want to add data about points 4 and 5 to table
-              //
-              // BUT we force new PDP points (points 6,7 from example above) to be empty. This is why we check 'data[data.length/2 + i]'
-                  var data = (typeof _lastLoadedData == 'undefined') ? [] : _lastLoadedData;
-                  for (var i = oldPairCount; i < (oldPairCount + diff); i++) {
-                      // if pair 'i' (BOTH pickup and delivery) loaded, restore them to table
-                      var useLoadedDataForNewRows = ((typeof data[i] !== 'undefined') && (typeof data[data.length/2 + i] !== 'undefined'));
-                      if (useLoadedDataForNewRows) {
-                          for (var j = 0; j < table.countCols(); j++) {
-                              table.setDataAtCell(i, j, data[i][j]);
-                              table.setDataAtCell(newPairCount + i, j, data[data.length/2 + i][j]);
-                          }
-                      }
-                      else {
-                          fillTableRowWithRandomValues(table, i);
-                          fillTableRowWithRandomValues(table, newPairCount + i);
-                      }
-                  }
-          }
-          //refresh table to redraw cells
-          table.loadData(table.getData().slice(0));
-      }
 
     </script>
 
@@ -593,6 +671,156 @@
     <script>
 
         $(function() {
+            // var
+            get = function(id) {
+              return document.getElementById(id);
+            },
+            container = get('pdp_table'),
+            exampleConsole = get('general_console'),
+            autosave = get('autosave'),
+            load = get('load'),
+            save = get('save');
+            _filenameContainer = get('pdp_points_filename');
+
+            pickupRenderer = function(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.TextRenderer.apply(this, arguments);
+              td.style.borderColor = 'green';
+              td.style.borderWidth = '2px';
+            };
+            deliveryRenderer = function(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.TextRenderer.apply(this, arguments);
+              td.style.backgroundColor = 'green';
+            };
+
+            disabledRenderer = function(instance, td, row, col, prop, value, cellProperties) {
+                Handsontable.renderers.TextRenderer.apply(this, arguments);
+                td.style.backgroundColor = 'grey';
+            }
+
+            _hot = new Handsontable(container, {
+              startRows: _pairCount * 2,
+              startCols: 6,
+              rowHeaders: true,
+              colHeaders: true,
+              minSpareRows: 0,
+              currentRowClassName: 'currentRow',
+              colHeaders: ['X', 'Y', 'box x', 'box y', 'box z', 'box weight'],
+              columnSorting: true,
+              // contextMenu: true,
+              contextMenuCopyPaste: {
+                swfPath: 'js/handsontable/zeroclipboard/ZeroClipboard.swf'
+              },
+              cells: function (row, col, prop) {
+                if (row < (this.instance.countRows() / 2) ) {
+                  this.renderer = pickupRenderer;
+                }
+                else
+                {
+                   this.renderer = deliveryRenderer;
+                   if (col > 1)
+                   {
+                      var cellProperties = {};
+                      cellProperties.readOnly = true;
+                      cellProperties.renderer = disabledRenderer;
+                      return cellProperties;
+                   }
+                }
+              },
+              beforeChange: function (changes, source) {
+                //changes[i][0] - row number
+                //changes[i][1] - column number
+                //changes[i][3] - new value
+
+                // remove all non-number symbols
+                 for (var i = changes.length - 1; i >= 0; i--) {
+                    if (changes[i][3]) {
+                        changes[i][3] = changes[i][3].toString().replace(/[^0-9\.]/g,'');
+
+                        // don't allow to fill box fields for delivery points
+                        if ((changes[i][1] > 1) && changes[i][0] >= Math.floor(this.getData().length/2) ) // if changed cell column > 1 and this is delivery point, ..
+                        {
+                            changes[i][3] = '';
+                        }
+                    }
+                 }
+              },
+              afterChange: function (changes, source) {
+                refreshAllPdpPoints(this.getData());
+                if (typeof _pointsContainer !== "undefined") {
+                    _pointsContainer.detachEveryConnection();
+                }
+
+                if (changes)
+                {
+                    var newPairCount = Math.floor(this.getData().length/2);
+                    var oldPairCount = $("#pdp_pairs_number").spinner().spinner("value" );
+                    if (newPairCount != oldPairCount) {
+                        $("#pdp_pairs_number").spinner().spinner("value", newPairCount);
+                    }
+
+                }
+              },
+              afterLoadData: function () {
+                var newPairCount = Math.floor(this.getData().length/2);
+                var oldPairCount = $("#pdp_pairs_number").spinner().spinner("value" );
+                if (newPairCount != oldPairCount) {
+                    $("#pdp_pairs_number").spinner().spinner("value", newPairCount);
+                }
+
+                refreshAllPdpPoints(this.getData());
+              },
+              afterSelectionEndByProp: function (row, col) {
+                getAllPdpPoints().removeClass('highlighted');
+                getPdpPoint(getPointIdFromRowNumber(row)).addClass('highlighted');
+              }
+
+            });
+
+            loadJsonToTable = function(table, file) {
+              if (file) {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    try {
+                        var data = JSON.parse(this.result);
+
+                        // GLOBAL DEF
+                        _lastLoadedData = data.data;
+
+                        exampleConsole.innerHTML = 'Data loaded';
+                        // console.log(_lastLoadedData.slice(0));
+                        table.loadData(_lastLoadedData.slice(0));
+                    }
+                    catch (e) {
+                        exampleConsole.innerHTML = 'Data is incorrect. <br/>' + e;
+                    }
+                  };
+
+                  reader.readAsText(file);
+                }
+            };
+
+            loadJsonFromFileContainerToMainTable = function(){
+                loadJsonToTable(_hot, _filenameContainer.files[0]);
+            };
+
+            Handsontable.Dom.addEvent(load, 'click', function(){
+                loadJsonFromFileContainerToMainTable();
+            });
+
+            Handsontable.Dom.addEvent(save, 'click', function() {
+              // // save all cell's data
+              ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
+                var response = JSON.parse(res.response);
+
+                if (response.result === 'ok') {
+                  exampleConsole.innerHTML = 'Data saved';
+                }
+                else {
+                  exampleConsole.innerHTML = 'Save error';
+                }
+              });
+            });
+
             $('#jsi-nav').sidebar({
                 trigger: '.jsc-sidebar-trigger',
                 scrollbarDisplay: true
@@ -697,50 +925,7 @@
             renderClusters(_clusters);
         });
 
-        function _sleep(milliSeconds){
-          var resource;
-          var response;
-          if(typeof ActiveXObject == 'undefined'){
-            resource = new XMLHttpRequest();
-          }
-          else{
-            // IE
-            resource = new ActiveXObject("Microsoft.XMLHTTP");
-          }
 
-          try{
-            resource.open('GET', '../api/sleep.php?milliSeconds=' + milliSeconds, false);
-            resource.send(null);
-            response = resource.responseText; // JavaScript waits for response
-          }
-          catch(e){
-            alert(e);
-          }
-
-          return true;
-        }
-
-        function drawPath(pointsContainer, pointsContainerId, path, drawIntervalMilliseconds) {
-          drawIntervalMilliseconds = drawIntervalMilliseconds || 0;
-          pointsContainer.detachEveryConnection();
-          // var pdpPoints = jsPlumb.getSelector(".shape");
-          var container = document.getElementById(pointsContainerId);
-
-          _num = 0;
-          for (var i=0; i < path.length-1; i++) {
-                setTimeout(function(){
-                  pointsContainer.connect({
-                      source: getPdpPoint(path[_num]),
-                      target: getPdpPoint(path[_num+1]),
-                      connector:"Straight",
-                      overlays:["Arrow"]
-                  });
-                  _num++;
-                  pointsContainer.repaintEverything();
-                }, i*drawIntervalMilliseconds);
-          }
-
-        }
         // function drawPath(pointsContainer, pointsContainerId, path, drawIntervalMilliseconds) {
 
         //     pointsContainer.detachEveryConnection();
@@ -761,42 +946,30 @@
         //     pointsContainer.repaintEverything();
         // };
 
-        $('#solve_gen_all_button').on('click', function (e) {
-            var params = {
-              method: _getSolveMethod(),
-              config: _getConfigInfo(),
-              data: {
-                depot: _getDepotInfo(),
-                points:_getPointsInfo()
-              }
-            };
+        $('#solve_gen_all_button').on('click', function (event) {
 
-            $("#console").text('Please, wait for solution ...');
-            $.ajax({
-                url: "../api/solve.php",
-                type: "POST",
-                data: 'params=' + JSON.stringify(params),
-                dataType: "json",
-                success: function(result){
-                  if (result.path)
-                  {
-                    _currentPath = result.path;
-                    $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. solution time: ' +result.solution_time.toFixed(2) + ' sec. Additional info:' + JSON.stringify(result.info));
-                    drawPath(_pointsContainer, "points_container", _currentPath);
-                  }
-                  else
-                  {
-                    $("#console").text("Error: " + JSON.stringify(result));
-                  }
-                },
-                error: function (request, status, error) {
-                   $("#console").text('Technical error '+ request.status +':'+ error);
-                }
-            });
         });
 
-        $('#draw_all_paths_button').click(function () {
-          drawPath(_pointsContainer, "points_container", _currentPath, 500);
+        $('.solve_cluster_button').on('click', function (event) {
+          var cluster_index = $( event.target ).data('cluster-id');
+          if (_clusters[cluster_index].points.length){
+            solveCluster(cluster_index);
+          }
+        });
+
+        $('.draw_cluster_button').on('click', function (event) {
+          var cluster_index = $( event.target ).data('cluster-id');
+          if (_clusters[cluster_index].solution){
+            drawPath(_pointsContainer, "points_container", _clusters[cluster_index].solution.path, $(".cluster"+cluster_index).css('backgroundColor'), 500);
+          }
+        });
+
+        $('#draw_all_button').click(function () {
+          drawPath(_pointsContainer, "points_container", _clusters, 500);
+        });
+
+        $('#clean_all_connections_button').click(function () {
+          _clearAllConnections();
         });
 
         $('#reset_clusters_button').click(function () {
@@ -805,7 +978,7 @@
         });
 
         $('#clusterize_button').click(function () {
-            $("#console").text('Please, wait for solution ...');
+            $("#general_console").text('Please, wait for solution ...');
 
             $.ajax({
                 url: "../api/clusterize.php",
@@ -827,22 +1000,24 @@
                       // numerize clusters from 1
                       text += 'Cluster ' + (cluster_index) + ': points ' + cluster.join(',') + ' . ';
 
-                      _clusters[cluster_index] = cluster;
+                      _clusters[cluster_index]={};
+                      _clusters[cluster_index].points = cluster;
                     });
 
                     renderClusters(_clusters);
+                    _clearAllConnections();
 
-                    $("#console").text(text);
-                    // $("#console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. solution time: ' +result.solution_time.toFixed(2) + ' sec. Additional info:' + JSON.stringify(result.info));
+                    $("#general_console").text(text);
+                    // $("#general_console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. solution time: ' +result.solution_time.toFixed(2) + ' sec. Additional info:' + JSON.stringify(result.info));
                     // drawPath(_pointsContainer, "points_container",  result.path);
                   }
                   else
                   {
-                    $("#console").text("Error: " + JSON.stringify(result));
+                    $("#general_console").text("Error: " + JSON.stringify(result));
                   }
                 },
                 error: function (request, status, error) {
-                   $("#console").text('Technical error '+ request.status +':'+ error);
+                   $("#general_console").text('Technical error '+ request.status +':'+ error);
                 }
             });
         });

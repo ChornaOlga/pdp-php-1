@@ -81,8 +81,8 @@ class Pdp extends \Litvinenko\Common\Object
     protected static function createPointsFromArray($data)
     {
         $points = [];
-
-        $count = count($data);
+/*!! hardcode*/$totalPointCount=20;
+        // $count = count($data);
         foreach ($data as $id => $pointInfo)
         {
             $id = ($id == 'depot') ? Point::DEPOT_ID : (int)$id;
@@ -104,10 +104,10 @@ class Pdp extends \Litvinenko\Common\Object
             }
             else
             {
-                $isPickup = ($id <= $count/2);
+                $isPickup = ($id <= $totalPointCount/2);
                 $newPoint->addData([
                     'type'    => $isPickup ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY,
-                    'pair_id' => $isPickup ? ($id + $count/2)   : ($id - $count/2),
+                    'pair_id' => $isPickup ? ($id + $totalPointCount/2)   : ($id - $totalPointCount/2),
                     ]);
             }
             $points[$id] = $newPoint;
