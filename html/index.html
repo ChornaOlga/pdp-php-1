@@ -104,7 +104,8 @@
             <button id="clusterize_button">Clusterize</button>
             <button id="reset_clusters_button">Reset clusters</button>
             <button id="solve_gen_all_button">Solve all clusters</button>
-            <button id="draw_all_button">Draw all paths step by step</button>
+            <button id="draw_all_paths_button">Draw all paths</button>
+            <button id="draw_all_step_by_step_button">Draw all paths step by step</button>
             <button id="clean_all_connections_button">Clean all connections</button>
 
             <!-- <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button> -->
@@ -224,8 +225,17 @@
                     refreshDepot();
                 }
 
-                function _clearAllConnections() {
-                  _pointsContainer.detachEveryConnection();
+                function _clearAllPaths() {
+                  for (var cluster_index in _clusters) {
+                    _clearClusterPath(parseInt(cluster_index));
+                  }
+                }
+
+                function _clearClusterPath(cluster_index)
+                {
+                  $.each(_clusters[cluster_index].points, function( index, pointId ) {
+                    _pointsContainer.detachAllConnections(getPdpPoint(pointId));
+                  });
                 }
 
                 function _resetClusters()
@@ -251,7 +261,8 @@
                       getPdpPoint(pointId).addClass('cluster'+i);
                     });
 
-                    $("#cluster_container #cluster"+i+" .description").html('<b>Points</b>:' + clusters[i].points.join(','));
+                    var pointsText = (Object.keys(clusters[i].points).length > 0) ? clusters[i].points.join(',') : '<no points>';
+                    $("#cluster_container #cluster"+i+" .description").html('<b>Points</b>:' + pointsText);
 
                     if (_clusters[i].solution) {
                       $("#cluster_container #cluster"+i+ ' .console').html(
@@ -261,8 +272,17 @@
                         '<br/><b>Additional info</b>:'  + JSON.stringify(_clusters[i].solution.info)
                       );
                     }
+                    else{
+                      $("#cluster_container #cluster"+i+ ' .console').html("No path hasn't obtained for cluster yet");
+                    }
 
                     $("#cluster_container #cluster"+i).show();
+                  }
+                }
+
+                function _drawClusterPath(cluster_index, drawIntervalMilliseconds) {
+                  if (_clusters[cluster_index].solution) {
+                    drawPath(_pointsContainer, "points_container", _clusters[cluster_index].solution.path, $(".cluster"+cluster_index).css('backgroundColor'), drawIntervalMilliseconds);
                   }
                 }
 
@@ -455,40 +475,47 @@
 
                 }
 
-                function solveCluster(cluster_index)
+                function _solveCluster(cluster_index)
                 {
-                    var params = {
-                      method: _getSolveMethod(),
-                      config: _getConfigInfo(),
-                      data: {
-                        depot: _getDepotInfo(),
-                        points:_getClusterPointsInfo(cluster_index)
-                      }
-                    };
+                  var console = $("#cluster_container #cluster"+cluster_index+ ' .console');
 
-                    $("#cluster_container #cluster"+cluster_index+ ' .console').text('Please, wait for solution ...');
-                    $.ajax({
-                        url: "../api/solve.php",
-                        type: "POST",
-                        data: 'params=' + JSON.stringify(params),
-                        dataType: "json",
-                        success: function(result){
-                          if (result.path)
-                          {
-                            _clusters[cluster_index].solution = result;
-                            renderClusters(_clusters);
-                            drawPath(_pointsContainer, "points_container", _clusters[cluster_index].solution.path,$(".cluster"+cluster_index).css('backgroundColor'));
-                          }
-                          else
-                          {
-                            $("#cluster_container #cluster"+cluster_index+ ' .console').text("Error: " + JSON.stringify(result));
-                          }
-                        },
-                        error: function (request, status, error) {
-                          alert('Technical error '+ request.status +':'+ request.responseText);
-                          $("#cluster_container #cluster"+cluster_index+ ' .console').text('Technical error '+ request.status +':'+ request.responseText);
+                  var params = {
+                    method: _getSolveMethod(),
+                    config: _getConfigInfo(),
+                    data: {
+                      depot: _getDepotInfo(),
+                      points:_getClusterPointsInfo(cluster_index)
+                    }
+                  };
+
+                  if (Object.keys(params.data.points).length == 0){
+                    return false;
+                  }
+
+                  console.text('Please, wait for solution ...');
+                  $.ajax({
+                      url: "../api/solve.php",
+                      type: "POST",
+                      data: 'params=' + JSON.stringify(params),
+                      dataType: "json",
+                      success: function(result){
+                        if (result.path)
+                        {
+                          _clusters[cluster_index].solution = result;
+                          renderClusters(_clusters);
+                          _clearClusterPath(cluster_index);
+                          drawPath(_pointsContainer, "points_container", _clusters[cluster_index].solution.path,$(".cluster"+cluster_index).css('backgroundColor'));
                         }
-                    });
+                        else
+                        {
+                          console.text("Error: " + JSON.stringify(result));
+                        }
+                      },
+                      error: function (request, status, error) {
+                        alert('Technical error '+ request.status +':'+ request.responseText);
+                        console.text('Technical error '+ request.status +':'+ request.responseText);
+                      }
+                  });
                 }
 
             </script>
@@ -541,7 +568,8 @@
                 <div>
                   <span class="cluster0" data-shape="Circle">&nbsp;0</span>
                   <button class="solve_cluster_button" data-cluster-id="0">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="0">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="0">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="0">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -552,7 +580,8 @@
                 <div>
                   <span class="cluster1" data-shape="Circle">&nbsp;1</span>
                   <button class="solve_cluster_button" data-cluster-id="1">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="1">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="1">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="1">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -563,7 +592,8 @@
                 <div>
                   <span class="cluster2" data-shape="Circle">&nbsp;2</span>
                   <button class="solve_cluster_button" data-cluster-id="2">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="2">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="2">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="2">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -574,7 +604,8 @@
                 <div>
                   <span class="cluster3" data-shape="Circle">&nbsp;3</span>
                   <button class="solve_cluster_button" data-cluster-id="3">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="3">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="3">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="3">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -585,7 +616,8 @@
                 <div>
                   <span class="cluster4" data-shape="Circle">&nbsp;4</span>
                   <button class="solve_cluster_button" data-cluster-id="4">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="4">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="4">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="4">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -596,7 +628,8 @@
                 <div>
                   <span class="cluster5" data-shape="Circle">&nbsp;5</span>
                   <button class="solve_cluster_button" data-cluster-id="5">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="5">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="5">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="5">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -607,7 +640,8 @@
                 <div>
                   <span class="cluster6" data-shape="Circle">&nbsp;6</span>
                   <button class="solve_cluster_button" data-cluster-id="6">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="6">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="6">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="6">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -618,7 +652,8 @@
                 <div>
                   <span class="cluster7" data-shape="Circle">&nbsp;7</span>
                   <button class="solve_cluster_button" data-cluster-id="7">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="7">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="7">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="7">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -629,7 +664,8 @@
                 <div>
                   <span class="cluster8" data-shape="Circle">&nbsp;8</span>
                   <button class="solve_cluster_button" data-cluster-id="8">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="8">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="8">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="8">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -640,7 +676,8 @@
                 <div>
                   <span class="cluster9" data-shape="Circle">&nbsp;9</span>
                   <button class="solve_cluster_button" data-cluster-id="9">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="9">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="9">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="9">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -651,7 +688,8 @@
                 <div>
                   <span class="cluster10" data-shape="Circle">&nbsp;10</span>
                   <button class="solve_cluster_button" data-cluster-id="0">solve</button>
-                  <button class="draw_cluster_button" data-cluster-id="0">draw path</button>
+                  <button class="draw_cluster_path_button" data-cluster-id="0">draw path</button>
+                  <button class="clear_cluster_path_button" data-cluster-id="0">clear path</button>
                 </div>
                 <br/>
                 <div class="description"><b>Points</b>: </div>
@@ -946,35 +984,49 @@
         //     pointsContainer.repaintEverything();
         // };
 
-        $('#solve_gen_all_button').on('click', function (event) {
 
-        });
 
         $('.solve_cluster_button').on('click', function (event) {
           var cluster_index = $( event.target ).data('cluster-id');
-          if (_clusters[cluster_index].points.length){
-            solveCluster(cluster_index);
-          }
+          _solveCluster(cluster_index);
         });
 
-        $('.draw_cluster_button').on('click', function (event) {
+        $('.draw_cluster_path_button').on('click', function (event) {
           var cluster_index = $( event.target ).data('cluster-id');
           if (_clusters[cluster_index].solution){
-            drawPath(_pointsContainer, "points_container", _clusters[cluster_index].solution.path, $(".cluster"+cluster_index).css('backgroundColor'), 500);
+            _clearClusterPath(cluster_index);
+            _drawClusterPath(cluster_index, 500);
           }
         });
 
-        $('#draw_all_button').click(function () {
-          drawPath(_pointsContainer, "points_container", _clusters, 500);
+        $('.clear_cluster_path_button').click(function (event) {
+          var cluster_index = $( event.target ).data('cluster-id');
+          _clearClusterPath(cluster_index);
         });
 
-        $('#clean_all_connections_button').click(function () {
-          _clearAllConnections();
-        });
+        // ---
 
         $('#reset_clusters_button').click(function () {
           _resetClusters();
+          _clearAllPaths();
           renderClusters(_clusters);
+        });
+
+        $('#solve_gen_all_button').on('click', function (event) {
+          for (var cluster_index in _clusters) {
+            _solveCluster(parseInt(cluster_index));
+          }
+        });
+
+        $('#clean_all_connections_button').click(function () {
+          _clearAllPaths();
+        });
+
+        $('#draw_all_paths_button').on('click', function () {
+          for (var cluster_index in _clusters) {
+            var cluster_index = parseInt(cluster_index);
+            _drawClusterPath(cluster_index);
+          }
         });
 
         $('#clusterize_button').click(function () {
@@ -1005,7 +1057,7 @@
                     });
 
                     renderClusters(_clusters);
-                    _clearAllConnections();
+                    _clearAllPaths();
 
                     $("#general_console").text(text);
                     // $("#general_console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. solution time: ' +result.solution_time.toFixed(2) + ' sec. Additional info:' + JSON.stringify(result.info));
