@@ -20,6 +20,13 @@ body, html
 {
 
 }
+
+.ui-accordion-content
+{
+    padding: 0 !important;
+    background: inherit;
+}
+
 #points_container
 {
     /*height:100%;*/
@@ -35,6 +42,12 @@ body, html
 .delivery
 {
     background: green;
+}
+
+[data-shape=Circle].pickup {
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
 }
 
 .depot
@@ -59,15 +72,23 @@ body, html
     z-index:999 !important;
 }
 
+#cluster_container li
+{
+    padding-bottom: 10px;
+}
+
+#cluster_container li .description
+{
+    font-size: .7em;
+}
+
 .cluster0
 {
-    color:white;
-    background: red !important;
+    background: white !important;;
 }
 .cluster1
 {
-    color:white;
-    background: blue !important;
+    background: green !important;;
 }
 .cluster2
 {
@@ -76,6 +97,41 @@ body, html
 .cluster3
 {
     background: magenta !important;
+}
+.cluster4
+{
+    color:white;
+    background: blue !important;
+}
+.cluster5
+{
+    color:white;
+    background: red !important;
+}
+.cluster6
+{
+    color: white;
+    background: black !important;
+}
+.cluster7
+{
+    color: white;
+    background: cyan !important;
+}
+.cluster8
+{
+    color: white;
+    background: orange !important;
+}
+.cluster9
+{
+    color: white;
+    background: pink !important;
+}
+.cluster10
+{
+    color: white;
+    background: lime !important;
 }
 
 
@@ -86,7 +142,7 @@ body, html
 
 .currentRow
 {
-    background-color: magenta !important;
+    background-color: yellow !important;
 }
 /**/
 .link-menu {
