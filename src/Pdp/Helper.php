@@ -148,7 +148,7 @@ class Helper extends \Litvinenko\Common\Object
         $result = false;
 
         $points = self::removeDepotFromPointSequence($pointSequence);
-        $boxFileName = 'boxes.txt';
+        $boxFileName = dirname($pythonFile).'/boxes.txt';
 
         if (!$this->getBoxesFileIsFilled())
         {

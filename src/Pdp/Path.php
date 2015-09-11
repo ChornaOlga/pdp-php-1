@@ -36,6 +36,36 @@ class Path extends \Litvinenko\Common\Object
     }
 
     /**
+     * Returns certain params of all path points
+     *
+     * @return array
+     */
+    public function getPointsParams($params)
+    {
+        $result = [];
+
+        foreach ($this->getPoints() as $point)
+        {
+            if (is_array($params))
+            {
+                $row = [];
+                foreach ($params as $param)
+                {
+                    $row[] = $point->getData($param);
+                }
+
+                $result[] = $row;
+            }
+            else
+            {
+                $result[] = $point->getData($params);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns total weight of currently loaded boxes
      *
      * @return array

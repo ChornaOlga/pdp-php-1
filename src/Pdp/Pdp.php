@@ -78,16 +78,18 @@ class Pdp extends \Litvinenko\Common\Object
       return json_decode(file_get_contents($filename), true);
     }
 
-    protected static function createPointsFromArray($data, $totalPairCount = null)
+    protected static function createPointsFromArray($data)
     {
         $points = [];
-        $pairCount = ($totalPairCount) ? $totalPairCount : (count($data)/2);
+        $pairCount = count($data)/2;
 
-        foreach ($data as $id => $pointInfo)
+        $i = 1;
+        foreach ($data as $display_id => $pointInfo)
         {
-            $id = ($id == 'depot') ? Point::DEPOT_ID : (int)$id;
+            $id = ($display_id == 0) ? Point::DEPOT_ID : $i++;
             $newPoint = new Point([
                 'id'                  => $id,
+                'display_id'          => $display_id,
                 'x'                   => floatval($pointInfo[0]),
                 'y'                   => floatval($pointInfo[1]),
                 'box_dimensions'      => isset($pointInfo[2]) ? ['x' => floatval($pointInfo[2]) , 'y' => floatval($pointInfo[3]), 'z' => floatval($pointInfo[4])] : null,
@@ -111,6 +113,7 @@ class Pdp extends \Litvinenko\Common\Object
                     ]);
             }
             $points[$id] = $newPoint;
+
         }
 
         // assign to each delivery point box weight = -1*<box weight of correspoding pickup>
@@ -172,16 +175,8 @@ class Pdp extends \Litvinenko\Common\Object
     $solver = App::getSingleton($solverClass);
     $solver->_construct();
 
-    if (isset($config['total_pair_count'])) {
-      $totalPairCount = $config['total_pair_count'];
-      unset($config['total_pair_count']);
-    }
-    else {
-      $totalPairCount = null;
-    }
-
     $solver->addData(array_merge($config, [
-        'depot'     => self::createPointsFromArray(array('depot' => $data['depot'])),
+        'depot'     => self::createPointsFromArray(array(0 => $data['depot'])),
         'points'    => self::createPointsFromArray($data['points'], $totalPairCount),
         'evaluator' => new $evaluatorClass(['metrics'   => new $metricsClass])
         ])
@@ -222,7 +217,7 @@ class Pdp extends \Litvinenko\Common\Object
         // printf('All other operations took %.4F seconds', App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart());
 
         $result = [
-            'path'          => $bestPath->getPointIds(),
+            'path'          => $bestPath->getPointsParams('display_id'),
             'path_cost'     => $bestCost,
             'solution_time' => $solutionTime,
             'info'      => [

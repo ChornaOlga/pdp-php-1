@@ -21,6 +21,16 @@ body, html
 
 }
 
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+input#python_file {
+    font-size:14px;
+    display: inline-block;
+}
+
 .ui-accordion-content
 {
     padding: 0 !important;

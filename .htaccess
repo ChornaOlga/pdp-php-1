@@ -1,0 +1,4 @@
+AuthName "How about authorization?"
+AuthType Basic
+Require valid-user
+AuthUserFile /путь/к/файлу/.htpasswd
