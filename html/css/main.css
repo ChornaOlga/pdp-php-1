@@ -75,7 +75,7 @@ input#python_file {
 }
 
 
-.highlighted
+.highlighted, #cluster_container span[data-shape=Circle]
 {
     width: 30px !important; height: 30px !important; -moz-border-radius: 15px !important; -webkit-border-radius: 15px !important; border-radius: 15px !important;
     font-size: 20px !important;

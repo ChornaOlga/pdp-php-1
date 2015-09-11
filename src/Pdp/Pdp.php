@@ -177,7 +177,7 @@ class Pdp extends \Litvinenko\Common\Object
 
     $solver->addData(array_merge($config, [
         'depot'     => self::createPointsFromArray(array(0 => $data['depot'])),
-        'points'    => self::createPointsFromArray($data['points'], $totalPairCount),
+        'points'    => self::createPointsFromArray($data['points']),
         'evaluator' => new $evaluatorClass(['metrics'   => new $metricsClass])
         ])
     );
