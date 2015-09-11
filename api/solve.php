@@ -95,7 +95,6 @@ $response = [];
 // var_dump($_REQUEST['params']);
 if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_REQUEST['params'], true)) && (is_array($params)))
 {
-
     $response = $launcher->getSolution($params['data'], $params['config'], $params['method']);
 }
 else

@@ -78,11 +78,11 @@ class Pdp extends \Litvinenko\Common\Object
       return json_decode(file_get_contents($filename), true);
     }
 
-    protected static function createPointsFromArray($data)
+    protected static function createPointsFromArray($data, $totalPairCount = null)
     {
         $points = [];
-/*!! hardcode*/$totalPointCount=20;
-        // $count = count($data);
+        $pairCount = ($totalPairCount) ? $totalPairCount : (count($data)/2);
+
         foreach ($data as $id => $pointInfo)
         {
             $id = ($id == 'depot') ? Point::DEPOT_ID : (int)$id;
@@ -104,10 +104,10 @@ class Pdp extends \Litvinenko\Common\Object
             }
             else
             {
-                $isPickup = ($id <= $totalPointCount/2);
+                $isPickup = ($id <= $pairCount);
                 $newPoint->addData([
                     'type'    => $isPickup ? Point::TYPE_PICKUP : Point::TYPE_DELIVERY,
-                    'pair_id' => $isPickup ? ($id + $totalPointCount/2)   : ($id - $totalPointCount/2),
+                    'pair_id' => $isPickup ? ($id + $pairCount)   : ($id - $pairCount),
                     ]);
             }
             $points[$id] = $newPoint;
@@ -171,9 +171,18 @@ class Pdp extends \Litvinenko\Common\Object
 
     $solver = App::getSingleton($solverClass);
     $solver->_construct();
+
+    if (isset($config['total_pair_count'])) {
+      $totalPairCount = $config['total_pair_count'];
+      unset($config['total_pair_count']);
+    }
+    else {
+      $totalPairCount = null;
+    }
+
     $solver->addData(array_merge($config, [
         'depot'     => self::createPointsFromArray(array('depot' => $data['depot'])),
-        'points'    => self::createPointsFromArray($data['points']),
+        'points'    => self::createPointsFromArray($data['points'], $totalPairCount),
         'evaluator' => new $evaluatorClass(['metrics'   => new $metricsClass])
         ])
     );
