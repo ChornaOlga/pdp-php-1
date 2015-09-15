@@ -44,7 +44,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
     {
         // $this->validate();
         // $this->getHelper()->validateObjects($this->getPoints());
-
+        // $this->_checks=0;
         $generator = new Generator([
             'tuple_length'        => Point::getPointCount($this->getPoints()),
             'generating_elements' => Helper::getGeneratorDataFromPoints($this->getPoints()),
@@ -79,6 +79,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         }
 
         $this->setGeneratedPointSequences($pointSequences);
+        // echo $this->_checks."\n";
         return new Path(['points' => $bestPointSequence]);
     }
 
@@ -96,14 +97,25 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
 
         $pointSequence = array_merge(Helper::getPointSequenceFromTuple($current_tuple), [$candidate]);
 
-        $checkLoading = (rand(0,100) < $this->getData('check_transitional_loading_probability'));
+        $checkLoading = ($this->getPrecise() == 100)
+                        ? false
+                        : (
+                            rand(0,100) < $this->getData('check_transitional_loading_probability') &&
+                            $this->_lastPointIsPickup($pointSequence)
+                          );
 
         // if needed, check 3D constraints
         $event->getResultContainer()->result = ($checkLoading) ? $this->canLoad($pointSequence) : true;
     }
 
+    protected function _lastPointIsPickup($pointSequence)
+    {
+        return end($pointSequence)->isPickup();
+    }
+
     protected function canLoad($pointSequence)
     {
+        // $this->_checks++;
         $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getPythonFile(), $this->getLoadArea(), $this->getWeightCapacity(), $this->getPoints());
         if (!$canLoad)
         {
