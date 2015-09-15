@@ -95,9 +95,9 @@ class IO
         if (file_exists($filename) && ($config = parse_ini_file($filename, true)))
         {
             $result = [
-                'check_loading'                    => isset($config['general']['check_loading'])        ? (bool)$config['general']['check_loading']  : null,
+                'check_final_loading'                    => isset($config['general']['check_final_loading'])        ? (bool)$config['general']['check_final_loading']  : null,
+                'check_transitional_loading_probability'        => isset($config['general']['check_transitional_loading_probability'])        ? (float)$config['general']['check_transitional_loading_probability']  : null,
                 'python_file'                      => isset($config['general']['python_file'])          ? $config['general']['python_file'] : null,
-                'check_loading_for_every_new_node' => isset($config['general']['check_loading_for_every_new_node']) ? (bool)$config['general']['check_loading_for_every_new_node'] : null,
                 'maximize_cost'                    => isset($config['general']['maximize_cost'])        ?(bool)$config['general']['maximize_cost']   : null,
                 'precise'                          => isset($config['general']['precise'])              ? (float)$config['general']['precise']       : null,
 

@@ -82,6 +82,7 @@
         y:200
     };
 
+    _default_check_transitional_loading_probability = 20;
     _default_weight_capacity = 1000;
     _default_load_area       = {x:100, y:100, z:100};
     _default_precise         = 5;
@@ -392,7 +393,8 @@
 
                 function _getConfigInfo() {
                   return {
-                    check_loading: $('#check_loading_checkbox').is(':checked'),
+                    check_final_loading: $('#check_final_loading_checkbox').is(':checked'),
+                    check_transitional_loading_probability:  $('#check_transitional_loading_probability').val(),
                     python_file: $('#python_file').val(),
                     precise: $('#precise').val(),
                     weight_capacity: $('#weight_capacity').val(),
@@ -614,8 +616,12 @@
                       <input id="precise" size="5">
                   </p>
                   <p>
-                    <label for="check_loading_checkbox">Check 3D constraints</label>
-                    <input type="checkbox" id="check_loading_checkbox">
+                    <label for="check_final_loading_checkbox">Check 3D constraints for final paths</label>
+                    <input type="checkbox" id="check_final_loading_checkbox">
+                  </p>
+                  <p>
+                      <label>Transitionally check 3D constraints probability</label>
+                      <input id="check_transitional_loading_probability" size="5">
                   </p>
                   <p>
                       <label>Python file</label>
@@ -1058,7 +1064,7 @@
             $("#vehicle_count").val(_default_vehicle_count);
 
             $("#python_file").val(_default_python_file);
-
+            $('#check_transitional_loading_probability').val(_default_check_transitional_loading_probability);
             _resetClusters();
             renderClusters(_clusters);
         });

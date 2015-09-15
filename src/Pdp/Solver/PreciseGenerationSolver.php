@@ -16,19 +16,20 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
 
     protected $dataRules = array(
         // rules from abstract solver
-        'maximize_cost'        => 'required|boolean',
+        'maximize_cost'                          => 'required|boolean',
 
         // specifically data rules for this class
-        'depot'           => 'required|object:\Litvinenko\Combinatorics\Pdp\Point',
-        'points'          => 'required|array',
-        'weight_capacity' => 'required|float_strict',
-        'load_area'       => 'required|array',
-        'check_loading'   => 'required|boolean',
-        'python_file'     => 'required',
+        'depot'                                  => 'required|object:\Litvinenko\Combinatorics\Pdp\Point',
+        'points'                                 => 'required|array',
+        'weight_capacity'                        => 'required|float_strict',
+        'load_area'                              => 'required|array',
+        'check_final_loading'                    => 'required|boolean',
+        'check_transitional_loading_probability' => 'required|boolean',
+        'python_file'                            => 'required',
 
-        'evaluator' => 'required|object:\Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator',
+        'evaluator'                              => 'required|object:\Litvinenko\Combinatorics\Common\Evaluator\AbstractEvaluator',
 
-        'precise' => 'required|float_strict',
+        'precise'                                => 'required|float_strict',
     );
 
     protected $_boxFileName = 'boxes.txt';
@@ -64,8 +65,14 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         {
             $pointSequence[] = $this->getDepot();
             $currentCost = $this->_getCost($pointSequence);
-            if ((is_null($bestPointSequence) || ($this->_compareCosts($currentCost, $bestCost) === 1)) && $this->canLoad($pointSequence))
+            if ((is_null($bestPointSequence) || ($this->_compareCosts($currentCost, $bestCost) === 1)))
             {
+                // if needed, check 3D constraints and skip path if it's incorrect
+                if ($this->getData('check_final_loading'))
+                {
+                    if (!$this->canLoad($pointSequence)) continue;
+                }
+
                 $bestPointSequence = $pointSequence;
                 $bestCost          = $currentCost;
             }
@@ -88,24 +95,22 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
 
 
         $pointSequence = array_merge(Helper::getPointSequenceFromTuple($current_tuple), [$candidate]);
-        $event->getResultContainer()->result = $this->canLoad($pointSequence);
+
+        $checkLoading = (rand(0,100) < $this->getData('check_transitional_loading_probability'));
+
+        // if needed, check 3D constraints
+        $event->getResultContainer()->result = ($checkLoading) ? $this->canLoad($pointSequence) : true;
     }
 
     protected function canLoad($pointSequence)
     {
-        $result = true;
-        if ($this->getCheckLoading())
+        $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getPythonFile(), $this->getLoadArea(), $this->getWeightCapacity(), $this->getPoints());
+        if (!$canLoad)
         {
-            $canLoad = App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getPythonFile(), $this->getLoadArea(), $this->getWeightCapacity(), $this->getPoints());
-            if (!$canLoad)
-            {
-                App::dispatchEvent('cant_load', ['point_sequence' => $pointSequence]);
-            }
-
-            $result = $canLoad;
+            App::dispatchEvent('cant_load', ['point_sequence' => $pointSequence]);
         }
 
-        return $result;
+        return $canLoad;
         // return ($this->getCheckLoading()) ? App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper')->canLoad($pointSequence, $this->getCheckLoadingCommandPrefix(), $this->getLoadArea(), $this->getWeightCapacity()) : true;
     }
 }

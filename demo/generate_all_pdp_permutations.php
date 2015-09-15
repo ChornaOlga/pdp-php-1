@@ -22,7 +22,7 @@ function _getGeneratorDataFromPoints($points)
     return $result;
 }
 
-$pdpInfoFile = 'pdp_points.txt';
+$pdpInfoFile = __DIR__.'/data/pdp_points.txt';
 
 $allPoints   = IO::readPointsFromFile($pdpInfoFile);
 $points      = $allPoints['points'];
