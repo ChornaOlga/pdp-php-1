@@ -139,11 +139,12 @@ class Pdp extends \Litvinenko\Common\Object
   {
       return [
           'path'          => explode(' ','d u m m y _ p a t h'),
-          'path_cost'     => 12345,
-          'solution_time' => 1,
+          'path_cost'     => 99999999999,
+          'solution_time' => 0,
           'info'      => [
               'total_generated_paths' => 123,
-          ]
+          ],
+          'errors' => ['dummy solution']
       ];
   }
 

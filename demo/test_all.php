@@ -7,7 +7,8 @@ $xmlConfigFile  = __DIR__.'/config.xml';
 
 // if true, data will be randomly generated before each test
 $generateRandomData      = true;
-$dummyMode               = false;
+$dummyMode               = false; // in Dummy mode we don't write to DB and output file is different
+$obtainFullSolution      = false; //if false, dummy solution will be obtained
 
 $pdpPointsFile           = __DIR__.'/data/pdp_points.txt'; // has sense if $generateRandomData == false. Data is taken from file in this case
 $pdpConfigFile           = __DIR__.'/data/pdp_config.ini'; // default config is taken from here and additional config is merged into it
@@ -15,15 +16,16 @@ $dummyOutputCsvFile      = 'dummy.csv';
 $productionOutputCsvFile = 'result.csv';
 $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
 
-$testSuiteComment        = 'continuing test suite 8. testCount=1';
-$pairCountToTest         = [5/*5,6,7,8*/]; // has sense if $generateRandomData == true
-$repeatEachTestCount     = 1;
+$testSuiteComment        = '!!! ___test probability ';
+$pairCountToTest         = [4/*5,6,7,8*/]; // has sense if $generateRandomData == true
+$repeatEachTestCount     = 5;
+
 
 $genPrecises = [
 // pair count => all precices to try
 2 => [25,50/*,100*/],
 3 => [50/*20,40,60,80*/],
-4 => [/*5,20,*/50/*,20,40,60*/],
+4 => [/*5,20,*/99/*,20,40,60*/],
 5 => [5,20,50/*100*/],
 6 => [5,20,40,60/*,100*/],7 => [5,20,30],8 => [5,20,30],
 
@@ -94,8 +96,19 @@ function db()
   return $dbh;
 }
 
+function query($sql)
+{
+  if (!db()->query($sql))
+  {
+    echo "\nError in query:\n $sql\n";
+    print_r(db()->errorInfo());
+    die();
+  }
+
+}
+
 $params = str_replace("'","",var_export(compact('generateRandomData', 'dummyMode', 'pairCountToTest', 'repeatEachTestCount', 'genPrecises', 'checkTransitionalLoadingProbabilites','allLoadParams'), true));
-if (!$dummyMode) {if (!db()->query("INSERT INTO test_suites(start_time,params,comment) VALUES (NOW(),'$params','$testSuiteComment')")) print_r(db()->errorInfo());}
+if (!$dummyMode) query("INSERT INTO test_suites(start_time,params,comment) VALUES (NOW(),'$params','$testSuiteComment')");
 
 // file_put_contents($outputCsvFile, "sep =,\n");
 if (!$generateRandomData)
@@ -108,35 +121,38 @@ foreach ($pairCountToTest as $pairCount)
   file_put_contents($outputCsvFile, "\n\n--------- {$pairCount} pairs --------\n", FILE_APPEND);
   foreach ($allLoadParams as $loadParams)
   {
-    foreach ($checkTransitionalLoadingProbabilites as $check_transitional_loading_probability)
-    {
-        file_put_contents($outputCsvFile, "\n\n--------- {$check_transitional_loading_probability}%  --------\n\n", FILE_APPEND);
       # code...
     // if (($pairCount == 5) && $loadParams['load_area']['x'] < 70 ) continue; //temp hardcode
-      if (($pairCount == 5) && ($loadParams['load_area']['x'] < 70)) continue; //temp hardcode
-      if (($pairCount == 5) && ($loadParams['load_area']['x'] == 70) && $loadParams['weight_capacity'] < 200 ) continue; //temp hardcode
+    // if (($pairCount == 5) && ($loadParams['load_area']['x'] < 70)) continue; //temp hardcode
+    // if (($pairCount == 5) && ($loadParams['load_area']['x'] == 70) && $loadParams['weight_capacity'] < 200 ) continue; //temp hardcode
 
-      file_put_contents($outputCsvFile, "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
+    file_put_contents($outputCsvFile, "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
 
-      $newLine = "pair count,test#,cost,solution_time,exec_time,total_branchings,path,errors,precise,cost,solution_time,exec_time,total_generated_paths,cost_increase,path,errors,data,pdp_points.txt\n";
-      file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
+    $newLine = "pair count,test#,cost,solution_time,exec_time,total_branchings,path,errors,precise,cost,solution_time,exec_time,total_generated_paths,cost_increase,path,errors,data,pdp_points.txt\n";
+    file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
 
-      $testCount = isset($loadParams['test_count']) ? $loadParams['test_count'] : $repeatEachTestCount;
-      for ($testNum = 1; $testNum <= $testCount; $testNum++)
+    $testCount = isset($loadParams['test_count']) ? $loadParams['test_count'] : $repeatEachTestCount;
+    for ($testNum = 1; $testNum <= $testCount; $testNum++)
+    {
+      unset($launcher);
+      $launcher = new \Litvinenko\Combinatorics\Pdp\Pdp;
+
+      $data = ($generateRandomData) ? $launcher->generateRandomData($pairCount) : $dataFromFile;
+
+      $pdpPointsPrepared = 'deprecated'/*file_get_contents('pdp_points.txt')*/;
+      $dataPrepared      = json_encode($data);
+
+      foreach ($checkTransitionalLoadingProbabilites as $check_transitional_loading_probability)
       {
-        unset($launcher);
-        $launcher = new \Litvinenko\Combinatorics\Pdp\Pdp;
-
-        $data = ($generateRandomData) ? $launcher->generateRandomData($pairCount) : $dataFromFile;
-
-        $pdpPointsPrepared = 'deprecated'/*file_get_contents('pdp_points.txt')*/;
-        $dataPrepared      = json_encode($data);
-
+        file_put_contents($outputCsvFile, "\n\n--------- {$check_transitional_loading_probability}%  --------\n\n", FILE_APPEND);
         $exact_solution_info = "$pairCount,$testNum,";
 
-        // if (!$dummyMode) {if (!db()->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, 100, NOW(), '$dataPrepared', '$pdpPointsPrepared')")) print_r(db()->errorInfo());}
+        if ($obtainFullSolution) if (!$dummyMode) query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, 100, NOW(), '$dataPrepared', '$pdpPointsPrepared')");
 
-        $genSolution = $launcher->getDummySolution();//$launcher->getSolution($data, array_merge($configFromFile,['check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]));
+        $genSolution = ($obtainFullSolution)
+                          ? $launcher->getSolution($data, array_merge($configFromFile,['check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]))
+                          : $launcher->getDummySolution();
+
         $genSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
         $exact_solution_info .=  "{$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\",";
         $exactSolution = $genSolution;
@@ -145,11 +161,11 @@ foreach ($pairCountToTest as $pairCount)
         $prefix  = $exact_solution_info;
         $postfix = ",\"" . $dataPrepared . "\",\"" . $pdpPointsPrepared . "\"";
 
-        // if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,time,cost,cost_increase,path) VALUES ((select max(id) from tests),{$exactSolution['solution_time']},{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r(db()->errorInfo());}
+        if ($obtainFullSolution) if (!$dummyMode) query("INSERT INTO results(test_id,time,cost,cost_increase,path) VALUES ((select max(id) from tests),{$exactSolution['solution_time']},{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')");
 
         foreach($genPrecises[$pairCount] as $precise)
         {
-          if (!$dummyMode) {if (!db()->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, $precise, NOW(), '$dataPrepared', '$pdpPointsPrepared')")) print_r(db()->errorInfo());}
+          if (!$dummyMode) query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, $precise, NOW(), '$dataPrepared', '$pdpPointsPrepared')");
 
           $genSolution = $launcher->getSolution($data, array_merge($configFromFile,[ 'check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => $precise, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]));
           $costIncrease = (floatval($exactSolution['path_cost']) > 0) ? ($genSolution['path_cost']-$exactSolution['path_cost'])/$exactSolution['path_cost'] : '';
@@ -160,20 +176,20 @@ foreach ($pairCountToTest as $pairCount)
 
           file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
 
-          if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,time,cost,cost_increase,path) VALUES ((select max(id) from tests),{$genSolution['solution_time']},{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r(db()->errorInfo());}
+          if (!$dummyMode) query("INSERT INTO results(test_id,time,cost,cost_increase,path) VALUES ((select max(id) from tests),{$genSolution['solution_time']},{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')");
         }
       }
     }
   }
 }
-if (!$dummyMode) {if (!db()->query("set @id = (select max(id) from test_suites); UPDATE test_suites SET end_time=NOW() WHERE id=@id")) print_r(db()->errorInfo());}
+if (!$dummyMode) query("set @id = (select max(id) from test_suites); UPDATE test_suites SET end_time=NOW() WHERE id=@id");
 
 /* SQL to view results:
 select s.id as suite_id,s.start_time,s.end_time,t.id as test_id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_transitional_loading_probability as check_prob, t.precise,t.start_time,r.time,r.cost,r.cost_increase,t.data,t.pdp_points_txt from test_suites s
 inner join tests t on s.id=t.test_suite_id
 left join results r on t.id=r.test_id
 where s.id = (select max(id) from test_suites)
-order by s.id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_transitional_loading_probability,t.precise
+order by s.id,t.id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_transitional_loading_probability,t.precise
 */
 
 /* db dump:*/
