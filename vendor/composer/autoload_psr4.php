@@ -6,7 +6,10 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Tree\\' => array($vendorDir . '/nicmart/tree/src'),
+    'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'Litvinenko\\PdpApp\\' => array($baseDir . '/app'),
     'Litvinenko\\Common\\' => array($vendorDir . '/litvinenko/object/src', $vendorDir . '/litvinenko/app/src'),
     'Litvinenko\\Combinatorics\\' => array($baseDir . '/src'),
+    'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
 );

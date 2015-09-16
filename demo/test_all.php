@@ -5,8 +5,8 @@ require_once '../vendor/autoload.php';
 
 $xmlConfigFile  = __DIR__.'/config.xml';
 
-// if true, data will be randomly generated before each test
-$generateRandomData      = true;
+
+$generateRandomData      = true; // if true, data will be randomly generated before each test
 $dummyMode               = false; // in Dummy mode we don't write to DB and output file is different
 $obtainFullSolution      = false; //if false, dummy solution will be obtained
 
@@ -17,16 +17,16 @@ $productionOutputCsvFile = 'result.csv';
 $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
 
 $testSuiteComment        = '!!! ___test probability ';
-$pairCountToTest         = [4/*5,6,7,8*/]; // has sense if $generateRandomData == true
-$repeatEachTestCount     = 5;
+$pairCountToTest         = [4,5/*5,6,7,8*/]; // has sense if $generateRandomData == true
+$repeatEachTestCount     = 1;
 
 
 $genPrecises = [
 // pair count => all precices to try
 2 => [25,50/*,100*/],
 3 => [50/*20,40,60,80*/],
-4 => [/*5,20,*/99/*,20,40,60*/],
-5 => [5,20,50/*100*/],
+4 => [/*5,20,*/5/*,20,40,60*/],
+5 => [5/*5,20,50*//*100*/],
 6 => [5,20,40,60/*,100*/],7 => [5,20,30],8 => [5,20,30],
 
 ];

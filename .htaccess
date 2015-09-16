@@ -1,4 +1,4 @@
 AuthName "How about authorization?"
 AuthType Basic
 Require valid-user
-AuthUserFile /путь/к/файлу/.htpasswd
+AuthUserFile /home/litvinenko/www/pdp-php/.htpasswd
