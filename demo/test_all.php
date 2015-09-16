@@ -6,7 +6,7 @@ require_once '../vendor/autoload.php';
 $xmlConfigFile  = __DIR__.'/config.xml';
 
 // if true, data will be randomly generated before each test
-$generateRandomData      = false;
+$generateRandomData      = true;
 $dummyMode               = false;
 
 $pdpPointsFile           = __DIR__.'/data/pdp_points.txt'; // has sense if $generateRandomData == false. Data is taken from file in this case
@@ -16,12 +16,12 @@ $productionOutputCsvFile = 'result.csv';
 $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
 
 $testSuiteComment        = 'continuing test suite 8. testCount=1';
-$pairCountToTest         = [3/*5,6,7,8*/]; // has sense if $generateRandomData == true
+$pairCountToTest         = [5/*5,6,7,8*/]; // has sense if $generateRandomData == true
 $repeatEachTestCount     = 1;
 
 $genPrecises = [
 // pair count => all precices to try
-2 => [25,50,100],
+2 => [25,50/*,100*/],
 3 => [50/*20,40,60,80*/],
 4 => [/*5,20,*/50/*,20,40,60*/],
 5 => [5,20,50/*100*/],
@@ -132,9 +132,9 @@ foreach ($pairCountToTest as $pairCount)
         $pdpPointsPrepared = 'deprecated'/*file_get_contents('pdp_points.txt')*/;
         $dataPrepared      = json_encode($data);
 
-        if (!$dummyMode) {if (!db()->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, '$dataPrepared', '$pdpPointsPrepared')")) print_r(db()->errorInfo());}
-
         $exact_solution_info = "$pairCount,$testNum,";
+
+        // if (!$dummyMode) {if (!db()->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, 100, NOW(), '$dataPrepared', '$pdpPointsPrepared')")) print_r(db()->errorInfo());}
 
         $genSolution = $launcher->getDummySolution();//$launcher->getSolution($data, array_merge($configFromFile,['check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]));
         $genSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
@@ -145,8 +145,12 @@ foreach ($pairCountToTest as $pairCount)
         $prefix  = $exact_solution_info;
         $postfix = ",\"" . $dataPrepared . "\",\"" . $pdpPointsPrepared . "\"";
 
+        // if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,time,cost,cost_increase,path) VALUES ((select max(id) from tests),{$exactSolution['solution_time']},{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r(db()->errorInfo());}
+
         foreach($genPrecises[$pairCount] as $precise)
         {
+          if (!$dummyMode) {if (!db()->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, $precise, NOW(), '$dataPrepared', '$pdpPointsPrepared')")) print_r(db()->errorInfo());}
+
           $genSolution = $launcher->getSolution($data, array_merge($configFromFile,[ 'check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => $precise, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]));
           $costIncrease = (floatval($exactSolution['path_cost']) > 0) ? ($genSolution['path_cost']-$exactSolution['path_cost'])/$exactSolution['path_cost'] : '';
           $newLine = $prefix . "{$precise}, {$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},{$costIncrease},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\"" . $postfix . "\n";
@@ -156,10 +160,8 @@ foreach ($pairCountToTest as $pairCount)
 
           file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
 
-          if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$genSolution['solution_time']},$precise,{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r(db()->errorInfo());}
+          if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,time,cost,cost_increase,path) VALUES ((select max(id) from tests),{$genSolution['solution_time']},{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r(db()->errorInfo());}
         }
-
-        // if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$exactSolution['solution_time']},100,{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r(db()->errorInfo());}
       }
     }
   }
@@ -167,10 +169,11 @@ foreach ($pairCountToTest as $pairCount)
 if (!$dummyMode) {if (!db()->query("set @id = (select max(id) from test_suites); UPDATE test_suites SET end_time=NOW() WHERE id=@id")) print_r(db()->errorInfo());}
 
 /* SQL to view results:
-select s.id as suite_id,s.start_time,s.end_time,t.id as test_id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_transitional_loading_probability as check_prob, r.start_time,r.time,r.cost,r.precise,r.cost_increase,t.data,t.pdp_points_txt from test_suites s, tests t, results r
-where s.id=t.test_suite_id and t.id=r.test_id
-and s.id = (select max(id) from test_suites)
-order by s.id,t.pair_count,t.load_area_size,t.weight_capacity
+select s.id as suite_id,s.start_time,s.end_time,t.id as test_id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_transitional_loading_probability as check_prob, t.precise,t.start_time,r.time,r.cost,r.cost_increase,t.data,t.pdp_points_txt from test_suites s
+inner join tests t on s.id=t.test_suite_id
+left join results r on t.id=r.test_id
+where s.id = (select max(id) from test_suites)
+order by s.id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_transitional_loading_probability,t.precise
 */
 
 /* db dump:*/
@@ -195,10 +198,8 @@ order by s.id,t.pair_count,t.load_area_size,t.weight_capacity
 // CREATE TABLE IF NOT EXISTS `results` (
 //   `id` int(11) NOT NULL AUTO_INCREMENT,
 //   `test_id` int(11) DEFAULT NULL,
-//   `start_time` datetime DEFAULT NULL,
 //   `time` float NOT NULL DEFAULT '0',
 //   `cost` float NOT NULL DEFAULT '0',
-//   `precise` tinyint(4) NOT NULL DEFAULT '0',
 //   `cost_increase` float NOT NULL DEFAULT '0',
 //   `path` varchar(50) NOT NULL DEFAULT '0',
 //   PRIMARY KEY (`id`),
@@ -217,6 +218,8 @@ order by s.id,t.pair_count,t.load_area_size,t.weight_capacity
 //   `load_area_size` int(11) NOT NULL,
 //   `weight_capacity` int(11) NOT NULL,
 //   `check_transitional_loading_probability` int(11) DEFAULT NULL,
+//   `precise` tinyint(4) DEFAULT NULL,
+//   `start_time` datetime DEFAULT NULL,
 //   `data` text,
 //   `pdp_points_txt` text,
 //   PRIMARY KEY (`id`),
