@@ -5,29 +5,34 @@ require_once '../vendor/autoload.php';
 
 $xmlConfigFile  = __DIR__.'/config.xml';
 
-$generateRandomData      = true;
-$dummyMode               = true;
+// if true, data will be randomly generated before each test
+$generateRandomData      = false;
+$dummyMode               = false;
 
+$pdpPointsFile           = __DIR__.'/data/pdp_points.txt'; // has sense if $generateRandomData == false. Data is taken from file in this case
+$pdpConfigFile           = __DIR__.'/data/pdp_config.ini'; // default config is taken from here and additional config is merged into it
 $dummyOutputCsvFile      = 'dummy.csv';
 $productionOutputCsvFile = 'result.csv';
 $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputCsvFile;
 
 $testSuiteComment        = 'continuing test suite 8. testCount=1';
-$pairCountToTest         = [2/*5,6,7,8*/];
-$repeatEachTestCount     = 3;
+$pairCountToTest         = [3/*5,6,7,8*/]; // has sense if $generateRandomData == true
+$repeatEachTestCount     = 1;
 
 $genPrecises = [
 // pair count => all precices to try
-2 => [25,50/*,100*/],
-3 => [20,40,60,80],
-4 => [5,20,40,60],
-5 => [5,20,40,60/*,100*/],
+2 => [25,50,100],
+3 => [50/*20,40,60,80*/],
+4 => [/*5,20,*/50/*,20,40,60*/],
+5 => [5,20,50/*100*/],
 6 => [5,20,40,60/*,100*/],7 => [5,20,30],8 => [5,20,30],
 
 ];
 
+$checkTransitionalLoadingProbabilites = array(0,10,20,30,40,50,60,70);
+
 $allLoadParams = [
-  ['weight_capacity' => 100,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
+  // ['weight_capacity' => 100,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 150,  'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 200, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]],
   // ['weight_capacity' => 300, 'load_area' => ['x' => 50, 'y' => 50, 'z' => 50]/*, 'test_count' => 4*/],
@@ -67,114 +72,131 @@ $allLoadParams = [
   // ['weight_capacity' => 200, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
   // ['weight_capacity' => 300, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
   // ['weight_capacity' => 400, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
-  // ['weight_capacity' => 500, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
+  ['weight_capacity' => 500, 'load_area' => ['x' => 100, 'y' => 100, 'z' => 100]],
 
 ];
-
-function db()
-{
-  global $dbh;
-  $dbh = null;
-  try {$dbh = new PDO('mysql:host=localhost;dbname=pdp;port=3307', 'root', '');} catch (PDOException $e) {print "Error!: " . $e->getMessage() . "<br/>"; die(); }
-  return $dbh;
-}
 
 \Litvinenko\Common\App::init($xmlConfigFile);
 
 $launcher = new \Litvinenko\Combinatorics\Pdp\Pdp;
 
-// $pairCountToTest         = [35,6,7];
-// $repeatEachTestCount     = 5;
+// config is taken from this file is merged with specially set params
+$configFromFile = \Litvinenko\Combinatorics\Pdp\IO::readConfigFromIniFile($pdpConfigFile);
 
+// if we don't generate data, we take it from this file
+$dataFromFile = $launcher->readPdpDataFromFile($pdpPointsFile);
 
-$params = str_replace("'","",var_export(compact('generateRandomData', 'dummyMode', 'pairCountToTest', 'repeatEachTestCount', 'genPrecises', 'allLoadParams'), true));
+function db()
+{
+  global $dbh;
+  $dbh = null;
+  try {$dbh = new PDO('mysql:host=localhost;dbname=pdp;port=3306', 'root', 'aDmiN8910');} catch (PDOException $e) {print "Error!: " . $e->getMessage() . "<br/>"; die(); }
+  return $dbh;
+}
+
+$params = str_replace("'","",var_export(compact('generateRandomData', 'dummyMode', 'pairCountToTest', 'repeatEachTestCount', 'genPrecises', 'checkTransitionalLoadingProbabilites','allLoadParams'), true));
 if (!$dummyMode) {if (!db()->query("INSERT INTO test_suites(start_time,params,comment) VALUES (NOW(),'$params','$testSuiteComment')")) print_r(db()->errorInfo());}
 
 // file_put_contents($outputCsvFile, "sep =,\n");
+if (!$generateRandomData)
+{
+  $pairCountToTest = [count($dataFromFile['points'])/2];
+}
+
 foreach ($pairCountToTest as $pairCount)
 {
   file_put_contents($outputCsvFile, "\n\n--------- {$pairCount} pairs --------\n", FILE_APPEND);
   foreach ($allLoadParams as $loadParams)
   {
-    // if (($pairCount == 5) && $loadParams['load_area']['x'] < 70 ) continue; //temp hardcode
-    if (($pairCount == 5) && ($loadParams['load_area']['x'] < 70)) continue; //temp hardcode
-    if (($pairCount == 5) && ($loadParams['load_area']['x'] == 70) && $loadParams['weight_capacity'] < 200 ) continue; //temp hardcode
-
-    file_put_contents($outputCsvFile, "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
-
-    $newLine = "pair count,test#,cost,solution_time,exec_time,total_branchings,path,errors,precise,cost,solution_time,exec_time,total_generated_paths,cost_increase,path,errors,data,pdp_points.txt\n";
-    file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
-
-    $testCount = isset($loadParams['test_count']) ? $loadParams['test_count'] : $repeatEachTestCount;
-    for ($testNum = 1; $testNum <= $testCount; $testNum++)
+    foreach ($checkTransitionalLoadingProbabilites as $check_transitional_loading_probability)
     {
-      unset($launcher);
-      $launcher = new \Litvinenko\Combinatorics\Pdp\Pdp;
+        file_put_contents($outputCsvFile, "\n\n--------- {$check_transitional_loading_probability}%  --------\n\n", FILE_APPEND);
+      # code...
+    // if (($pairCount == 5) && $loadParams['load_area']['x'] < 70 ) continue; //temp hardcode
+      if (($pairCount == 5) && ($loadParams['load_area']['x'] < 70)) continue; //temp hardcode
+      if (($pairCount == 5) && ($loadParams['load_area']['x'] == 70) && $loadParams['weight_capacity'] < 200 ) continue; //temp hardcode
 
-      $data = ($generateRandomData) ? $launcher->generateRandomData($pairCount) : [];
+      file_put_contents($outputCsvFile, "\n Load area " . implode(' x ', $loadParams['load_area']) . ", weight capacity {$loadParams['weight_capacity']}\n", FILE_APPEND);
 
-      $pdpPointsPrepared = 'deprecated'/*file_get_contents('pdp_points.txt')*/;
-      $dataPrepared      = json_encode($data);
+      $newLine = "pair count,test#,cost,solution_time,exec_time,total_branchings,path,errors,precise,cost,solution_time,exec_time,total_generated_paths,cost_increase,path,errors,data,pdp_points.txt\n";
+      file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
 
-      if (!$dummyMode) {if (!db()->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']}, '$dataPrepared', '$pdpPointsPrepared')")) print_r(db()->errorInfo());}
-
-      $exact_solution_info = "$pairCount,$testNum,";
-
-      $genSolution = $launcher->getSolution($data, ['precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
-      $genSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
-      $exact_solution_info .=  "{$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\",";
-      $exactSolution = $genSolution;
-
-      // solve with GEN method with different precises
-      $prefix  = $exact_solution_info;
-      $postfix = ",\"" . $dataPrepared . "\",\"" . $pdpPointsPrepared . "\"";
-
-      foreach($genPrecises[$pairCount] as $precise)
+      $testCount = isset($loadParams['test_count']) ? $loadParams['test_count'] : $repeatEachTestCount;
+      for ($testNum = 1; $testNum <= $testCount; $testNum++)
       {
-        $genSolution = $launcher->getSolution($data, [ 'precise' => $precise, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]);
+        unset($launcher);
+        $launcher = new \Litvinenko\Combinatorics\Pdp\Pdp;
 
-        $costIncrease = (floatval($exactSolution['path_cost']) > 0) ? ($genSolution['path_cost']-$exactSolution['path_cost'])/$exactSolution['path_cost'] : '';
-        $newLine = $prefix . "{$precise}, {$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},{$costIncrease},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\"" . $postfix . "\n";
+        $data = ($generateRandomData) ? $launcher->generateRandomData($pairCount) : $dataFromFile;
 
-        $prefix  = preg_replace("/[^,]+/", "", $prefix);
-        $postfix = preg_replace("/[^,]+/", "", $postfix);
+        $pdpPointsPrepared = 'deprecated'/*file_get_contents('pdp_points.txt')*/;
+        $dataPrepared      = json_encode($data);
 
-        file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
+        if (!$dummyMode) {if (!db()->query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, '$dataPrepared', '$pdpPointsPrepared')")) print_r(db()->errorInfo());}
 
-        if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$genSolution['solution_time']},$precise,{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r(db()->errorInfo());}
+        $exact_solution_info = "$pairCount,$testNum,";
+
+        $genSolution = $launcher->getDummySolution();//$launcher->getSolution($data, array_merge($configFromFile,['check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]));
+        $genSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
+        $exact_solution_info .=  "{$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\",";
+        $exactSolution = $genSolution;
+
+        // solve with GEN method with different precises
+        $prefix  = $exact_solution_info;
+        $postfix = ",\"" . $dataPrepared . "\",\"" . $pdpPointsPrepared . "\"";
+
+        foreach($genPrecises[$pairCount] as $precise)
+        {
+          $genSolution = $launcher->getSolution($data, array_merge($configFromFile,[ 'check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => $precise, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]));
+          $costIncrease = (floatval($exactSolution['path_cost']) > 0) ? ($genSolution['path_cost']-$exactSolution['path_cost'])/$exactSolution['path_cost'] : '';
+          $newLine = $prefix . "{$precise}, {$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},{$costIncrease},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\"" . $postfix . "\n";
+
+          $prefix  = preg_replace("/[^,]+/", "", $prefix);
+          $postfix = preg_replace("/[^,]+/", "", $postfix);
+
+          file_put_contents($outputCsvFile, $newLine, FILE_APPEND);
+
+          if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$genSolution['solution_time']},$precise,{$genSolution['path_cost']},$costIncrease,'".implode(' ',$genSolution['path'])."')")) print_r(db()->errorInfo());}
+        }
+
+        // if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$exactSolution['solution_time']},100,{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r(db()->errorInfo());}
       }
-
-      if (!$dummyMode) {if (!db()->query("INSERT INTO results(test_id,start_time,time,precise,cost,cost_increase,path) VALUES ((select max(id) from tests),NOW(),{$exactSolution['solution_time']},100,{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')")) print_r(db()->errorInfo());}
     }
   }
 }
-
 if (!$dummyMode) {if (!db()->query("set @id = (select max(id) from test_suites); UPDATE test_suites SET end_time=NOW() WHERE id=@id")) print_r(db()->errorInfo());}
 
 /* SQL to view results:
-select s.id as suite_id,s.start_time,s.end_time,t.id as test_id,t.pair_count,t.load_area_size,t.weight_capacity,r.start_time,r.time,r.cost,r.precise,r.cost_increase,t.data,t.pdp_points_txt from test_suites s, tests t, results r
+select s.id as suite_id,s.start_time,s.end_time,t.id as test_id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_transitional_loading_probability as check_prob, r.start_time,r.time,r.cost,r.precise,r.cost_increase,t.data,t.pdp_points_txt from test_suites s, tests t, results r
 where s.id=t.test_suite_id and t.id=r.test_id
 and s.id = (select max(id) from test_suites)
 order by s.id,t.pair_count,t.load_area_size,t.weight_capacity
 */
 
-/* db dump:
--- --------------------------------------------------------
---
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/* db dump:*/
+// -- --------------------------------------------------------
+// -- Host:                         46.101.195.105
+// -- Server version:               5.5.44-0ubuntu0.14.04.1 - (Ubuntu)
+// -- Server OS:                    debian-linux-gnu
+// -- HeidiSQL Version:             8.3.0.4705
+// -- --------------------------------------------------------
 
+// /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+// /*!40101 SET NAMES utf8 */;
+// /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+// /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+// -- Dumping database structure for pdp
 // CREATE DATABASE IF NOT EXISTS `pdp` /*!40100 DEFAULT CHARACTER SET latin1 */;
 // USE `pdp`;
 
 
+// -- Dumping structure for table pdp.results
 // CREATE TABLE IF NOT EXISTS `results` (
 //   `id` int(11) NOT NULL AUTO_INCREMENT,
 //   `test_id` int(11) DEFAULT NULL,
+//   `start_time` datetime DEFAULT NULL,
 //   `time` float NOT NULL DEFAULT '0',
-//   `start_time` DATETIME NULL DEFAULT NULL,
 //   `cost` float NOT NULL DEFAULT '0',
 //   `precise` tinyint(4) NOT NULL DEFAULT '0',
 //   `cost_increase` float NOT NULL DEFAULT '0',
@@ -184,14 +206,17 @@ order by s.id,t.pair_count,t.load_area_size,t.weight_capacity
 //   CONSTRAINT `FK__tests` FOREIGN KEY (`test_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 // ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+// -- Data exporting was unselected.
 
 
+// -- Dumping structure for table pdp.tests
 // CREATE TABLE IF NOT EXISTS `tests` (
 //   `id` int(11) NOT NULL AUTO_INCREMENT,
 //   `test_suite_id` int(11) NOT NULL,
 //   `pair_count` int(11) NOT NULL,
 //   `load_area_size` int(11) NOT NULL,
 //   `weight_capacity` int(11) NOT NULL,
+//   `check_transitional_loading_probability` int(11) DEFAULT NULL,
 //   `data` text,
 //   `pdp_points_txt` text,
 //   PRIMARY KEY (`id`),
@@ -199,17 +224,20 @@ order by s.id,t.pair_count,t.load_area_size,t.weight_capacity
 //   CONSTRAINT `FK_tests_test_suites` FOREIGN KEY (`test_suite_id`) REFERENCES `test_suites` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 // ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+// -- Data exporting was unselected.
 
 
+// -- Dumping structure for table pdp.test_suites
 // CREATE TABLE IF NOT EXISTS `test_suites` (
 //   `id` int(11) NOT NULL AUTO_INCREMENT,
 //   `start_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 //   `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-//   `params` mediumtext NOT NULL,
-//   `comment` VARCHAR(500) NULL DEFAULT NULL,
+//   `params` longtext CHARACTER SET utf8 NOT NULL,
+//   `comment` varchar(500) CHARACTER SET utf8 DEFAULT NULL,
 //   PRIMARY KEY (`id`)
-// ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+// -- Data exporting was unselected.
 // /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 // /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 // /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -135,6 +135,18 @@ class Pdp extends \Litvinenko\Common\Object
         return (count($points)>1) ? $points : reset($points);
     }
 
+  public function getDummySolution()
+  {
+      return [
+          'path'          => explode(' ','d u m m y _ p a t h'),
+          'path_cost'     => 12345,
+          'solution_time' => 1,
+          'info'      => [
+              'total_generated_paths' => 123,
+          ]
+      ];
+  }
+
   public function getSolution($data, $config, $method = 'gen')
   {
       $result = [];
