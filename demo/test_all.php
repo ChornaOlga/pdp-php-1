@@ -18,7 +18,7 @@ $outputCsvFile           = $dummyMode ? $dummyOutputCsvFile : $productionOutputC
 
 $testSuiteComment        = '!!! ___test probability ';
 $pairCountToTest         = [4,5/*5,6,7,8*/]; // has sense if $generateRandomData == true
-$repeatEachTestCount     = 1;
+$repeatEachTestCount     = 10;
 
 
 $genPrecises = [
@@ -190,6 +190,14 @@ inner join tests t on s.id=t.test_suite_id
 left join results r on t.id=r.test_id
 where s.id = (select max(id) from test_suites)
 order by s.id,t.id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_transitional_loading_probability,t.precise
+
+select s.id as suite_id,s.start_time,s.end_time,t.id as test_id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_transitional_loading_probability as check_prob, t.precise,t.start_time,r.time,r.cost,r.cost_increase,t.data,t.pdp_points_txt from test_suites s
+inner join tests t on s.id=t.test_suite_id
+left join results r on t.id=r.test_id
+where s.id = (select max(id) from test_suites)
+and precise=5
+and pair_count=9
+order by data,t.check_transitional_loading_probability,s.id,t.id,t.pair_count,t.load_area_size,t.weight_capacity,t.precise
 */
 
 /* db dump:*/
@@ -242,7 +250,9 @@ order by s.id,t.id,t.pair_count,t.load_area_size,t.weight_capacity,t.check_trans
 //   KEY `FK_tests_test_suites` (`test_suite_id`),
 //   CONSTRAINT `FK_tests_test_suites` FOREIGN KEY (`test_suite_id`) REFERENCES `test_suites` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 // ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
+// ALTER TABLE `tests`
+  // CHANGE COLUMN `data` `data` VARCHAR(2000) NULL AFTER `start_time`,
+  // ADD INDEX `data` (`data`);
 // -- Data exporting was unselected.
 
 
