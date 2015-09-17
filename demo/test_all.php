@@ -8,7 +8,7 @@ $xmlConfigFile  = __DIR__.'/config.xml';
 
 $generateRandomData      = true; // if true, data will be randomly generated before each test
 $dummyMode               = false; // in Dummy mode we don't write to DB and output file is different
-$obtainFullSolution      = false; //if false, dummy solution will be obtained
+$obtainFullSolution      = true; //if false, dummy solution will be obtained
 
 $pdpPointsFile           = __DIR__.'/data/pdp_points.txt'; // has sense if $generateRandomData == false. Data is taken from file in this case
 $pdpConfigFile           = __DIR__.'/data/pdp_config.ini'; // default config is taken from here and additional config is merged into it
@@ -142,27 +142,28 @@ foreach ($pairCountToTest as $pairCount)
       $pdpPointsPrepared = 'deprecated'/*file_get_contents('pdp_points.txt')*/;
       $dataPrepared      = json_encode($data);
 
+      $exact_solution_info = "$pairCount,$testNum,";
+      $check_transitional_loading_probability = 0; // for FULL solution we don't check transitional loading (it has no sense)
+
+      if ($obtainFullSolution) if (!$dummyMode) query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, 100, NOW(), '$dataPrepared', '$pdpPointsPrepared')");
+
+      $genSolution = ($obtainFullSolution)
+                        ? $launcher->getSolution($data, array_merge($configFromFile,['check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]))
+                        : $launcher->getDummySolution();
+
+      $genSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
+      $exact_solution_info .=  "{$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\",";
+      $exactSolution = $genSolution;
+
+      // solve with GEN method with different precises
+      $prefix  = $exact_solution_info;
+      $postfix = ",\"" . $dataPrepared . "\",\"" . $pdpPointsPrepared . "\"";
+
+      if ($obtainFullSolution) if (!$dummyMode) query("INSERT INTO results(test_id,time,cost,cost_increase,path) VALUES ((select max(id) from tests),{$exactSolution['solution_time']},{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')");
+
       foreach ($checkTransitionalLoadingProbabilites as $check_transitional_loading_probability)
       {
         file_put_contents($outputCsvFile, "\n\n--------- {$check_transitional_loading_probability}%  --------\n\n", FILE_APPEND);
-        $exact_solution_info = "$pairCount,$testNum,";
-
-        if ($obtainFullSolution) if (!$dummyMode) query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, 100, NOW(), '$dataPrepared', '$pdpPointsPrepared')");
-
-        $genSolution = ($obtainFullSolution)
-                          ? $launcher->getSolution($data, array_merge($configFromFile,['check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]))
-                          : $launcher->getDummySolution();
-
-        $genSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
-        $exact_solution_info .=  "{$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\",";
-        $exactSolution = $genSolution;
-
-        // solve with GEN method with different precises
-        $prefix  = $exact_solution_info;
-        $postfix = ",\"" . $dataPrepared . "\",\"" . $pdpPointsPrepared . "\"";
-
-        if ($obtainFullSolution) if (!$dummyMode) query("INSERT INTO results(test_id,time,cost,cost_increase,path) VALUES ((select max(id) from tests),{$exactSolution['solution_time']},{$exactSolution['path_cost']},0,'".implode(' ',$exactSolution['path'])."')");
-
         foreach($genPrecises[$pairCount] as $precise)
         {
           if (!$dummyMode) query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data,pdp_points_txt) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, $precise, NOW(), '$dataPrepared', '$pdpPointsPrepared')");
