@@ -99,10 +99,10 @@
     </nav>
     <section class="container">
         <div id="header_container" >
-            <input type="file" id="pdp_points_filename" />
+            <!-- <input type="file" id="pdp_points_filename" /> -->
 
-            <button name="load" id="load">Load</button>
-            <button name="save" id="save">Save</button>
+            <!-- <button name="load" id="load">Load</button>
+            <button name="save" id="save">Save</button> -->
             <button id="clusterize_button">Clusterize</button>
             <button id="reset_clusters_button">Reset clusters</button>
             <button id="solve_gen_all_button">Solve all clusters</button>
@@ -608,11 +608,22 @@
             <div>
               <form action="" id="input_params">
                   <p>
-                      <label>Vehicle count</label>
+                      <label>Vehicle count (<i>k</i>)</label>
                       <input id="vehicle_count" size="1">
                   </p>
                   <p>
-                      <label>Precise, %</label>
+                      <label>Vehicle load area</label>
+                      x: <input id="load_area_x" size="3">
+                      y: <input id="load_area_y" size="3">
+                      z: <input id="load_area_z" size="3">
+                  </p>
+                  <p>
+                      <label>Vehicle weight capacity (<i>Q</i>)</label>
+                      <input id="weight_capacity" size="5">
+                  </p>
+                  <hr>
+                  <p>
+                      <label>Precise (<i>RBW</i>), %</label>
                       <input id="precise" size="5">
                   </p>
                   <p>
@@ -620,33 +631,23 @@
                     <input type="checkbox" id="check_final_loading_checkbox">
                   </p>
                   <p>
-                      <label>Transitionally check 3D constraints probability</label>
-                      <input id="check_transitional_loading_probability" size="5">
+                      <label>Check 3D constraints for partial paths probability(<i>check_prob</i>)</label>
+                      <input id="check_transitional_loading_probability" size="3">/100
                   </p>
+                  <input type="hidden" id="python_file" size="45">
+                  <hr>
                   <p>
-                      <label>Python file</label>
-                      <input id="python_file" size="45">
-                  </p>
-                  <p>
-                      <label>Weight capacity</label>
-                      <input id="weight_capacity" size="5">
-                  </p>
-                  <p>
-                      <label>Load area</label>
-                      x: <input id="load_area_x" size="3">
-                      y: <input id="load_area_y" size="3">
-                      z: <input id="load_area_z" size="3">
-                  </p>
-                  <p>
-                      <label>Depot</label>
+                      <label>Depot coords</label>
                       X: <input id="depot_x" size="3">
                       Y: <input id="depot_y" size="3">
                   </p>
                   <p>
-                      <label for="pdp_pairs_number">Pdp pairs:</label>
+                      <label for="pdp_pairs_number">Number of PDP pairs(<i>n</i>)</label>
                       <input id="pdp_pairs_number" name="pdp_pairs_number" size="5">
                   </p>
               </form>
+
+              <label>PDP points</label>
               <div id="pdp_table"></div>
             </div>
             <h1>Clusters</h1>
@@ -945,23 +946,23 @@
                 loadJsonToTable(_hot, _filenameContainer.files[0]);
             };
 
-            Handsontable.Dom.addEvent(load, 'click', function(){
-                loadJsonFromFileContainerToMainTable();
-            });
+            // Handsontable.Dom.addEvent(load, 'click', function(){
+            //     loadJsonFromFileContainerToMainTable();
+            // });
 
-            Handsontable.Dom.addEvent(save, 'click', function() {
-              // // save all cell's data
-              ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
-                var response = JSON.parse(res.response);
+            // Handsontable.Dom.addEvent(save, 'click', function() {
+            //   // // save all cell's data
+            //   ajax('json/save.json', 'GET', JSON.stringify({data: _hot.getData()}), function (res) {
+            //     var response = JSON.parse(res.response);
 
-                if (response.result === 'ok') {
-                  exampleConsole.innerHTML = 'Data saved';
-                }
-                else {
-                  exampleConsole.innerHTML = 'Save error';
-                }
-              });
-            });
+            //     if (response.result === 'ok') {
+            //       exampleConsole.innerHTML = 'Data saved';
+            //     }
+            //     else {
+            //       exampleConsole.innerHTML = 'Save error';
+            //     }
+            //   });
+            // });
 
             $('#jsi-nav').sidebar({
                 trigger: '.jsc-sidebar-trigger',

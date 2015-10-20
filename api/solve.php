@@ -98,6 +98,7 @@ $response = [];
 
 if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_REQUEST['params'], true)) && (is_array($params)))
 {
+    if (isset($_SERVER['PHP_AUTH_USER']) && $_SERVER['PHP_AUTH_USER'] != 'admin') set_time_limit(60*5); // set 5 minutes time limit
     $response = $launcher->getSolution($params['data'], $params['config'], $params['method']);
 }
 else
