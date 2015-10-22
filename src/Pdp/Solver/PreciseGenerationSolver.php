@@ -68,7 +68,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
             if ((is_null($bestPointSequence) || ($this->_compareCosts($currentCost, $bestCost) === 1)))
             {
                 // if needed, check 3D constraints and skip path if it's incorrect
-                if ($this->getData('check_final_loading'))
+                if ($this->getData('check_final_loading') && ($this->getPrecise() < 100))
                 {
                     if (!$this->canLoad($pointSequence)) continue;
                 }
