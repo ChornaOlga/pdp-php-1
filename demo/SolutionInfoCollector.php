@@ -6,14 +6,16 @@ class SolutionInfoCollector extends \Litvinenko\Common\Object
 
     public function _construct()
     {
+        file_put_contents(__DIR__.'/log.txt', '');
         $this->setLog('');
         $this->setNotLoadedPaths([]);
     }
 
     public function logGeneratedPath($event)
     {
-        //$newStr = implode(' ', array_column($event->getTuple(), 'combinatorial_value')) . "\n";
-        //file_put_contents('log.txt', "1\n"/*, FILE_APPEND*/);
+        $newStr = implode(' ', array_column($event->getTuple(), 'combinatorial_value')) . "\n";
+        // echo $newStr;
+        file_put_contents(__DIR__.'/log.txt', $newStr, FILE_APPEND);
         // $this->setLog($this->getLog() . $newStr);
     }
 

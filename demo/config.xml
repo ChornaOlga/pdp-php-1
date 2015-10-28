@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config>
     <events>
-<!--         <new_path_generated>
+         <new_path_generated>
             <observers>
                 <solutioninfocollector_new_path_generated>
                     <class>\SolutionInfoCollector</class>
@@ -10,7 +10,7 @@
                 </solutioninfocollector_new_path_generated>
             </observers>
         </new_path_generated>
-        <cant_load>
+<!--        <cant_load>
             <observers>
                 <solutioninfocollector_cant_load>
                     <class>\SolutionInfoCollector</class>

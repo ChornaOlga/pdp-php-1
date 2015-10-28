@@ -45,7 +45,7 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
         // $this->validate();
         // $this->getHelper()->validateObjects($this->getPoints());
         // $this->_checks=0;
-        $generator = new Generator([
+        $generator = new Generator($this->getData()+[
             'tuple_length'        => Point::getPointCount($this->getPoints()),
             'generating_elements' => Helper::getGeneratorDataFromPoints($this->getPoints()),
             'weight_capacity'     => $this->getWeightCapacity(),
@@ -54,8 +54,6 @@ class PreciseGenerationSolver extends \Litvinenko\Combinatorics\Common\Solver\Ab
             'precise'             => $this->getPrecise(),
             'metrics'             => $this->getEvaluator()->getMetrics(),
             'initial_object'      => Helper::getGeneratorDataFromPoints([$this->getDepot()]),
-
-            'log_steps' => true
         ]);
 
         $pointSequences = Helper::getPointSequencesFromGeneratorData($generator->generateAll());
