@@ -8,7 +8,7 @@ $xmlConfigFile  = __DIR__.'/config.xml';
 
 $generateRandomData      = true; // if true, data will be randomly generated before each test
 $dummyMode               = false; // in Dummy mode we don't write to DB and output file is different
-$obtainFullSolution      = false; //if false, dummy solution will be obtained
+$obtainFullSolution      = true; //if false, dummy solution will be obtained
 
 $pdpPointsFile           = __DIR__.'/data/pdp_points.txt'; // has sense if $generateRandomData == false. Data is taken from file in this case
 $pdpConfigFile           = __DIR__.'/data/pdp_config.ini'; // default config is taken from here and additional config is merged into it
@@ -149,15 +149,19 @@ foreach ($pairCountToTest as $pairCount)
 
       if ($obtainFullSolution) if (!$dummyMode) query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data_id,data) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, 100, NOW(), $dataId, '$dataPrepared')");
 
-      $genSolution = ($obtainFullSolution)
+      $exactSolution = ($obtainFullSolution)
                         ? $launcher->getSolution($data, array_merge($configFromFile,['check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => 100, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]))
                         : $launcher->getDummySolution();
 
-      $genSolution['errors'] = ['bb method crashed. Gen method with v=100% was launched'];
-      $exact_solution_info .=  "{$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\",";
-      $exactSolution = $genSolution;
+      $exactSolution['errors'][] = 'bb method crashed. Gen method with v=100% was launched';
+
+      if (!isset($exactSolution['solution_time']))                 $exactSolution['solution_time']                 = 0;
+      if (!isset($exactSolution['path_cost']))                     $exactSolution['path_cost']                     = 0;
+      if (!isset($exactSolution['path']))                          $exactSolution['path']                          = [];
+      if (!isset($exactSolution['info']['total_generated_paths'])) $exactSolution['info']['total_generated_paths'] = 0;
 
       // solve with GEN method with different precises
+      $exact_solution_info .=  "{$exactSolution['path_cost']},{$exactSolution['solution_time']}, deprecated,{$exactSolution['info']['total_generated_paths']},\"" . (isset($exactSolution['path']) ? implode(' ',$exactSolution['path']) : '-') . "\",\"" . (isset($exactSolution['errors']) ? implode(';',$exactSolution['errors']) : '') ."\",";
       $prefix  = $exact_solution_info;
       $postfix = ",\"" . $dataPrepared . "\",\"" . $pdpPointsPrepared . "\"";
 
@@ -171,6 +175,12 @@ foreach ($pairCountToTest as $pairCount)
           if (!$dummyMode) query("INSERT INTO tests(test_suite_id,pair_count,load_area_size,weight_capacity,check_transitional_loading_probability,precise,start_time,data_id,data) VALUES ((select max(id) from test_suites),$pairCount,{$loadParams['load_area']['x']},{$loadParams['weight_capacity']},$check_transitional_loading_probability, $precise, NOW(), $dataId, '$dataPrepared')");
 
           $genSolution = $launcher->getSolution($data, array_merge($configFromFile,[ 'check_transitional_loading_probability' => $check_transitional_loading_probability, 'precise' => $precise, 'weight_capacity' => $loadParams['weight_capacity'], 'load_area' => $loadParams['load_area'] ]));
+
+          if (!isset($genSolution['solution_time']))                 $genSolution['solution_time']                 = 0;
+          if (!isset($genSolution['path_cost']))                     $genSolution['path_cost']                     = 0;
+          if (!isset($genSolution['path']))                          $genSolution['path']                          = [];
+          if (!isset($genSolution['info']['total_generated_paths'])) $genSolution['info']['total_generated_paths'] = 0;
+
           $costIncrease = (floatval($exactSolution['path_cost']) > 0) ? ($genSolution['path_cost']-$exactSolution['path_cost'])/$exactSolution['path_cost'] : '0';
           $newLine = $prefix . "{$precise}, {$genSolution['path_cost']},{$genSolution['solution_time']}, deprecated,{$genSolution['info']['total_generated_paths']},{$costIncrease},\"" . (isset($genSolution['path']) ? implode(' ',$genSolution['path']) : '-') . "\",\"" . (isset($genSolution['errors']) ? implode(';',$genSolution['errors']) : '') ."\"" . $postfix . "\n";
 
