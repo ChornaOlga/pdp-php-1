@@ -98,8 +98,10 @@
 
         <!-- <button name="load" id="load">Load</button>
             <button name="save" id="save">Save</button> -->
+        <button id="export_points_button">Export points</button>
         <button id="clusterize_button">Clusterize</button>
         <button id="reset_clusters_button">Reset clusters</button>
+
         <button id="solve_gen_all_button">Solve all clusters</button>
         <button id="draw_all_paths_button">Draw all paths</button>
         <button id="draw_all_paths_step_by_step_button">Draw all paths step by step</button>
@@ -1146,6 +1148,42 @@
       _drawAllClusterPaths(500);
     });
 
+    $('#export_points_button').click(function () {
+      console.log(JSON.stringify(_hot.getData(), null, 2));
+    });
+
+    var loadClusters = function(clusters) {
+      console.log("Loading clusters");
+      console.log(clusters);
+
+      var text = '';
+
+      _resetClusters();
+      clusters.forEach(function (cluster, cluster_index) {
+        /* PHP returns point ids from 0. We convert them to fronend point ids (from 1)*/
+        cluster.forEach(function (elem, point_index) {
+          var pointId = getPointIdFromRowNumber(cluster[point_index]);
+          cluster[point_index] = pointId;
+        });
+
+
+        // numerize clusters from 1
+        text += 'Cluster ' + (cluster_index) + ': points ' + cluster.join(',') + ' . ';
+
+        _clusters[cluster_index] = {};
+        _clusters[cluster_index].points = cluster;
+      });
+
+      renderClusters(_clusters);
+      _clearAllPaths();
+
+      $("#general_console").text(text);
+    };
+
+    $('#import_clusters_button').click(function () {
+      console.log(JSON.stringify(_hot.getData(), null, 2));
+    });
+
     $('#clusterize_button').click(function () {
       $("#general_console").text('Please, wait for solution ...');
 
@@ -1156,26 +1194,8 @@
         dataType: "json",
         success: function (result) {
           if (result.clusters) {
-            var text = '';
-            result.clusters.forEach(function (cluster, cluster_index) {
-              /* PHP returns point ids from 0. We convert them to fronend point ids (from 1)*/
-              cluster.forEach(function (elem, point_index) {
-                var pointId = getPointIdFromRowNumber(cluster[point_index]);
-                cluster[point_index] = pointId;
-              });
+            loadClusters(result.clusters);
 
-
-              // numerize clusters from 1
-              text += 'Cluster ' + (cluster_index) + ': points ' + cluster.join(',') + ' . ';
-
-              _clusters[cluster_index] = {};
-              _clusters[cluster_index].points = cluster;
-            });
-
-            renderClusters(_clusters);
-            _clearAllPaths();
-
-            $("#general_console").text(text);
             // $("#general_console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. solution time: ' +result.solution_time.toFixed(2) + ' sec. Additional info:' + JSON.stringify(result.info));
             // drawPath(_pointsContainer, "points_container",  result.path);
           }
