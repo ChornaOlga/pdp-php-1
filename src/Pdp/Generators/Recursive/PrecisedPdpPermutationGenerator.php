@@ -18,7 +18,8 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
         'precise' => 'required|float_strict',
         'metrics' => 'required|object:\Litvinenko\Combinatorics\Pdp\Metrics\AbstractMetric',
 
-        'log_steps' => 'required|boolean'
+        'log_steps' => 'required|boolean',
+        'time_limit' => 'integer_strict'
     );
 
     protected function _getSuccessiveElements($tuple)
@@ -48,6 +49,11 @@ class PrecisedPdpPermutationGenerator extends PdpPermutationGenerator
                 if ($this->getLogSteps())
                 {
                     App::dispatchEvent("new_path_generated", ['tuple' => $nextObject]);
+                }
+
+                if ($this->getTimeLimit() && (App::getSingleton('\Litvinenko\Combinatorics\Pdp\Helper\Time')->getTimeFromStart() > $this->getTimeLimit()))
+                {
+                    throw new \Exception("Time limit of seconds " . $this->getTimeLimit() . " exceeded");
                 }
                 $this->_generate($nextObject);
             }

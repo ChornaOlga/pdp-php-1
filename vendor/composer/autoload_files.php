@@ -11,4 +11,5 @@ return array(
     $vendorDir . '/litvinenko/object/bootstrap.php',
     $baseDir . '/src/Lib/functions.php',
     $baseDir . '/src/Lib/KMeans/KMeans.php',
+    $baseDir . '/demo/SolutionInfoCollector.php',
 );

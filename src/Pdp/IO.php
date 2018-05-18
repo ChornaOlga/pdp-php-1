@@ -102,6 +102,8 @@ class IO
                 'precise'                          => isset($config['general']['precise'])              ? (float)$config['general']['precise']       : null,
 
                 'log_solution'                     => isset($config['general']['log_solution'])         ?(bool)$config['general']['log_solution']    : null,
+                'log_steps'                     => isset($config['general']['log_steps'])         ?(bool)$config['general']['log_steps']    : null,
+                'time_limit'      => isset($config['general']['time_limit'])         ? (int)($config['general']['time_limit'])  : null,
 
                 'weight_capacity'      => isset($config['load']['weight_capacity'])         ? (float)($config['load']['weight_capacity'])  : null,
                 'load_area'            => isset($config['load']['load_area'])               ? $config['load']['load_area']               : null,
