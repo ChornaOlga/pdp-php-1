@@ -5,64 +5,64 @@
   <meta charset='utf-8'>
   <title>Pdp online solver</title>
 
-  <script src="/html/js/common/jquery-1.9.0-min.js"></script>
-  <script src="/html/js/common/jquery-ui-1.9.2.min.js"></script>
-  <link rel="stylesheet" href="/html/css/jquery-ui/jquery-ui.css">
+  <script src="js/common/jquery-1.9.0-min.js"></script>
+  <script src="js/common/jquery-ui-1.9.2.min.js"></script>
+  <link rel="stylesheet" href="css/jquery-ui/jquery-ui.css">
 
   <!-- Sidebar dependencies -->
-  <link rel="stylesheet" href="/html/css/sidebar/lib/fontello.css" />
-  <link rel="stylesheet" href="/html/css/sidebar/lib/normalize.css" />
-  <link rel="stylesheet" href="/html/css/sidebar/sidebar.css" />
+  <link rel="stylesheet" href="css/sidebar/lib/fontello.css" />
+  <link rel="stylesheet" href="css/sidebar/lib/normalize.css" />
+  <link rel="stylesheet" href="css/sidebar/sidebar.css" />
   <!-- end Sidebar dependencies -->
 
-  <script src="/html/js/handsontable.js"></script>
-  <link rel="stylesheet" href="/html/css/handsontable.css">
+  <script src="js/handsontable.js"></script>
+  <link rel="stylesheet" href="css/handsontable.css">
 
   <!-- jsPlumb dependencies -->
-  <link rel="stylesheet" href="/html/css/jsplumb/jsplumb.css">
+  <link rel="stylesheet" href="css/jsplumb/jsplumb.css">
   <!-- JS -->
-  <script src="/html/js/common/jquery-1.9.0-min.js"></script>
-  <script src="/html/js/common/jquery-ui-1.9.2.min.js"></script>
-  <script src="/html/js/jsplumb/external/jquery.ui.touch-punch-0.2.2.min.js"></script>
+  <script src="js/common/jquery-1.9.0-min.js"></script>
+  <script src="js/common/jquery-ui-1.9.2.min.js"></script>
+  <script src="js/jsplumb/external/jquery.ui.touch-punch-0.2.2.min.js"></script>
   <!-- support lib for bezier stuff -->
-  <script src="/html/js/jsplumb/lib/jsBezier-0.6.js"></script>
+  <script src="js/jsplumb/lib/jsBezier-0.6.js"></script>
   <!-- event adapter -->
-  <script src="/html/js/jsplumb/lib/mottle-0.4.js"></script>
+  <script src="js/jsplumb/lib/mottle-0.4.js"></script>
   <!-- geom functions -->
-  <script src="/html/js/jsplumb/lib/biltong-0.2.js"></script>
+  <script src="js/jsplumb/lib/biltong-0.2.js"></script>
   <!-- jsplumb util -->
-  <script src="/html/js/jsplumb/src/util.js"></script>
-  <script src="/html/js/jsplumb/src/browser-util.js"></script>
+  <script src="js/jsplumb/src/util.js"></script>
+  <script src="js/jsplumb/src/browser-util.js"></script>
   <!-- base DOM adapter -->
-  <script src="/html/js/jsplumb/src/dom-adapter.js"></script>
+  <script src="js/jsplumb/src/dom-adapter.js"></script>
   <!-- main jsplumb engine -->
-  <script src="/html/js/jsplumb/src/jsPlumb.js"></script>
+  <script src="js/jsplumb/src/jsPlumb.js"></script>
   <!-- endpoint -->
-  <script src="/html/js/jsplumb/src/endpoint.js"></script>
+  <script src="js/jsplumb/src/endpoint.js"></script>
   <!-- connection -->
-  <script src="/html/js/jsplumb/src/connection.js"></script>
+  <script src="js/jsplumb/src/connection.js"></script>
   <!-- anchors -->
-  <script src="/html/js/jsplumb/src/anchors.js"></script>
+  <script src="js/jsplumb/src/anchors.js"></script>
   <!-- connectors, endpoint and overlays  -->
-  <script src="/html/js/jsplumb/src/defaults.js"></script>
+  <script src="js/jsplumb/src/defaults.js"></script>
   <!-- bezier connectors -->
-  <script src="/html/js/jsplumb/src/connectors-bezier.js"></script>
+  <script src="js/jsplumb/src/connectors-bezier.js"></script>
   <!-- state machine connectors -->
-  <script src="/html/js/jsplumb/src/connectors-statemachine.js"></script>
+  <script src="js/jsplumb/src/connectors-statemachine.js"></script>
   <!-- flowchart connectors -->
-  <script src="/html/js/jsplumb/src/connector-editors.js"></script>
+  <script src="js/jsplumb/src/connector-editors.js"></script>
   <!-- SVG renderer -->
-  <script src="/html/js/jsplumb/src/renderers-svg.js"></script>
+  <script src="js/jsplumb/src/renderers-svg.js"></script>
   <!-- vml renderer -->
-  <script src="/html/js/jsplumb/src/renderers-vml.js"></script>
+  <script src="js/jsplumb/src/renderers-vml.js"></script>
   <!-- common adapter -->
-  <script src="/html/js/jsplumb/src/base-library-adapter.js"></script>
+  <script src="js/jsplumb/src/base-library-adapter.js"></script>
   <!-- jquery jsPlumb adapter -->
-  <script src="/html/js/jsplumb/src/jquery.jsPlumb.js"></script>
+  <script src="js/jsplumb/src/jquery.jsPlumb.js"></script>
   <!-- /JS -->
   <!-- end of jsPlumb dependencies -->
 
-  <link rel="stylesheet" media="screen" href="/html/css/main.css">
+  <link rel="stylesheet" media="screen" href="css/main.css">
 
 </head>
 
@@ -808,7 +808,7 @@
 
   </script>
 
-  <script src="/html/js/sidebar/sidebar.js"></script>
+  <script src="js/sidebar/sidebar.js"></script>
 
   <script>
 
