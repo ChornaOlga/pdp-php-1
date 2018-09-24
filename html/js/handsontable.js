@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 		return getter;
 /******/ 	};
 /******/
-/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	// SomeObject.prototype.hasOwnProperty.call
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
@@ -1646,13 +1646,13 @@ function isObjectEqual(object1, object2) {
 }
 
 /**
- * Determines whether given object is a plain Object.
+ * Determines whether given object is a plain SomeObject.
  * Note: String and Array are not plain Objects
  * @param {*} obj
  * @returns {boolean}
  */
 function isObject(obj) {
-  return Object.prototype.toString.call(obj) == '[object Object]';
+  return Object.prototype.toString.call(obj) == '[object SomeObject]';
 }
 
 function defineGetter(object, property, value, options) {
@@ -1686,8 +1686,8 @@ function objectEach(object, iteratee) {
 /**
  * Get object property by its name. Access to sub properties can be achieved by dot notation (e.q. `'foo.bar.baz'`).
  *
- * @param {Object} object Object which value will be exported.
- * @param {String} name Object property name.
+ * @param {Object} object SomeObject which value will be exported.
+ * @param {String} name SomeObject property name.
  * @returns {*}
  */
 function getProperty(object, name) {
@@ -1710,7 +1710,7 @@ function getProperty(object, name) {
 /**
  * Return object length (recursively).
  *
- * @param {*} object Object for which we want get length.
+ * @param {*} object SomeObject for which we want get length.
  * @returns {Number}
  */
 function deepObjectSize(object) {
@@ -1772,7 +1772,7 @@ function createObjectPropListener(defaultValue) {
 /**
  * Check if at specified `key` there is any value for `object`.
  *
- * @param {Object} object Object to search value at specyfic key.
+ * @param {Object} object SomeObject to search value at specyfic key.
  * @param {String} key String key to check.
  */
 function hasOwnProperty(object, key) {
@@ -3601,7 +3601,7 @@ var REGISTERED_HOOKS = [
  * @event Hooks#afterGetCellMeta
  * @param {Number} row Visual row index.
  * @param {Number} col Visual column index.
- * @param {Object} cellProperties Object containing the cell properties.
+ * @param {Object} cellProperties SomeObject containing the cell properties.
  */
 'afterGetCellMeta',
 
@@ -3739,7 +3739,7 @@ var REGISTERED_HOOKS = [
  * @param {Number} col Visual column index.
  * @param {String|Number} prop Column property name or a column index, if datasource is an array of arrays.
  * @param {String} value Value of the rendered cell.
- * @param {Object} cellProperties Object containing the cell's properties.
+ * @param {Object} cellProperties SomeObject containing the cell's properties.
  */
 'beforeRenderer',
 
@@ -3753,7 +3753,7 @@ var REGISTERED_HOOKS = [
  * @param {Number} col Visual column index.
  * @param {String|Number} prop Column property name or a column index, if datasource is an array of arrays.
  * @param {String} value Value of the rendered cell.
- * @param {Object} cellProperties Object containing the cell's properties.
+ * @param {Object} cellProperties SomeObject containing the cell's properties.
  */
 'afterRenderer',
 
@@ -3781,7 +3781,7 @@ var REGISTERED_HOOKS = [
  * @param {Number} c Selection start visual column index.
  * @param {Number} r2 Selection end visual row index.
  * @param {Number} c2 Selection end visual column index.
- * @param {Object} preventScrolling Object with `value` property where its value change will be observed.
+ * @param {Object} preventScrolling SomeObject with `value` property where its value change will be observed.
  * @param {Number} selectionLayerLevel The number which indicates what selection layer is currently modified.
  * @example
  * ```js
@@ -3803,7 +3803,7 @@ var REGISTERED_HOOKS = [
  * @param {String} p Selection start data source object property name.
  * @param {Number} r2 Selection end visual row index.
  * @param {String} p2 Selection end data source object property name.
- * @param {Object} preventScrolling Object with `value` property where its value change will be observed.
+ * @param {Object} preventScrolling SomeObject with `value` property where its value change will be observed.
  * @param {Number} selectionLayerLevel The number which indicates what selection layer is currently modified.
  * @example
  * ```js
@@ -3936,8 +3936,8 @@ var REGISTERED_HOOKS = [
  * Fired before populating the data in the autofill feature.
  *
  * @event Hooks#beforeAutofill
- * @param {Object} start Object containing information about first filled cell: `{row: 2, col: 0}`.
- * @param {Object} end Object containing information about last filled cell: `{row: 4, col: 1}`.
+ * @param {Object} start SomeObject containing information about first filled cell: `{row: 2, col: 0}`.
+ * @param {Object} end SomeObject containing information about last filled cell: `{row: 4, col: 1}`.
  * @param {Array} data 2D array containing information about fill pattern: `[["1", "Ted"], ["1", "John"]]`.
  * @param {Array} baseRange The coordinates of the base area for autofill.
  */
@@ -4034,7 +4034,7 @@ var REGISTERED_HOOKS = [
  * @event Hooks#beforeGetCellMeta
  * @param {Number} row Visual row index.
  * @param {Number} col Visual column index.
- * @param {Object} cellProperties Object containing the cell's properties.
+ * @param {Object} cellProperties SomeObject containing the cell's properties.
  */
 'beforeGetCellMeta',
 
@@ -4291,7 +4291,7 @@ var REGISTERED_HOOKS = [
  * @since 0.28.0
  * @param {Number} row Row height.
  * @param {Number} column Column index.
- * @param {Object} valueHolder Object which contains original value which can be modified by overwriting `.value` property.
+ * @param {Object} valueHolder SomeObject which contains original value which can be modified by overwriting `.value` property.
  * @param {String} ioMode String which indicates for what operation hook is fired (`get` or `set`).
  */
 'modifyData',
@@ -4322,7 +4322,7 @@ var REGISTERED_HOOKS = [
  *
  * @event Hooks#persistentStateLoad
  * @param {String} key Key string.
- * @param {Object} valuePlaceholder Object containing the loaded data.
+ * @param {Object} valuePlaceholder SomeObject containing the loaded data.
  */
 'persistentStateLoad',
 
@@ -4716,7 +4716,7 @@ var REGISTERED_HOOKS = [
  * Fired from the `populateFromArray` method during the `autofill` process. Fired for each "autofilled" cell individually.
  *
  * @event Hooks#beforeAutofillInsidePopulate
- * @param {Object} index Object containing `row` and `col` properties, defining the number of rows/columns from the initial cell of the autofill.
+ * @param {Object} index SomeObject containing `row` and `col` properties, defining the number of rows/columns from the initial cell of the autofill.
  * @param {String} direction Declares the direction of the autofill. Possible values: `up`, `down`, `left`, `right`.
  * @param {Array} input Array of arrays. Contains an array of rows with data being used in the autofill.
  * @param {Array} deltas The deltas array passed to the `populateFromArray` method.
@@ -6010,7 +6010,7 @@ module.exports = function (it) {
 /* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// most Object methods by ES6 should accept primitives
+// most SomeObject methods by ES6 should accept primitives
 var $export = __webpack_require__(3);
 var core = __webpack_require__(39);
 var fails = __webpack_require__(23);
@@ -6732,7 +6732,7 @@ function isPercentValue(value) {
  * square brackets must be the same as property name of `variables` object.
  *
  * @param {String} template Template string.
- * @param {Object} variables Object which contains all available values which can be injected into template.
+ * @param {Object} variables SomeObject which contains all available values which can be injected into template.
  * @returns {String}
  */
 function substitute(template) {
@@ -6765,7 +6765,7 @@ function stripTags(string) {
 /* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+// 19.1.2.14 / 15.2.3.14 SomeObject.keys(O)
 var $keys = __webpack_require__(101);
 var enumBugKeys = __webpack_require__(78);
 
@@ -8914,7 +8914,7 @@ function registerLanguage(languageCodeOrDictionary, dictionary) {
  * Get language dictionary for specific language code.
  *
  * @param {String} languageCode Language code.
- * @returns {Object} Object with constants representing identifiers for translation (as keys) and corresponding translation phrases (as values).
+ * @returns {Object} SomeObject with constants representing identifiers for translation (as keys) and corresponding translation phrases (as values).
  */
 function getLanguage(languageCode) {
   if (!hasLanguage(languageCode)) {
@@ -8938,7 +8938,7 @@ function hasLanguage(languageCode) {
 /**
  * Get default language dictionary.
  *
- * @returns {Object} Object with constants representing identifiers for translation (as keys) and corresponding translation phrases (as values).
+ * @returns {Object} SomeObject with constants representing identifiers for translation (as keys) and corresponding translation phrases (as values).
  */
 function getDefaultLanguage() {
   return _enUS2.default;
@@ -9014,7 +9014,7 @@ module.exports = function (it, S) {
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+// 19.1.2.2 / 15.2.3.5 SomeObject.create(O [, Properties])
 var anObject = __webpack_require__(18);
 var dPs = __webpack_require__(207);
 var enumBugKeys = __webpack_require__(78);
@@ -9022,7 +9022,7 @@ var IE_PROTO = __webpack_require__(76)('IE_PROTO');
 var Empty = function () { /* empty */ };
 var PROTOTYPE = 'prototype';
 
-// Create object with fake `null` prototype: use iframe Object with cleared prototype
+// Create object with fake `null` prototype: use iframe SomeObject with cleared prototype
 var createDict = function () {
   // Thrash, waste and sodomy: IE GC bug
   var iframe = __webpack_require__(72)('iframe');
@@ -9033,11 +9033,11 @@ var createDict = function () {
   iframe.style.display = 'none';
   __webpack_require__(103).appendChild(iframe);
   iframe.src = 'javascript:'; // eslint-disable-line no-script-url
-  // createDict = iframe.contentWindow.Object;
+  // createDict = iframe.contentWindow.SomeObject;
   // html.removeChild(iframe);
   iframeDocument = iframe.contentWindow.document;
   iframeDocument.open();
-  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+  iframeDocument.write(lt + 'script' + gt + 'document.F=SomeObject' + lt + '/script' + gt);
   iframeDocument.close();
   createDict = iframeDocument.F;
   while (i--) delete createDict[PROTOTYPE][enumBugKeys[i]];
@@ -9050,7 +9050,7 @@ module.exports = Object.create || function create(O, Properties) {
     Empty[PROTOTYPE] = anObject(O);
     result = new Empty();
     Empty[PROTOTYPE] = null;
-    // add "__proto__" for Object.getPrototypeOf polyfill
+    // add "__proto__" for SomeObject.getPrototypeOf polyfill
     result[IE_PROTO] = O;
   } else result = createDict();
   return Properties === undefined ? result : dPs(result, Properties);
@@ -9240,7 +9240,7 @@ module.exports = navigator && navigator.userAgent || '';
 /* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
+// 19.1.2.7 / 15.2.3.4 SomeObject.getOwnPropertyNames(O)
 var $keys = __webpack_require__(101);
 var hiddenKeys = __webpack_require__(78).concat('length', 'prototype');
 
@@ -12087,7 +12087,7 @@ function Core(rootElement, userSettings) {
    *
    * @memberof Core#
    * @function getSettings
-   * @returns {Object} Object containing the current grid settings.
+   * @returns {Object} SomeObject containing the current grid settings.
    */
   this.getSettings = function () {
     return priv.settings;
@@ -14006,7 +14006,7 @@ function translateRowsToColumns(input) {
  * Methods/properties defined explicitly always takes precedence over those defined through "type".
  *
  * If the method/property is not found in an object, searching is continued recursively through prototype chain, until
- * it reaches the Object.prototype.
+ * it reaches the SomeObject.prototype.
  *
  *
  * @param methodName {String} name of the method/property to search (i.e. 'renderer', 'validator', 'copyable')
@@ -14379,7 +14379,7 @@ var GhostTable = function () {
      * Ghost table settings.
      *
      * @type {Object}
-     * @default {Object}
+     * @default {SomeObject}
      */
     this.settings = {
       useHeaders: true
@@ -15247,7 +15247,7 @@ function predefinedItems() {
  * Add new predefined menu item to the collection.
  *
  * @param {String} key Menu command id.
- * @param {Object} item Object command descriptor.
+ * @param {Object} item SomeObject command descriptor.
  */
 function addItem(key, item) {
   if (ITEMS.indexOf(key) === -1) {
@@ -15324,7 +15324,7 @@ var MergedCellCoords = function () {
   /**
    * Get a warning message for when the declared merged cell data contains negative values.
    *
-   * @param {Object} newMergedCell Object containg information about the merged cells that was about to be added.
+   * @param {Object} newMergedCell SomeObject containg information about the merged cells that was about to be added.
    * @return {String}
    */
 
@@ -15535,7 +15535,7 @@ var MergedCellCoords = function () {
     /**
      * Get a warning message for when the declared merged cell data contains values exceeding the table limits.
      *
-     * @param {Object} newMergedCell Object containg information about the merged cells that was about to be added.
+     * @param {Object} newMergedCell SomeObject containg information about the merged cells that was about to be added.
      * @return {String}
      */
 
@@ -15548,7 +15548,7 @@ var MergedCellCoords = function () {
     /**
      * Get a warning message for when the declared merged cell data represents a single cell.
      *
-     * @param {Object} newMergedCell Object containg information about the merged cells that was about to be added.
+     * @param {Object} newMergedCell SomeObject containg information about the merged cells that was about to be added.
      * @return {String}
      */
 
@@ -15561,7 +15561,7 @@ var MergedCellCoords = function () {
     /**
      * Get a warning message for when the declared merged cell data contains "colspan" or "rowspan", that equals 0.
      *
-     * @param {Object} newMergedCell Object containg information about the merged cells that was about to be added.
+     * @param {Object} newMergedCell SomeObject containg information about the merged cells that was about to be added.
      * @return {String}
      */
 
@@ -15574,7 +15574,7 @@ var MergedCellCoords = function () {
     /**
      * Check whether the values provided for a merged cell contain any negative values.
      *
-     * @param {Object} mergedCellInfo Object containing the `row`, `col`, `rowspan` and `colspan` properties.
+     * @param {Object} mergedCellInfo SomeObject containing the `row`, `col`, `rowspan` and `colspan` properties.
      * @return {Boolean}
      */
 
@@ -15615,7 +15615,7 @@ var MergedCellCoords = function () {
     /**
      * Check whether the provided merged cell object is to be declared out of bounds of the table.
      *
-     * @param {Object} mergeCell Object containing the `row`, `col`, `rowspan` and `colspan` properties.
+     * @param {Object} mergeCell SomeObject containing the `row`, `col`, `rowspan` and `colspan` properties.
      * @param {Number} rowCount Number of rows in the table.
      * @param {Number} columnCount Number of rows in the table.
      * @return {Boolean}
@@ -15929,7 +15929,7 @@ module.exports = __webpack_require__(39).getIteratorMethod = function (it) {
 /* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// getting tag from 19.1.3.6 Object.prototype.toString()
+// getting tag from 19.1.3.6 SomeObject.prototype.toString()
 var cof = __webpack_require__(44);
 var TAG = __webpack_require__(12)('toStringTag');
 // ES3 wrong here
@@ -16034,7 +16034,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 /* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+// 19.1.2.9 / 15.2.3.2 SomeObject.getPrototypeOf(O)
 var has = __webpack_require__(29);
 var toObject = __webpack_require__(33);
 var IE_PROTO = __webpack_require__(76)('IE_PROTO');
@@ -16213,7 +16213,7 @@ module.exports = Array.isArray || function isArray(arg) {
 
 "use strict";
 
-// 19.1.2.1 Object.assign(target, source, ...)
+// 19.1.2.1 SomeObject.assign(target, source, ...)
 var getKeys = __webpack_require__(37);
 var gOPS = __webpack_require__(69);
 var pIE = __webpack_require__(53);
@@ -16872,17 +16872,17 @@ $export($export.S + $export.F * !USE_NATIVE, 'Symbol', {
 });
 
 $export($export.S + $export.F * !USE_NATIVE, 'Object', {
-  // 19.1.2.2 Object.create(O [, Properties])
+  // 19.1.2.2 SomeObject.create(O [, Properties])
   create: $create,
-  // 19.1.2.4 Object.defineProperty(O, P, Attributes)
+  // 19.1.2.4 SomeObject.defineProperty(O, P, Attributes)
   defineProperty: $defineProperty,
-  // 19.1.2.3 Object.defineProperties(O, Properties)
+  // 19.1.2.3 SomeObject.defineProperties(O, Properties)
   defineProperties: $defineProperties,
-  // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
+  // 19.1.2.6 SomeObject.getOwnPropertyDescriptor(O, P)
   getOwnPropertyDescriptor: $getOwnPropertyDescriptor,
-  // 19.1.2.7 Object.getOwnPropertyNames(O)
+  // 19.1.2.7 SomeObject.getOwnPropertyNames(O)
   getOwnPropertyNames: $getOwnPropertyNames,
-  // 19.1.2.8 Object.getOwnPropertySymbols(O)
+  // 19.1.2.8 SomeObject.getOwnPropertySymbols(O)
   getOwnPropertySymbols: $getOwnPropertySymbols
 });
 
@@ -16931,7 +16931,7 @@ exports.f = __webpack_require__(12);
 /* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
+// fallback for IE11 buggy SomeObject.getOwnPropertyNames with iframe and window
 var toIObject = __webpack_require__(24);
 var gOPN = __webpack_require__(82).f;
 var toString = {}.toString;
@@ -16956,7 +16956,7 @@ module.exports.f = function getOwnPropertyNames(it) {
 /* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.5 Object.freeze(O)
+// 19.1.2.5 SomeObject.freeze(O)
 var isObject = __webpack_require__(9);
 var meta = __webpack_require__(34).onFreeze;
 
@@ -16971,7 +16971,7 @@ __webpack_require__(26)('freeze', function ($freeze) {
 /* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.17 Object.seal(O)
+// 19.1.2.17 SomeObject.seal(O)
 var isObject = __webpack_require__(9);
 var meta = __webpack_require__(34).onFreeze;
 
@@ -16986,7 +16986,7 @@ __webpack_require__(26)('seal', function ($seal) {
 /* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.15 Object.preventExtensions(O)
+// 19.1.2.15 SomeObject.preventExtensions(O)
 var isObject = __webpack_require__(9);
 var meta = __webpack_require__(34).onFreeze;
 
@@ -17001,7 +17001,7 @@ __webpack_require__(26)('preventExtensions', function ($preventExtensions) {
 /* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.12 Object.isFrozen(O)
+// 19.1.2.12 SomeObject.isFrozen(O)
 var isObject = __webpack_require__(9);
 
 __webpack_require__(26)('isFrozen', function ($isFrozen) {
@@ -17015,7 +17015,7 @@ __webpack_require__(26)('isFrozen', function ($isFrozen) {
 /* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.13 Object.isSealed(O)
+// 19.1.2.13 SomeObject.isSealed(O)
 var isObject = __webpack_require__(9);
 
 __webpack_require__(26)('isSealed', function ($isSealed) {
@@ -17029,7 +17029,7 @@ __webpack_require__(26)('isSealed', function ($isSealed) {
 /* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.11 Object.isExtensible(O)
+// 19.1.2.11 SomeObject.isExtensible(O)
 var isObject = __webpack_require__(9);
 
 __webpack_require__(26)('isExtensible', function ($isExtensible) {
@@ -17043,7 +17043,7 @@ __webpack_require__(26)('isExtensible', function ($isExtensible) {
 /* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
+// 19.1.2.6 SomeObject.getOwnPropertyDescriptor(O, P)
 var toIObject = __webpack_require__(24);
 var $getOwnPropertyDescriptor = __webpack_require__(67).f;
 
@@ -17058,7 +17058,7 @@ __webpack_require__(26)('getOwnPropertyDescriptor', function () {
 /* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.9 Object.getPrototypeOf(O)
+// 19.1.2.9 SomeObject.getPrototypeOf(O)
 var toObject = __webpack_require__(33);
 var $getPrototypeOf = __webpack_require__(109);
 
@@ -17073,7 +17073,7 @@ __webpack_require__(26)('getPrototypeOf', function () {
 /* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.14 Object.keys(O)
+// 19.1.2.14 SomeObject.keys(O)
 var toObject = __webpack_require__(33);
 var $keys = __webpack_require__(37);
 
@@ -17088,7 +17088,7 @@ __webpack_require__(26)('keys', function () {
 /* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.7 Object.getOwnPropertyNames(O)
+// 19.1.2.7 SomeObject.getOwnPropertyNames(O)
 __webpack_require__(26)('getOwnPropertyNames', function () {
   return __webpack_require__(123).f;
 });
@@ -17098,7 +17098,7 @@ __webpack_require__(26)('getOwnPropertyNames', function () {
 /* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.3.1 Object.assign(target, source)
+// 19.1.3.1 SomeObject.assign(target, source)
 var $export = __webpack_require__(3);
 
 $export($export.S + $export.F, 'Object', { assign: __webpack_require__(116) });
@@ -17108,7 +17108,7 @@ $export($export.S + $export.F, 'Object', { assign: __webpack_require__(116) });
 /* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.3.10 Object.is(value1, value2)
+// 19.1.3.10 SomeObject.is(value1, value2)
 var $export = __webpack_require__(3);
 $export($export.S, 'Object', { is: __webpack_require__(219) });
 
@@ -17117,7 +17117,7 @@ $export($export.S, 'Object', { is: __webpack_require__(219) });
 /* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.3.19 Object.setPrototypeOf(O, proto)
+// 19.1.3.19 SomeObject.setPrototypeOf(O, proto)
 var $export = __webpack_require__(3);
 $export($export.S, 'Object', { setPrototypeOf: __webpack_require__(112).set });
 
@@ -25157,7 +25157,7 @@ DefaultSettings.prototype = {
    *
    *   * Saves value under given key in browser local storage.
    *
-   * __persistentStateLoad__ (key: String, valuePlaceholder: Object)
+   * __persistentStateLoad__ (key: String, valuePlaceholder: SomeObject)
    *
    *   * Loads `value`, saved under given key, form browser local storage. The loaded `value` will be saved in `valuePlaceholder.value`
    *     (this is due to specific behaviour of `Hooks.run()` method). If no value have been saved under key `valuePlaceholder.value`
@@ -26061,7 +26061,7 @@ DefaultSettings.prototype = {
 
   /**
    * @description
-   * Object which describes if renderer should create checkbox element with label element as a parent. Option desired for
+   * SomeObject which describes if renderer should create checkbox element with label element as a parent. Option desired for
    * [checkbox](http://docs.handsontable.com/demo-checkbox.html)-typed cells.
    *
    * By default the [checkbox](http://docs.handsontable.com/demo-checkbox.html) renderer renders the checkbox without a label.
@@ -27590,7 +27590,7 @@ var BaseUI = function () {
     /**
      * Getter for the element position.
      *
-     * @returns {Object} Object contains left and top position of the element.
+     * @returns {Object} SomeObject contains left and top position of the element.
      */
 
   }, {
@@ -27623,7 +27623,7 @@ var BaseUI = function () {
     /**
      * Getter for the element position.
      *
-     * @returns {Object} Object contains height and width of the element.
+     * @returns {Object} SomeObject contains height and width of the element.
      */
 
   }, {
@@ -27656,7 +27656,7 @@ var BaseUI = function () {
     /**
      * Getter for the element offset.
      *
-     * @returns {Object} Object contains top and left offset of the element.
+     * @returns {Object} SomeObject contains top and left offset of the element.
      */
 
   }, {
@@ -27808,7 +27808,7 @@ var BaseUI = function () {
     /**
      * Getter for the element position.
      *
-     * @returns {Object} Object contains left and top position of the element.
+     * @returns {Object} SomeObject contains left and top position of the element.
      */
 
   }, {
@@ -27841,7 +27841,7 @@ var BaseUI = function () {
     /**
      * Getter for the element position.
      *
-     * @returns {Object} Object contains height and width of the element.
+     * @returns {Object} SomeObject contains height and width of the element.
      */
 
   }, {
@@ -27874,7 +27874,7 @@ var BaseUI = function () {
     /**
      * Getter for the element offset.
      *
-     * @returns {Object} Object contains top and left offset of the element.
+     * @returns {Object} SomeObject contains top and left offset of the element.
      */
 
   }, {
@@ -28141,7 +28141,7 @@ var jsonpatch;
         }
         var path = _getPathRecursive(root, obj);
         if (path === '') {
-            throw new OriginalError("Object not found in root");
+            throw new OriginalError("SomeObject not found in root");
         }
         return '/' + path;
     }
@@ -31004,7 +31004,7 @@ var DateEditor = function (_TextEditor) {
      * @param {String} prop Property name (passed when datasource is an array of objects)
      * @param {HTMLTableCellElement} td Table cell element
      * @param {*} originalValue Original value
-     * @param {Object} cellProperties Object with cell properties ({@see Core#getCellMeta})
+     * @param {Object} cellProperties SomeObject with cell properties ({@see Core#getCellMeta})
      */
 
   }, {
@@ -35241,8 +35241,8 @@ var DataSource = function () {
     /**
      * Returns source data by passed range.
      *
-     * @param {Object} start Object with physical `row` and `col` keys (or visual column index, if data type is an array of objects).
-     * @param {Object} end Object with physical `row` and `col` keys (or visual column index, if data type is an array of objects).
+     * @param {Object} start SomeObject with physical `row` and `col` keys (or visual column index, if data type is an array of objects).
+     * @param {Object} end SomeObject with physical `row` and `col` keys (or visual column index, if data type is an array of objects).
      * @param {Boolean} [toArray=false] If `true` return source data as an array of arrays even when source data was provided
      *                                  in another format.
      * @returns {Array}
@@ -37025,7 +37025,7 @@ _pluginHooks2.default.getSingleton().register('persistentStateReset');
  * persistentStateSave (key: String, value: Mixed) -
  * Saves value under given key in browser local storage.
  *
- * persistentStateLoad (key: String, saveTo: Object) -
+ * persistentStateLoad (key: String, saveTo: SomeObject) -
  * Loads value, saved under given key, form browser local storage.
  * The loaded value will be saved in saveTo.value.
  *
@@ -37243,7 +37243,7 @@ var Storage = function () {
      * Load data from localStorage.
      *
      * @param {String} key Key string.
-     * @param {Object} defaultValue Object containing the loaded data.
+     * @param {Object} defaultValue SomeObject containing the loaded data.
      *
      * @returns {}
      */
@@ -39603,7 +39603,7 @@ var ColumnSorting = function (_BasePlugin) {
      */
     _this2.sortOrder = NONE_SORT_STATE;
     /**
-     * Object containing visual row indexes mapped to data source indexes.
+     * SomeObject containing visual row indexes mapped to data source indexes.
      *
      * @type {RowsMapper}
      */
@@ -41170,7 +41170,7 @@ var Comments = function (_BasePlugin) {
      * Set current cell range to be able to use general methods like {@link Comments#setComment},
      * {@link Comments#removeComment}, {@link Comments#show}.
      *
-     * @param {Object} range Object with `from` and `to` properties, each with `row` and `col` properties.
+     * @param {Object} range SomeObject with `from` and `to` properties, each with `row` and `col` properties.
      */
 
   }, {
@@ -41463,7 +41463,7 @@ var Comments = function (_BasePlugin) {
      *
      * @param {Number} row Visual row index.
      * @param {Number} column Visual column index.
-     * @param {Object} metaObject Object defining all the comment-related meta information.
+     * @param {Object} metaObject SomeObject defining all the comment-related meta information.
      */
 
   }, {
@@ -44257,7 +44257,7 @@ var Menu = function () {
     /**
      * Set menu position based on dom event or based on literal object.
      *
-     * @param {Event|Object} coords Event or literal Object with coordinates.
+     * @param {Event|Object} coords Event or literal SomeObject with coordinates.
      */
 
   }, {
@@ -44697,7 +44697,7 @@ var Menu = function () {
      * @param {Number} c Selection start column index.
      * @param {Number} r2 Selection end row index.
      * @param {Number} c2 Selection end column index.
-     * @param {Object} preventScrolling Object with `value` property where its value change will be observed.
+     * @param {Object} preventScrolling SomeObject with `value` property where its value change will be observed.
      * @param {Number} selectionLayerLevel The number which indicates what selection layer is currently modified.
      */
 
@@ -44812,7 +44812,7 @@ var Cursor = function () {
   /**
    * Get source type name.
    *
-   * @param {*} object Event or Object with coordinates.
+   * @param {*} object Event or SomeObject with coordinates.
    * @returns {String} Returns one of this values: `'literal'`, `'event'`.
    */
 
@@ -46108,7 +46108,7 @@ var CustomBorders = function (_BasePlugin) {
     /**
      * Insert WalkontableSelection instance into Walkontable settings.
      *
-     * @param {Object} border Object with `row` and `col`, `left`, `right`, `top` and `bottom`, `className` and `border` ({Object} with `color`, `width` and `cornerVisible` property) properties.
+     * @param {Object} border SomeObject with `row` and `col`, `left`, `right`, `top` and `bottom`, `className` and `border` ({SomeObject} with `color`, `width` and `cornerVisible` property) properties.
      */
 
   }, {
@@ -46133,7 +46133,7 @@ var CustomBorders = function (_BasePlugin) {
      *
      * @param {Number} row Visual row index.
      * @param {Number} col Visual column index.
-     * @param {Object} borderObj Object with `row` and `col`, `left`, `right`, `top` and `bottom` properties.
+     * @param {Object} borderObj SomeObject with `row` and `col`, `left`, `right`, `top` and `bottom` properties.
      */
 
   }, {
@@ -46150,7 +46150,7 @@ var CustomBorders = function (_BasePlugin) {
     /** *
      * Prepare borders from setting (object).
      *
-     * @param {Object} rowObj Object with `range`, `left`, `right`, `top` and `bottom` properties.
+     * @param {Object} rowObj SomeObject with `range`, `left`, `right`, `top` and `bottom` properties.
      */
 
   }, {
@@ -46341,7 +46341,7 @@ var CustomBorders = function (_BasePlugin) {
      * Create borders from settings.
      *
      * @private
-     * @param {Array} customBorders Object with `row` and `col`, `left`, `right`, `top` and `bottom` properties.
+     * @param {Array} customBorders SomeObject with `row` and `col`, `left`, `right`, `top` and `bottom` properties.
      */
 
   }, {
@@ -47506,7 +47506,7 @@ var ManualColumnMove = function (_BasePlugin) {
      */
     _this.removedColumns = [];
     /**
-     * Object containing visual row indexes mapped to data source indexes.
+     * SomeObject containing visual row indexes mapped to data source indexes.
      *
      * @type {RowsMapper}
      */
@@ -47971,7 +47971,7 @@ var ManualColumnMove = function (_BasePlugin) {
      * @param {MouseEvent} event `mousedown` event properties.
      * @param {CellCoords} coords Visual cell coordinates where was fired event.
      * @param {HTMLElement} TD Cell represented as HTMLElement.
-     * @param {Object} blockCalculations Object which contains information about blockCalculation for row, column or cells.
+     * @param {Object} blockCalculations SomeObject which contains information about blockCalculation for row, column or cells.
      */
 
   }, {
@@ -48075,7 +48075,7 @@ var ManualColumnMove = function (_BasePlugin) {
      * @param {MouseEvent} event `mouseover` event properties.
      * @param {CellCoords} coords Visual cell coordinates where was fired event.
      * @param {HTMLElement} TD Cell represented as HTMLElement.
-     * @param {Object} blockCalculations Object which contains information about blockCalculation for row, column or cells.
+     * @param {Object} blockCalculations SomeObject which contains information about blockCalculation for row, column or cells.
      */
 
   }, {
@@ -49304,7 +49304,7 @@ var ManualRowMove = function (_BasePlugin) {
      */
     _this.removedRows = [];
     /**
-     * Object containing visual row indexes mapped to data source indexes.
+     * SomeObject containing visual row indexes mapped to data source indexes.
      *
      * @type {RowsMapper}
      */
@@ -49895,7 +49895,7 @@ var ManualRowMove = function (_BasePlugin) {
      * @param {MouseEvent} event `mouseover` event properties.
      * @param {CellCoords} coords Visual cell coordinates where was fired event.
      * @param {HTMLElement} TD Cell represented as HTMLElement.
-     * @param {Object} blockCalculations Object which contains information about blockCalculation for row, column or cells.
+     * @param {Object} blockCalculations SomeObject which contains information about blockCalculation for row, column or cells.
      */
 
   }, {
@@ -52235,7 +52235,7 @@ var MergedCellsCollection = function () {
   /**
    * Get a warning message for when the declared merged cell data overlaps already existing merged cells.
    *
-   * @param {Object} newMergedCell Object containg information about the merged cells that was about to be added.
+   * @param {Object} newMergedCell SomeObject containg information about the merged cells that was about to be added.
    * @return {String}
    */
 
@@ -52985,7 +52985,7 @@ var AutofillCalculations = function () {
      *
      * @private
      * @param {Array} changes The changes made.
-     * @returns {Object} Object with `from` and `to` properties, both containing `row` and `column` keys.
+     * @returns {Object} SomeObject with `from` and `to` properties, both containing `row` and `column` keys.
      */
 
   }, {
@@ -54237,7 +54237,7 @@ function cleanPatches(patches) {
   var newOrRemovedColumns = [];
 
   /**
-   * If observeChanges uses native Object.observe method, then it produces patches for length property. Filter them.
+   * If observeChanges uses native SomeObject.observe method, then it produces patches for length property. Filter them.
    * If path can't be parsed. Filter it.
    */
   patches = (0, _array.arrayFilter)(patches, function (patch) {
@@ -54640,7 +54640,7 @@ var Search = function (_BasePlugin) {
      * @param {Number} col Visual column index.
      * @param {String | Number} prop Column property name or a column index, if datasource is an array of arrays.
      * @param {String} value Value of the rendered cell.
-     * @param {Object} cellProperties Object containing the cell's properties.
+     * @param {Object} cellProperties SomeObject containing the cell's properties.
      */
 
   }, {

@@ -1,7 +1,7 @@
 <?php
 namespace Litvinenko\Combinatorics\Common\Solver;
 
-abstract class AbstractSolver extends \Litvinenko\Common\Object
+abstract class AbstractSolver extends \Litvinenko\Common\SomeObject
 {
     protected $dataRules = array(
         'maximize_cost' => 'required|boolean'

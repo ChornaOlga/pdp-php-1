@@ -22,7 +22,7 @@
       _iss = function(s) { return typeof s === "string"; },
       _isb = function(s) { return typeof s === "boolean"; },
       _isnull = function(s) { return s == null; },
-      _iso = function(o) { return o == null ? false : Object.prototype.toString.call(o) === "[object Object]"; },
+      _iso = function(o) { return o == null ? false : Object.prototype.toString.call(o) === "[object SomeObject]"; },
       _isd = function(o) { return Object.prototype.toString.call(o) === "[object Date]"; },
       _isf = function(o) { return Object.prototype.toString.call(o) === "[object Function]"; },
       _ise = function(o) {

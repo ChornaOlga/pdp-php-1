@@ -5,7 +5,7 @@ namespace Litvinenko\Combinatorics\Pdp;
 use \Litvinenko\Combinatorics\Pdp\Point;
 use \Litvinenko\Common\App;
 
-class Pdp extends \Litvinenko\Common\Object
+class Pdp extends \Litvinenko\Common\SomeObject
 {
     protected function _construct()
     {

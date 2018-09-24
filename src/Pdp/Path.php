@@ -1,7 +1,7 @@
 <?php
 
 namespace Litvinenko\Combinatorics\Pdp;
-class Path extends \Litvinenko\Common\Object
+class Path extends \Litvinenko\Common\SomeObject
 {
     protected $dataRules = array(
         'points' => 'required|array'

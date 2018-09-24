@@ -1,6 +1,6 @@
 <?php
 
-class SolutionInfoCollector extends \Litvinenko\Common\Object
+class SolutionInfoCollector extends \Litvinenko\Common\SomeObject
 {
     const LOG_FILE = 'solution_process.log';
     public function _construct()

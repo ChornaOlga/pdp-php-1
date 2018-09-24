@@ -437,7 +437,7 @@ jQuery.extend({
 	},
 
 	isPlainObject: function( obj ) {
-		// Must be an Object.
+		// Must be an SomeObject.
 		// Because of IE, we also have to check the presence of the constructor property.
 		// Make sure that DOM nodes and window objects don't pass through, as well
 		if ( !obj || jQuery.type(obj) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
@@ -445,7 +445,7 @@ jQuery.extend({
 		}
 
 		try {
-			// Not own constructor property must be Object
+			// Not own constructor property must be SomeObject
 			if ( obj.constructor &&
 				!core_hasOwn.call(obj, "constructor") &&
 				!core_hasOwn.call(obj.constructor.prototype, "isPrototypeOf") ) {
@@ -898,16 +898,16 @@ jQuery.ready.promise = function( obj ) {
 };
 
 // Populate the class2type map
-jQuery.each("Boolean Number String Function Array Date RegExp Object".split(" "), function(i, name) {
+jQuery.each("Boolean Number String Function Array Date RegExp SomeObject".split(" "), function(i, name) {
 	class2type[ "[object " + name + "]" ] = name.toLowerCase();
 });
 
 // All jQuery objects should point back to these
 rootjQuery = jQuery(document);
-// String to Object options format cache
+// String to SomeObject options format cache
 var optionsCache = {};
 
-// Convert String-formatted options into Object-formatted ones and store in cache
+// Convert String-formatted options into SomeObject-formatted ones and store in cache
 function createOptions( options ) {
 	var object = optionsCache[ options ] = {};
 	jQuery.each( options.split( core_rspace ), function( _, flag ) {
@@ -940,7 +940,7 @@ function createOptions( options ) {
  */
 jQuery.Callbacks = function( options ) {
 
-	// Convert options from String-formatted to Object-formatted if needed
+	// Convert options from String-formatted to SomeObject-formatted if needed
 	// (we check in cache first)
 	options = typeof options === "string" ?
 		( optionsCache[ options ] || createOptions( options ) ) :
@@ -2867,11 +2867,11 @@ jQuery.event = {
 			return;
 		}
 
-		// Caller can pass in an Event, Object, or just an event type string
+		// Caller can pass in an Event, SomeObject, or just an event type string
 		event = typeof event === "object" ?
 			// jQuery.Event object
 			event[ jQuery.expando ] ? event :
-			// Object literal
+			// SomeObject literal
 			new jQuery.Event( type, event ) :
 			// Just the event type (string)
 			new jQuery.Event( type );
@@ -3487,9 +3487,9 @@ jQuery.fn.extend({
 
 		// Types can be a map of types/handlers
 		if ( typeof types === "object" ) {
-			// ( types-Object, selector, data )
+			// ( types-SomeObject, selector, data )
 			if ( typeof selector !== "string" ) { // && selector != null
-				// ( types-Object, data )
+				// ( types-SomeObject, data )
 				data = data || selector;
 				selector = undefined;
 			}
@@ -3720,7 +3720,7 @@ var cachedruns,
 				delete cache[ keys.shift() ];
 			}
 
-			// Retrieve with (key + " ") to avoid collision with native Object.prototype properties (see Issue #157)
+			// Retrieve with (key + " ") to avoid collision with native SomeObject.prototype properties (see Issue #157)
 			return (cache[ key + " " ] = value);
 		}, cache );
 	},

@@ -1,7 +1,7 @@
 <?php
 namespace Litvinenko\Combinatorics\Pdp;
 
-use \Litvinenko\Common\Object;
+use \Litvinenko\Common\SomeObject;
 class IO
 {
     /* deprecated. for old file format*/

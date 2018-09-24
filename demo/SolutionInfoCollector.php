@@ -1,7 +1,7 @@
 <?php
 
 use \Litvinenko\Combinatorics\Pdp\IO;
-class SolutionInfoCollector extends \Litvinenko\Common\Object
+class SolutionInfoCollector extends \Litvinenko\Common\SomeObject
 {
 
     public function _construct()

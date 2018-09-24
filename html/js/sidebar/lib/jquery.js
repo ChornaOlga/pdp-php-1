@@ -432,7 +432,7 @@ jQuery.extend({
 
 	isPlainObject: function( obj ) {
 		// Not plain objects:
-		// - Any object or value whose internal [[Class]] property is not "[object Object]"
+		// - Any object or value whose internal [[Class]] property is not "[object SomeObject]"
 		// - DOM nodes
 		// - window
 		if ( jQuery.type( obj ) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
@@ -453,7 +453,7 @@ jQuery.extend({
 		}
 
 		// If the function hasn't returned already, we're confident that
-		// |obj| is a plain object, created by {} or constructed with new Object
+		// |obj| is a plain object, created by {} or constructed with new SomeObject
 		return true;
 	},
 
@@ -841,7 +841,7 @@ jQuery.ready.promise = function( obj ) {
 };
 
 // Populate the class2type map
-jQuery.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
+jQuery.each("Boolean Number String Function Array Date RegExp SomeObject Error".split(" "), function(i, name) {
 	class2type[ "[object " + name + "]" ] = name.toLowerCase();
 });
 
@@ -1156,7 +1156,7 @@ function Sizzle( selector, context, results, seed ) {
 
 /**
  * Create key-value caches of limited size
- * @returns {Function(string, Object)} Returns the Object data after storing it on itself with
+ * @returns {Function(string, SomeObject)} Returns the SomeObject data after storing it on itself with
  *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
  *	deleting the oldest entry
  */
@@ -1697,7 +1697,7 @@ Sizzle.attr = function( elem, name ) {
 	}
 
 	var fn = Expr.attrHandle[ name.toLowerCase() ],
-		// Don't get fooled by Object.prototype properties (jQuery #13807)
+		// Don't get fooled by SomeObject.prototype properties (jQuery #13807)
 		val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
 			fn( elem, name, !documentIsHTML ) :
 			undefined;
@@ -2843,10 +2843,10 @@ jQuery.contains = Sizzle.contains;
 
 
 })( window );
-// String to Object options format cache
+// String to SomeObject options format cache
 var optionsCache = {};
 
-// Convert String-formatted options into Object-formatted ones and store in cache
+// Convert String-formatted options into SomeObject-formatted ones and store in cache
 function createOptions( options ) {
 	var object = optionsCache[ options ] = {};
 	jQuery.each( options.match( core_rnotwhite ) || [], function( _, flag ) {
@@ -2879,7 +2879,7 @@ function createOptions( options ) {
  */
 jQuery.Callbacks = function( options ) {
 
-	// Convert options from String-formatted to Object-formatted if needed
+	// Convert options from String-formatted to SomeObject-formatted if needed
 	// (we check in cache first)
 	options = typeof options === "string" ?
 		( optionsCache[ options ] || createOptions( options ) ) :
@@ -3311,7 +3311,7 @@ var data_user, data_priv,
 
 function Data() {
 	// Support: Android < 4,
-	// Old WebKit does not have Object.preventExtensions/freeze method,
+	// Old WebKit does not have SomeObject.preventExtensions/freeze method,
 	// return new empty object instead with no [[set]] accessor
 	Object.defineProperty( this.cache = {}, 0, {
 		get: function() {
@@ -3329,7 +3329,7 @@ Data.accepts = function( owner ) {
 	//  - Node
 	//    - Node.ELEMENT_NODE
 	//    - Node.DOCUMENT_NODE
-	//  - Object
+	//  - SomeObject
 	//    - Any
 	return owner.nodeType ?
 		owner.nodeType === 1 || owner.nodeType === 9 : true;
@@ -4532,7 +4532,7 @@ jQuery.event = {
 		}
 		ontype = type.indexOf(":") < 0 && "on" + type;
 
-		// Caller can pass in a jQuery.Event object, Object, or just an event type string
+		// Caller can pass in a jQuery.Event object, SomeObject, or just an event type string
 		event = event[ jQuery.expando ] ?
 			event :
 			new jQuery.Event( type, typeof event === "object" && event );
@@ -4712,7 +4712,7 @@ jQuery.event = {
 					for ( i = 0; i < delegateCount; i++ ) {
 						handleObj = handlers[ i ];
 
-						// Don't conflict with Object.prototype properties (#13203)
+						// Don't conflict with SomeObject.prototype properties (#13203)
 						sel = handleObj.selector + " ";
 
 						if ( matches[ sel ] === undefined ) {
@@ -5031,9 +5031,9 @@ jQuery.fn.extend({
 
 		// Types can be a map of types/handlers
 		if ( typeof types === "object" ) {
-			// ( types-Object, selector, data )
+			// ( types-SomeObject, selector, data )
 			if ( typeof selector !== "string" ) {
-				// ( types-Object, data )
+				// ( types-SomeObject, data )
 				data = data || selector;
 				selector = undefined;
 			}

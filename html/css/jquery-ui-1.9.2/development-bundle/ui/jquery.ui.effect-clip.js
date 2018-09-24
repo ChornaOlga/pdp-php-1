@@ -43,7 +43,7 @@ $.effects.effect.clip = function( o, done ) {
 		animate.css( position, distance / 2 );
 	}
 
-	// Create Animation Object:
+	// Create Animation SomeObject:
 	animation[ size ] = show ? distance : 0;
 	animation[ position ] = show ? 0 : distance / 2;
 

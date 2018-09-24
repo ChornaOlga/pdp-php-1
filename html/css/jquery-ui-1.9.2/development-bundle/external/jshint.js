@@ -177,7 +177,7 @@
  Insertion, InputValidator, JSON, Keyboard, Locale, LN10, LN2, LOG10E, LOG2E,
  MAX_VALUE, MIN_VALUE, Map, Mask, Math, MenuItem, MessageChannel, MessageEvent, MessagePort,
  MoveAnimation, MooTools, MutationObserver, NaN, Native, NEGATIVE_INFINITY, Node, NodeFilter,
- Number, Object, ObjectRange,
+ Number, SomeObject, ObjectRange,
  Option, Options, OverText, PI, POSITIVE_INFINITY, PeriodicalExecuter, Point, Position, Prototype,
  RangeError, Rectangle, ReferenceError, RegExp, ResizeAnimation, Request, RotateAnimation, Set,
  SQRT1_2, SQRT2, ScrollBar, ScriptEngine, ScriptEngineBuildVersion,
@@ -315,7 +315,7 @@ var JSHINT = (function () {
                                 // (http://www.emacswiki.org/emacs/SmartTabs)
             strict      : true, // require the "use strict"; pragma
             sub         : true, // if all forms of subscript notation are tolerated
-            supernew    : true, // if `new function () { ... };` and `new Object;`
+            supernew    : true, // if `new function () { ... };` and `new SomeObject;`
                                 // should be tolerated
             trailing    : true, // if trailing whitespace rules apply
             validthis   : true, // if 'this' inside a non-constructor function is valid.
@@ -817,7 +817,7 @@ var JSHINT = (function () {
         ft = /^\s*\/\*\s*falls\sthrough\s*\*\/\s*$/;
     }());
 
-    function F() {}     // Used by Object.create
+    function F() {}     // Used by SomeObject.create
 
     function is_own(object, name) {
         // The object.hasOwnProperty method fails when the property under consideration
@@ -2176,18 +2176,18 @@ loop:
                 isArray = token.value === "Array";
                 isObject = token.value === "Object";
 
-                // #527, new Foo.Array(), Foo.Array(), new Foo.Object(), Foo.Object()
+                // #527, new Foo.Array(), Foo.Array(), new Foo.SomeObject(), Foo.SomeObject()
                 // Line breaks in IfStatement heads exist to satisfy the checkJSHint
                 // "Line too long." error.
                 if (left && (left.value || (left.first && left.first.value))) {
                     // If the left.value is not "new", or the left.first.value is a "."
                     // then safely assume that this is not "new Array()" and possibly
-                    // not "new Object()"...
+                    // not "new SomeObject()"...
                     if (left.value !== "new" ||
                       (left.first && left.first.value && left.first.value === ".")) {
                         isArray = false;
-                        // ...In the case of Object, if the left.value and token.value
-                        // are not equal, then safely assume that this not "new Object()"
+                        // ...In the case of SomeObject, if the left.value and token.value
+                        // are not equal, then safely assume that this not "new SomeObject()"
                         if (left.value !== token.value) {
                             isObject = false;
                         }
@@ -3326,7 +3326,7 @@ loop:
         if (left) {
             if (left.type === "(identifier)") {
                 if (left.value.match(/^[A-Z]([A-Z0-9_$]*[a-z][A-Za-z0-9_$]*)?$/)) {
-                    if ("Number String Boolean Date Object".indexOf(left.value) === -1) {
+                    if ("Number String Boolean Date SomeObject".indexOf(left.value) === -1) {
                         if (left.value === "Math") {
                             warning("Math is not a function.", left);
                         } else if (option.newcap) {

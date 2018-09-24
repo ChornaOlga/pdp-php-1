@@ -1,7 +1,7 @@
 <?php
 namespace Litvinenko\Common\App;
 
-use Litvinenko\Common\Object;
+use Litvinenko\Common\SomeObject;
 
 /**
  * Simple event class
@@ -9,7 +9,7 @@ use Litvinenko\Common\Object;
  * This class have 'name' property which allows to prevent conflicts with 'name' param in its data
  * This means that there can exist event param called 'name' and it won't conflice with actual event name
  */
-class Event extends \Litvinenko\Common\Object
+class Event extends \Litvinenko\Common\SomeObject
 {
     protected $name;
 

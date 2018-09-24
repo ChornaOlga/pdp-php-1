@@ -1503,7 +1503,7 @@ QUnit.equiv = (function() {
 					// instanceof
 					if ( a.constructor !== b.constructor ) {
 						// Allow objects with no prototype to be equivalent to
-						// objects with Object as their constructor.
+						// objects with SomeObject as their constructor.
 						if ( !(( getProto(a) === null && getProto(b) === Object.prototype ) ||
 							( getProto(b) === null && getProto(a) === Object.prototype ) ) ) {
 								return false;

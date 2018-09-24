@@ -362,7 +362,7 @@ isFunction = function( obj ) {
 }
 
 isObject = function( obj ) {
-	return Object.prototype.toString.call( obj ) === "[object Object]";
+	return Object.prototype.toString.call( obj ) === "[object SomeObject]";
 };
 
 startsWith = function( value, pattern ) {
