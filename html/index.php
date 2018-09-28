@@ -313,6 +313,7 @@
               getPdpPoint(pointId).addClass('cluster' + i);
             });
 
+            //place to edit description
             var pointsText = (Object.keys(clusters[i].points).length > 0) ? clusters[i].points.join(',') : '<no points>';
             $("#cluster_container #cluster" + i + " .description").html('<b>Points</b>:' + pointsText);
 

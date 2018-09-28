@@ -59,7 +59,7 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
             $middle = getMiddlePointBetween($params->points[$i], $params->points[$n + $i]);
             $kmeansPoints[$i] = [
                 'pdp_points'    => [$i, $n + $i],
-                'internal_data' => [$i, $middle[0], $middle[1]]
+                'internal_data' => [$i, $middle[0], $middle[1], 0]
             ];
         }
 
@@ -96,7 +96,22 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
         // return ids of points in each cluster
         foreach ($kmeans->getClusters() as $cluster) {
             $kMeansPointsIds = array_column($cluster->getData(),0); // ids of k-means points in this cluster
-            $response['clusters'][] = array_flatten(array_intersect_key(array_column($kmeansPoints,'pdp_points'), array_flip($kMeansPointsIds)));
+
+            //worse point in each cluster
+            $temp = [];
+
+            for ($i = 0; $i < count($kMeansPointsIds); $i++)
+            {
+                $xdelta = abs($params->points[$kMeansPointsIds[$i]][0] - $cluster->getX())**2;
+                $ydelta = abs($params->points[$kMeansPointsIds[$i]][1] - $cluster->getY())**2;
+                $sum = sqrt($xdelta + $ydelta);
+                $temp[$i] = $sum;
+
+            };
+            $worsepoint = $kMeansPointsIds[array_search(max($temp), $temp)];
+            $WPinC = $params->points[$worsepoint];
+
+           $response['clusters'][] = array_flatten(array_intersect_key(array_column($kmeansPoints,'pdp_points'), array_flip($kMeansPointsIds)));
         }
 
         // $clusters = $kmeans->getClusters();
