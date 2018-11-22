@@ -84,7 +84,7 @@
 
     _default_vehicle_count = 3;
     // _default_python_file = "/home/vagrant/code/pdp-php/demo/pdphelper/pdphelper.py";
-    _default_python_file = "<?= str_replace('\\','\\\\', __DIR__)  ?>\\..\\pdphelper\\pdphelper.py";
+    _default_python_file = "<?=realpath(__DIR__ . '/../pdphelper/pdphelper.py') ?>";
   </script>
 
   <div class="jsc-sidebar-content jsc-sidebar-pulled sidebar" style="z-index:999">
