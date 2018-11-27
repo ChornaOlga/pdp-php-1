@@ -150,7 +150,7 @@ class Pdp extends \Litvinenko\Common\Object
 
   public function getSolution($data, $config, $method = 'gen')
   {
-      App::resetSingletons();
+//      App::resetSingletons();
 
       $result = [];
       try
