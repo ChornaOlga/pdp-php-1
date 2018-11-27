@@ -93,6 +93,7 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
             ->setClusterCount($params->cluster_count)
             ->solve();
 
+        $fp = fopen('output.txt', 'w');
         // return ids of points in each cluster
         foreach ($kmeans->getClusters() as $cluster) {
             $kMeansPointsIds = array_column($cluster->getData(),0); // ids of k-means points in this cluster
@@ -110,9 +111,12 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
             };
             $worsepoint = $kMeansPointsIds[array_search(max($temp), $temp)];
             $WPinC = $params->points[$worsepoint];
+            fwrite($fp, $worsepoint+1);
+            //file_put_contents('output.txt', $worsepoint);
 
            $response['clusters'][] = array_flatten(array_intersect_key(array_column($kmeansPoints,'pdp_points'), array_flip($kMeansPointsIds)));
         }
+        fclose($fp);
 
         // $clusters = $kmeans->getClusters();
         // foreach ($clusters as $cluster) {
