@@ -4,7 +4,6 @@ namespace Litvinenko\Combinatorics\Pdp\Generators\Recursive;
 use Litvinenko\Combinatorics\Pdp\Helper;
 use Litvinenko\Combinatorics\Pdp\Path;
 use Litvinenko\Common\App;
-use Litvinenko\Common\SomeObject;
 
 class PdpPermutationGenerator extends \Litvinenko\Combinatorics\Common\Generators\Recursive\RegularSetGenerator
 {

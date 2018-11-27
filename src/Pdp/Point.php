@@ -1,7 +1,7 @@
 <?php
 namespace Litvinenko\Combinatorics\Pdp;
 
-class Point extends \Litvinenko\Common\SomeObject
+class Point extends \Litvinenko\Common\Object
 {
     const TYPE_PICKUP   = 'pickup';
     const TYPE_DELIVERY = 'delivery';
