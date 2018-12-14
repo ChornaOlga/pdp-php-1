@@ -99,7 +99,7 @@ $response = [];
 $response = [];
 header('Content-Type: application/json');
 if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_REQUEST['params'], true)) && (is_array($params))) {
-    foreach ($params as $param) {
+    foreach ($params as $key => $param) {
         if (empty($param['data']['points'])) {
             continue;
         }
@@ -108,7 +108,7 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
             $param['config']['time_limit'] = 300;
         }
 
-        $response[] = $launcher->getSolution($param['data'], $param['config'], $param['method']);
+        $response[$key] = $launcher->getSolution($param['data'], $param['config'], $param['method']);
     }
 
 } else {

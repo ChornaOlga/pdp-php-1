@@ -552,9 +552,9 @@
                 var params = [];
 
                 for (var i in clusters) {
-                    consoleLog[i] = $("#cluster_container #cluster" + clusters[i] + ' .console');
+                    consoleLog[clusters[i]] = $("#cluster_container #cluster" + clusters[i] + ' .console');
 
-                    params[i] = {
+                    params[clusters[i]] = {
                         method: _getSolveMethod(),
                         config: _getConfigInfo(),
                         data: {
@@ -563,7 +563,7 @@
                         }
                     };
 
-                    consoleLog[i].text('Please, wait for solution ...');
+                    consoleLog[clusters[i]].text('Please, wait for solution ...');
                 }
 
                 $.ajax({
@@ -572,14 +572,18 @@
                     data: 'params=' + JSON.stringify(params),
                     dataType: "json",
                     success: function (result) {
-                        for (var i in result) {
-                            if (result[i].path) {
-                                _clusters[i].solution = result[i];
+                        for (var i in clusters) {
+                            if (result[clusters[i]] === undefined) {
+                                continue;
+                            }
+
+                            if (result[clusters[i]].path) {
+                                _clusters[clusters[i]].solution = result[clusters[i]];
                                 renderClusters(_clusters);
-                                _clearClusterPath(i);
-                                drawPath(_pointsContainer, "points_container", _clusters[i].solution.path, $(".cluster" + i).css('backgroundColor'));
+                                _clearClusterPath(clusters[i]);
+                                drawPath(_pointsContainer, "points_container", _clusters[clusters[i]].solution.path, $(".cluster" + clusters[i]).css('backgroundColor'));
                             } else {
-                                consoleLog[i].text("Error: " + JSON.stringify(result[i]));
+                                consoleLog[clusters[i]].text("Error: " + JSON.stringify(result[clusters[i]]));
                             }
                         }
 
