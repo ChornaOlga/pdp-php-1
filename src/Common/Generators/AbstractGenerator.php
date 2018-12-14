@@ -2,7 +2,7 @@
 
 namespace Litvinenko\Combinatorics\Common\Generators;
 
-abstract class AbstractGenerator extends \Litvinenko\Common\SomeObject
+abstract class AbstractGenerator extends \Litvinenko\Common\Object
 {
     protected $dataRules = array(
         'generating_elements' => 'not_null|array'

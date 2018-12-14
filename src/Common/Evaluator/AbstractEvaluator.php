@@ -1,7 +1,7 @@
 <?php
 namespace Litvinenko\Combinatorics\Common\Evaluator;
 
-abstract class AbstractEvaluator extends \Litvinenko\Common\SomeObject
+abstract class AbstractEvaluator extends \Litvinenko\Common\Object
 {
     const BOUND_TYPE_OPTIMISTIC  = 'optimistic';
     const BOUND_TYPE_PESSIMISTIC = 'pessimistic';

@@ -4,7 +4,7 @@ namespace Litvinenko\Combinatorics\Pdp;
 use Litvinenko\Combinatorics\Pdp\IO;
 use Litvinenko\Combinatorics\Pdp\Point;
 
-class Helper extends \Litvinenko\Common\SomeObject
+class Helper extends \Litvinenko\Common\Object
 {
     const LOG_FILE       = 'log/system.log';
     const ERROR_LOG_FILE = 'log/error.log';
@@ -40,9 +40,9 @@ class Helper extends \Litvinenko\Common\SomeObject
 
         foreach($objects as $object)
         {
-            if (!($object instanceof \Litvinenko\Common\SomeObject))
+            if (!($object instanceof \Litvinenko\Common\Object))
             {
-                $message = 'given ' . gettype($object) . ' is not instance of \Litvinenko\Common\SomeObject';
+                $message = 'given ' . gettype($object) . ' is not instance of \Litvinenko\Common\Object';
                 if ($this->getThrowExceptions()) throw new \Exception($message);
                 if ($this->getLogErrors()) self::logError($message);
             }
@@ -52,7 +52,7 @@ class Helper extends \Litvinenko\Common\SomeObject
                 {
                     $object->validate();
                 }
-                catch (\Litvinenko\Common\SomeObject\Exception $e)
+                catch (\Litvinenko\Common\Object\Exception $e)
                 {
                     if ($this->getThrowExceptions()) throw new \Exception($e->getMessage());
                     if ($this->getLogErrors()) self::logError($e->getMessage());
