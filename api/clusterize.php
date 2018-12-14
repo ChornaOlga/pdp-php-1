@@ -106,13 +106,15 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
                 $xdelta = abs($params->points[$kMeansPointsIds[$i]][0] - $cluster->getX())**2;
                 $ydelta = abs($params->points[$kMeansPointsIds[$i]][1] - $cluster->getY())**2;
                 $sum = sqrt($xdelta + $ydelta);
-                $temp[$i] = $sum;
+                $temp[] = $sum;
 
             };
-            $worsepoint = $kMeansPointsIds[array_search(max($temp), $temp)];
-            $WPinC = $params->points[$worsepoint];
-            fwrite($fp, $worsepoint+1);
-            //file_put_contents('output.txt', $worsepoint);
+
+            if (!empty($temp)) {
+                $worsepoint = $kMeansPointsIds[array_search(max($temp), $temp)];
+                $WPinC = $params->points[$worsepoint];
+                fwrite($fp, $worsepoint+1);
+            }
 
            $response['clusters'][] = array_flatten(array_intersect_key(array_column($kmeansPoints,'pdp_points'), array_flip($kMeansPointsIds)));
         }
