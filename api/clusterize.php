@@ -93,32 +93,49 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
             ->setClusterCount($params->cluster_count)
             ->solve();
 
+        $worsepointsArr = [];
         $fp = fopen('output.txt', 'w');
         // return ids of points in each cluster
-        foreach ($kmeans->getClusters() as $cluster) {
+        foreach ($kmeans->getClusters() as $key => $cluster) {
             $kMeansPointsIds = array_column($cluster->getData(),0); // ids of k-means points in this cluster
 
             //worse point in each cluster
             $temp = [];
 
-            for ($i = 0; $i < count($kMeansPointsIds); $i++)
-            {
+            for ($i = 0; $i < count($kMeansPointsIds); $i++) {
                 $xdelta = abs($params->points[$kMeansPointsIds[$i]][0] - $cluster->getX())**2;
                 $ydelta = abs($params->points[$kMeansPointsIds[$i]][1] - $cluster->getY())**2;
-                $sum = sqrt($xdelta + $ydelta);
-                $temp[] = $sum;
-
-            };
+                $temp[] = sqrt($xdelta + $ydelta);
+            }
 
             if (!empty($temp)) {
                 $worsepoint = $kMeansPointsIds[array_search(max($temp), $temp)];
                 $WPinC = $params->points[$worsepoint];
                 fwrite($fp, $worsepoint+1);
+                $worsepointsArr[$key] = $worsepoint;
             }
 
-           $response['clusters'][] = array_flatten(array_intersect_key(array_column($kmeansPoints,'pdp_points'), array_flip($kMeansPointsIds)));
+           $response['clusters'][$key] = array_flatten(array_intersect_key(array_column($kmeansPoints,'pdp_points'), array_flip($kMeansPointsIds)));
         }
         fclose($fp);
+
+        if (!empty($worsepointsArr)) {
+            foreach ($worsepointsArr as $key => $worsepointValue) {
+                $response['worsepoint'][$key] = [];
+                $worsepointsTemp = $worsepointsArr;
+                unset($worsepointsTemp[$key]);
+                reset($worsepointsTemp);
+                $cluster = $response['clusters'][$key];
+                $worsepointValueKeyInCluster = array_search($worsepointValue, $cluster);
+                if ($worsepointValueKeyInCluster === false) {
+                    continue;
+                }
+                foreach ($worsepointsTemp as $worsepointTempValue) {
+                    $cluster[$worsepointValueKeyInCluster] = $worsepointTempValue;
+                    $response['worsepoint'][$key][] = $cluster;
+                }
+            }
+        }
 
         // $clusters = $kmeans->getClusters();
         // foreach ($clusters as $cluster) {

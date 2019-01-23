@@ -8,6 +8,7 @@
     <script src="js/common/jquery-1.9.0-min.js"></script>
     <script src="js/common/jquery-ui-1.9.2.min.js"></script>
     <link rel="stylesheet" href="css/jquery-ui/jquery-ui.css">
+    <link rel="stylesheet" media="screen" href="css/bootstrap/bootstrap.min.css">
 
     <!-- Sidebar dependencies -->
     <link rel="stylesheet" href="css/sidebar/lib/fontello.css"/>
@@ -85,6 +86,8 @@
     _default_vehicle_count = 3;
     // _default_python_file = "/home/vagrant/code/pdp-php/demo/pdphelper/pdphelper.py";
     _default_python_file = "<?=realpath(__DIR__ . '/../pdphelper/pdphelper.py') ?>";
+    var worsepoint = [];
+    var reSolveIteration = 0;
 </script>
 
 <div class="jsc-sidebar-content jsc-sidebar-pulled sidebar" style="z-index:999">
@@ -98,14 +101,15 @@
 
             <!-- <button name="load" id="load">Load</button>
                 <button name="save" id="save">Save</button> -->
-            <button id="export_points_button">Export points</button>
-            <button id="clusterize_button">Clusterize</button>
-            <button id="reset_clusters_button">Reset clusters</button>
+            <button id="export_points_button" class="btn btn-primary btn-xs">Export points</button>
+            <button id="clusterize_button" class="btn btn-success btn-xs">Clusterize</button>
+            <button id="reset_clusters_button" class="btn btn-warning btn-xs">Reset clusters</button>
 
-            <button id="solve_gen_all_button">Solve all clusters</button>
-            <button id="draw_all_paths_button">Draw all paths</button>
-            <button id="draw_all_paths_step_by_step_button">Draw all paths step by step</button>
-            <button id="clean_all_connections_button">Clean all connections</button>
+            <button id="solve_gen_all_button" class="btn btn-success btn-xs">Solve all clusters</button>
+            <button id="re_solve_all_button" class="btn btn-info btn-xs hidden">Re-Solve clusters</button>
+            <button id="draw_all_paths_button" class="btn btn-primary btn-xs">Draw all paths</button>
+            <button id="draw_all_paths_step_by_step_button" class="btn btn-primary btn-xs">Draw all paths step by step</button>
+            <button id="clean_all_connections_button" class="btn btn-danger btn-xs">Clean all connections</button>
 
             <!-- <button name="solve_branch_bound" class="solve_button" id="solve_branch_bound">Solve using branch and bound</button> -->
             <div id="general_console">
@@ -371,11 +375,10 @@
                 }, {});
             }
 
-            function _getClusterPointsInfo(cluster_index) {
-                if (!_clusters[cluster_index]) return false;
+            function _getClusterPointsInfo(clusterPoints) {
+                if (clusterPoints.length == 0) return false;
 
                 var allPoints = _getPointsInfo();
-                var clusterPoints = _clusters[cluster_index].points;
 
                 var result = {};
                 for (var pointId in allPoints) {
@@ -547,43 +550,42 @@
 
             }
 
-            function _solveCluster(clusters) {
+            function _solveCluster(params) {
                 var consoleLog = [];
-                var params = [];
 
-                for (var i in clusters) {
-                    consoleLog[clusters[i]] = $("#cluster_container #cluster" + clusters[i] + ' .console');
-
-                    params[clusters[i]] = {
-                        method: _getSolveMethod(),
-                        config: _getConfigInfo(),
-                        data: {
-                            depot: _getDepotInfo(),
-                            points: _getClusterPointsInfo(clusters[i])
-                        }
-                    };
-
-                    consoleLog[clusters[i]].text('Please, wait for solution ...');
+                for (var i in params) {
+                    consoleLog[i] = $("#cluster_container #cluster" + i + ' .console');
+                    consoleLog[i].text('Please, wait for solution ...');
                 }
+
+                var data = {
+                    params: JSON.stringify(params)
+                };
 
                 $.ajax({
                     url: "../api/solve.php",
                     type: "POST",
-                    data: 'params=' + JSON.stringify(params),
+                    data: data,
                     dataType: "json",
                     success: function (result) {
-                        for (var i in clusters) {
-                            if (result[clusters[i]] === undefined) {
+                        if (worsepoint.length > 0) {
+                            $('#re_solve_all_button').removeClass('hidden');
+                        } else {
+                            $('#re_solve_all_button').addClass('hidden');
+                        }
+
+                        for (var i in params) {
+                            if (result[i] === undefined) {
                                 continue;
                             }
 
-                            if (result[clusters[i]].path) {
-                                _clusters[clusters[i]].solution = result[clusters[i]];
+                            if (result[i].path) {
+                                _clusters[i].solution = result[i];
                                 renderClusters(_clusters);
-                                _clearClusterPath(clusters[i]);
-                                drawPath(_pointsContainer, "points_container", _clusters[clusters[i]].solution.path, $(".cluster" + clusters[i]).css('backgroundColor'));
+                                _clearClusterPath(i);
+                                drawPath(_pointsContainer, "points_container", _clusters[i].solution.path, $(".cluster" + i).css('backgroundColor'));
                             } else {
-                                consoleLog[clusters[i]].text("Error: " + JSON.stringify(result[clusters[i]]));
+                                consoleLog[i].text("Error: " + JSON.stringify(result[i]));
                             }
                         }
 
@@ -591,8 +593,25 @@
                     error: function (request, status, error) {
                         alert('Technical error ' + request.status + ':' + request.responseText);
                         consoleLog[0].text('Technical error ' + request.status + ':' + request.responseText);
-                    },
+                    }
                 });
+            }
+
+            function getClusterData(clusters) {
+                var params = [];
+
+                for (var i in clusters) {
+                    params[clusters[i]] = {
+                        method: _getSolveMethod(),
+                        config: _getConfigInfo(),
+                        data: {
+                            depot: _getDepotInfo(),
+                            points: _getClusterPointsInfo(_clusters[clusters[i]].points)
+                        }
+                    };
+                }
+
+                return params;
             }
 
         </script>
@@ -1146,7 +1165,7 @@
 
     $('.solve_cluster_button').on('click', function (event) {
         var cluster_index = $(event.target).data('cluster-id');
-        _solveCluster([cluster_index]);
+        _solveCluster(getClusterData([cluster_index]));
     });
 
     $('.draw_cluster_path_button').on('click', function (event) {
@@ -1184,7 +1203,34 @@
             clusters.push(parseInt(cluster_index));
         }
 
-        _solveCluster(clusters);
+        _solveCluster(getClusterData(clusters));
+    });
+
+    $('#re_solve_all_button').on('click', function (event) {
+        if (worsepoint.length > 0) {
+            var params = [];
+            var clusters = [];
+            for (var cluster_index in _clusters) {
+                params[cluster_index] = {
+                    method: _getSolveMethod(),
+                    config: _getConfigInfo(),
+                    data: {
+                        depot: _getDepotInfo(),
+                        points: _getClusterPointsInfo(worsepoint[cluster_index][reSolveIteration])
+                    }
+                };
+
+                clusters[cluster_index] = worsepoint[cluster_index][reSolveIteration];
+            }
+
+            reSolveIteration++;
+            loadClusters(clusters);
+            _solveCluster(params);
+        }
+
+        if ((worsepoint.length - 1) == reSolveIteration) {
+            reSolveIteration = 0;
+        }
     });
 
     $('#clean_all_connections_button').click(function () {
@@ -1206,8 +1252,8 @@
     });
 
     var loadClusters = function (clusters) {
-        console.log("Loading clusters");
-        console.log(clusters);
+//        console.log("Loading clusters");
+//        console.log(clusters);
 
         var text = '';
 
@@ -1238,6 +1284,7 @@
     });
 
     $('#clusterize_button').click(function () {
+        reSolveIteration = 0;
         $("#general_console").text('Please, wait for solution ...');
 
         $.ajax({
@@ -1251,9 +1298,12 @@
 
                     // $("#general_console").text("Best path is: " + result.path.join(' ') + " with cost " + result.path_cost + '. solution time: ' +result.solution_time.toFixed(2) + ' sec. Additional info:' + JSON.stringify(result.info));
                     // drawPath(_pointsContainer, "points_container",  result.path);
-                }
-                else {
+                } else {
                     $("#general_console").text("Error: " + JSON.stringify(result));
+                }
+
+                if (result.worsepoint.length > 0) {
+                    worsepoint = result.worsepoint;
                 }
             },
             error: function (request, status, error) {
