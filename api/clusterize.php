@@ -149,9 +149,10 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
                 }
             }
         }*/
-
-        $permutationorder3to5 = [[[1, 2, 0],[2, 0, 1]],
-        [[1, 2, 3, 0],[1, 3, 0, 2],[2, 0, 3, 1],[2, 3, 1, 0],[3, 0, 1, 2],[3, 2, 0, 1]],
+        $response['worsepoint'] = [];
+        $permutationorder2to5 = [[[1, 0]],
+            [[1, 2, 0],[2, 0, 1]],
+            [[1, 2, 3, 0],[1, 3, 0, 2],[2, 0, 3, 1],[2, 3, 1, 0],[3, 0, 1, 2],[3, 2, 0, 1]],
             [[1, 2, 4, 0, 3],[1, 4, 3, 0, 2],[4, 2, 3, 0, 1],[4, 3, 0, 2, 1],[1, 4, 0, 2, 3],
                 [1, 3, 0, 4, 2],[1, 3, 4, 2, 0],[3, 2, 4, 1, 0],[3, 4, 0, 1, 2],[3, 2, 0, 4, 1],
                 [4, 2, 0, 1, 3], [4, 0, 1, 2, 3], [3, 0, 1, 4, 2], [3, 0, 4, 2, 1], [3, 4, 1, 2, 0],
@@ -165,7 +166,7 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
                 array_splice($tempclusters[$key], array_search($worsepointsArr[$key][0], $tempclusters[$key]), 2);
             }
 
-            foreach ($permutationorder3to5[count($worsepointsArr)-intval($params->cluster_count)] as $key => $nc) {
+            foreach ($permutationorder2to5[count($worsepointsArr)-2] as $key => $nc) {
                 $temp = $tempclusters;
                 foreach (array_keys($temp) as $order) {
                     $response['worsepoint'][$key][] = array_merge($temp[$order], $worsepointsArr[$nc[$order]]);

@@ -1305,10 +1305,7 @@
                 } else {
                     $("#general_console").text("Error: " + JSON.stringify(result));
                 }
-
-                if (result.worsepoint.length > 0) {
-                    worsepoint = result.worsepoint;
-                }
+                worsepoint = result.worsepoint;
             },
             error: function (request, status, error) {
                 $("#general_console").text('Technical error ' + request.status + ':' + error);
