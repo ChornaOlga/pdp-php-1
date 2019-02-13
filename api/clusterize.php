@@ -94,7 +94,7 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
             ->solve();
 
         $worsepointsArr = [];
-        $fp = fopen('output.txt', 'w');
+        $output = [];
         // return ids of points in each cluster
         foreach ($kmeans->getClusters() as $key => $cluster) {
             $kMeansPointsIds = array_column($cluster->getData(),0); // ids of k-means points in this cluster
@@ -108,31 +108,67 @@ if (!empty($_REQUEST) && isset($_REQUEST['params']) && ($params = json_decode($_
                 $temp[] = sqrt($xdelta + $ydelta);
             }
 
+            $worsepoint = null;
             if (!empty($temp)) {
                 $worsepoint = $kMeansPointsIds[array_search(max($temp), $temp)];
                 $WPinC = $params->points[$worsepoint];
-                fwrite($fp, $worsepoint+1);
-                $worsepointsArr[$key] = $worsepoint;
+                $output[] = $worsepoint+1;
             }
 
-           $response['clusters'][$key] = array_flatten(array_intersect_key(array_column($kmeansPoints,'pdp_points'), array_flip($kMeansPointsIds)));
-        }
-        fclose($fp);
+            $response['clusters'][$key] = array_flatten(array_intersect_key(array_column($kmeansPoints,'pdp_points'), array_flip($kMeansPointsIds)));
+            if (!is_null($worsepoint)) {
+                $currentCluster = $response['clusters'][$key];
+                $worsepointValueKeyInCluster = array_search($worsepoint, $currentCluster);
 
-        if (!empty($worsepointsArr)) {
+                $worsepointsArr[$key] = [
+                    $currentCluster[$worsepointValueKeyInCluster],
+                    $currentCluster[$worsepointValueKeyInCluster+1]
+                ];
+            }
+
+            $worsepoint = null;
+        }
+
+        file_put_contents('output.txt', implode(', ',$output));
+
+        /*if (!empty($worsepointsArr)) {
             foreach ($worsepointsArr as $key => $worsepointValue) {
                 $response['worsepoint'][$key] = [];
+
                 $worsepointsTemp = $worsepointsArr;
                 unset($worsepointsTemp[$key]);
                 reset($worsepointsTemp);
-                $cluster = $response['clusters'][$key];
-                $worsepointValueKeyInCluster = array_search($worsepointValue, $cluster);
-                if ($worsepointValueKeyInCluster === false) {
-                    continue;
-                }
+
+
                 foreach ($worsepointsTemp as $worsepointTempValue) {
-                    $cluster[$worsepointValueKeyInCluster] = $worsepointTempValue;
+                    $next = isset($response['clusters'][$key + 1]) ? $key + 1:0;
+                    $currentCluster = $response['clusters'][$key];
+                    $nextCluster = $response['clusters'][$next];
+
                     $response['worsepoint'][$key][] = $cluster;
+                }
+            }
+        }*/
+
+        $permutationorder3to5 = [[[1, 2, 0],[2, 0, 1]],
+        [[1, 2, 3, 0],[1, 3, 0, 2],[2, 0, 3, 1],[2, 3, 1, 0],[3, 0, 1, 2],[3, 2, 0, 1]],
+            [[1, 2, 4, 0, 3],[1, 4, 3, 0, 2],[4, 2, 3, 0, 1],[4, 3, 0, 2, 1],[1, 4, 0, 2, 3],
+                [1, 3, 0, 4, 2],[1, 3, 4, 2, 0],[3, 2, 4, 1, 0],[3, 4, 0, 1, 2],[3, 2, 0, 4, 1],
+                [4, 2, 0, 1, 3], [4, 0, 1, 2, 3], [3, 0, 1, 4, 2], [3, 0, 4, 2, 1], [3, 4, 1, 2, 0],
+                [2, 4, 3, 1, 0],[2, 0, 3, 4, 1],[2, 0, 4, 1, 3],[4, 0, 3, 1, 2],[4, 3, 1, 0, 2],
+                [2, 3, 4, 0, 1],[2, 4, 1, 0, 3],[2, 3, 1, 4, 0],[1, 2, 3, 4, 0]]];
+
+        if (count($worsepointsArr)===intval($params->cluster_count)) {
+            $tempclusters = $response['clusters'];
+
+            foreach (array_keys($tempclusters) as $key) {
+                array_splice($tempclusters[$key], array_search($worsepointsArr[$key][0], $tempclusters[$key]), 2);
+            }
+
+            foreach ($permutationorder3to5[count($worsepointsArr)-intval($params->cluster_count)] as $key => $nc) {
+                $temp = $tempclusters;
+                foreach (array_keys($temp) as $order) {
+                    $response['worsepoint'][$key][] = array_merge($temp[$order], $worsepointsArr[$nc[$order]]);
                 }
             }
         }

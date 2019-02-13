@@ -3,12 +3,13 @@
 //phpinfo();
 
 $worsepointsArr = [];
-$worsepoint = [3, 8, 9];
+$worsepoint = [5, 10, 7];
+$permutationorder = [[1, 2, 0],[2, 0, 1]];
 
 $response['clusters'] = [
-    [3,13,4,14,5,15],
-    [6,16,8,18],
-    [1,11,2,12,7,17,9,19,10,20],
+    [5,15,6,16],
+    [2,12,3,13,4,14,8,18,10,20],
+    [1,11,7,17,9,19],
 ];
 
 foreach ($worsepoint as $key => $wp) {
@@ -22,6 +23,22 @@ foreach ($worsepoint as $key => $wp) {
 }
 
 if (!empty($worsepointsArr)) {
+    $tempclusters = $response['clusters'];
+
+    foreach (array_keys($tempclusters) as $key) {
+        array_splice($tempclusters[$key], array_search($worsepointsArr[$key][0], $tempclusters[$key]), 2);
+    }
+
+    foreach ($permutationorder as $key => $nc) {
+        $temp = $tempclusters;
+        foreach (array_keys($temp) as $order) {
+            $response['worsepoint'][$key][] = array_merge($temp[$order], $worsepointsArr[$nc[$order]]);
+        }
+    }
+}
+
+
+/*if (!empty($worsepointsArr)) {
     foreach ($worsepointsArr as $key => $currentWPA) {
         $response['worsepoint'][$key] = [];
 
@@ -37,7 +54,7 @@ if (!empty($worsepointsArr)) {
         $nextCluster = array_filter($nextCluster, function($a) use ($nextWPA) {
             return !in_array($a, $nextWPA);
         });
-        $nextCluster + = $currentWPA;
+        //$nextCluster + = $currentWPA;
 
         foreach ($worsepointsTemp as $worsepointTempValue) {
 
@@ -47,4 +64,4 @@ if (!empty($worsepointsArr)) {
     }
 }
 
-var_dump($worsepointsArr);
+var_dump($worsepointsArr);*/

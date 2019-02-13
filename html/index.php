@@ -84,8 +84,8 @@
     _default_precise = 5;
 
     _default_vehicle_count = 3;
-    // _default_python_file = "/home/vagrant/code/pdp-php/demo/pdphelper/pdphelper.py";
-    _default_python_file = "<?=realpath(__DIR__ . '/../pdphelper/pdphelper.py') ?>";
+    _default_python_file = "C:/xampp/htdocs/pdp-php-1/pdphelper/pdphelper.py";
+    // _default_python_file = "<?php echo realpath(__DIR__ . '/../pdphelper/pdphelper.py') ?>";
     var worsepoint = [];
     var reSolveIteration = 0;
 </script>
@@ -568,7 +568,7 @@
                     data: data,
                     dataType: "json",
                     success: function (result) {
-                        if (worsepoint.length > 0) {
+                        if ((worsepoint.length > 0)&&((worsepoint.length) !== reSolveIteration)){
                             $('#re_solve_all_button').removeClass('hidden');
                         } else {
                             $('#re_solve_all_button').addClass('hidden');
@@ -1192,6 +1192,7 @@
     // ---
 
     $('#reset_clusters_button').click(function () {
+        $('#re_solve_all_button').addClass('hidden');
         _resetClusters();
         _clearAllPaths();
         renderClusters(_clusters);
@@ -1210,27 +1211,30 @@
         if (worsepoint.length > 0) {
             var params = [];
             var clusters = [];
+
+            //console.log(worsepoint);
+            //console.log(worsepoint[reSolveIteration]);
+            loadClusters(worsepoint[reSolveIteration]);
+
             for (var cluster_index in _clusters) {
                 params[cluster_index] = {
                     method: _getSolveMethod(),
                     config: _getConfigInfo(),
                     data: {
                         depot: _getDepotInfo(),
-                        points: _getClusterPointsInfo(worsepoint[cluster_index][reSolveIteration])
+                        points: _getClusterPointsInfo(worsepoint[reSolveIteration][cluster_index])
                     }
                 };
-
-                clusters[cluster_index] = worsepoint[cluster_index][reSolveIteration];
             }
 
             reSolveIteration++;
-            loadClusters(clusters);
             _solveCluster(params);
+            //_solveCluster(getClusterData(clusters));
         }
 
-        if ((worsepoint.length - 1) == reSolveIteration) {
-            reSolveIteration = 0;
-        }
+        /*if ((worsepoint.length - 1) == reSolveIteration) {
+            $('#re_solve_all_button').addClass('hidden');
+        }*/
     });
 
     $('#clean_all_connections_button').click(function () {
