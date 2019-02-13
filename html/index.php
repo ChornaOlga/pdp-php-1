@@ -87,6 +87,7 @@
     _default_python_file = "C:/xampp/htdocs/pdp-php-1/pdphelper/pdphelper.py";
     // _default_python_file = "<?php echo realpath(__DIR__ . '/../pdphelper/pdphelper.py') ?>";
     var worsepoint = [];
+    var TotalCost = 0;
     var reSolveIteration = 0;
 </script>
 
@@ -107,6 +108,7 @@
 
             <button id="solve_gen_all_button" class="btn btn-success btn-xs">Solve all clusters</button>
             <button id="re_solve_all_button" class="btn btn-info btn-xs hidden">Re-Solve clusters</button>
+            <button id="collect_cost" class="btn btn-info btn-xs hidden">Collect cost</button>
             <button id="draw_all_paths_button" class="btn btn-primary btn-xs">Draw all paths</button>
             <button id="draw_all_paths_step_by_step_button" class="btn btn-primary btn-xs">Draw all paths step by step</button>
             <button id="clean_all_connections_button" class="btn btn-danger btn-xs">Clean all connections</button>
@@ -581,6 +583,7 @@
 
                             if (result[i].path) {
                                 _clusters[i].solution = result[i];
+                                TotalCost += result[i].path_cost;
                                 renderClusters(_clusters);
                                 _clearClusterPath(i);
                                 drawPath(_pointsContainer, "points_container", _clusters[i].solution.path, $(".cluster" + i).css('backgroundColor'));
@@ -868,6 +871,10 @@
                     <hr>
                 </li>
             </ul>
+        </div>
+        <h1>Results</h1>
+        <div>
+        <span id="total-count-result"></span>
         </div>
     </div>
 </nav>
@@ -1164,6 +1171,7 @@
 
 
     $('.solve_cluster_button').on('click', function (event) {
+        $('#collect_cost').removeClass('hidden');
         var cluster_index = $(event.target).data('cluster-id');
         _solveCluster(getClusterData([cluster_index]));
     });
@@ -1192,14 +1200,18 @@
     // ---
 
     $('#reset_clusters_button').click(function () {
+        $('#total-count-result').empty();
         $('#re_solve_all_button').addClass('hidden');
+        $('#collect_cost').addClass('hidden');
         _resetClusters();
         _clearAllPaths();
         renderClusters(_clusters);
     });
 
     $('#solve_gen_all_button').on('click', function (event) {
+        $('#collect_cost').removeClass('hidden');
         var clusters = [];
+        TotalCost = 0;
         for (var cluster_index in _clusters) {
             clusters.push(parseInt(cluster_index));
         }
@@ -1208,6 +1220,7 @@
     });
 
     $('#re_solve_all_button').on('click', function (event) {
+        TotalCost = 0;
         if (worsepoint.length > 0) {
             var params = [];
             var clusters = [];
@@ -1231,10 +1244,10 @@
             _solveCluster(params);
             //_solveCluster(getClusterData(clusters));
         }
+    });
 
-        /*if ((worsepoint.length - 1) == reSolveIteration) {
-            $('#re_solve_all_button').addClass('hidden');
-        }*/
+    $('#collect_cost').on('click', function (event) {
+        $('#total-count-result').append(TotalCost + '<br/>');
     });
 
     $('#clean_all_connections_button').click(function () {
@@ -1288,6 +1301,8 @@
     });
 
     $('#clusterize_button').click(function () {
+        $('#total-count-result').empty();
+        $('#collect_cost').addClass('hidden');
         reSolveIteration = 0;
         $("#general_console").text('Please, wait for solution ...');
 
