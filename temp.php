@@ -37,31 +37,3 @@ if (!empty($worsepointsArr)) {
     }
 }
 
-
-/*if (!empty($worsepointsArr)) {
-    foreach ($worsepointsArr as $key => $currentWPA) {
-        $response['worsepoint'][$key] = [];
-
-        $next = isset($response['clusters'][$key + 1]) ? ($key + 1):0;
-        $currentCluster = $response['clusters'][$key];
-        $nextCluster = $response['clusters'][$next];
-        $nextWPA = $worsepointsArr[$next];
-
-        $worsepointsTemp = $worsepointsArr;
-        unset($worsepointsTemp[$key]);
-        reset($worsepointsTemp);
-
-        $nextCluster = array_filter($nextCluster, function($a) use ($nextWPA) {
-            return !in_array($a, $nextWPA);
-        });
-        //$nextCluster + = $currentWPA;
-
-        foreach ($worsepointsTemp as $worsepointTempValue) {
-
-
-            $response['worsepoint'][$key][] = $cluster;
-        }
-    }
-}
-
-var_dump($worsepointsArr);*/

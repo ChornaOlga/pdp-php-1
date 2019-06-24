@@ -71,23 +71,27 @@
 
 <script>
     // GLOBAL DEF
-    _pairCount = 10;
+    _pairCount = 30;
 
     _default_depot_coords = {
-        x: 200,
-        y: 200
+        //x: 200,
+        //y: 200
+        x: Math.floor(Math.random() * 500),
+        y: Math.floor(Math.random() * 500)
     };
 
     _default_check_transitional_loading_probability = 20;
     _default_weight_capacity = 1000;
     _default_load_area = {x: 100, y: 100, z: 100};
-    _default_precise = 5;
+    _default_precise = 1;
 
-    _default_vehicle_count = 3;
+    _default_vehicle_count = 5;
     _default_python_file = "C:/xampp/htdocs/pdp-php-1/pdphelper/pdphelper.py";
-    // _default_python_file = "<?php echo realpath(__DIR__ . '/../pdphelper/pdphelper.py') ?>";
+    
     var worsepoint = [];
     var TotalCost = 0;
+    var TotalArea = 0;
+    var NormSumArea = 0;
     var reSolveIteration = 0;
 </script>
 
@@ -561,7 +565,7 @@
                 }
 
                 var data = {
-                    params: JSON.stringify(params)
+                    params: JSON.stringify(params),
                 };
 
                 $.ajax({
@@ -570,7 +574,9 @@
                     data: data,
                     dataType: "json",
                     success: function (result) {
-                        if ((worsepoint.length > 0)&&((worsepoint.length) !== reSolveIteration)){
+                        if(result.NSArea){NormSumArea = result.NSArea;}
+                        console.log(NormSumArea);
+                        if ((worsepoint.length > 0)&&((worsepoint.length) !== reSolveIteration)&&(NormSumArea > 1)){
                             $('#re_solve_all_button').removeClass('hidden');
                         } else {
                             $('#re_solve_all_button').addClass('hidden');
@@ -609,6 +615,7 @@
                         config: _getConfigInfo(),
                         data: {
                             depot: _getDepotInfo(),
+                            area: [TotalArea],
                             points: _getClusterPointsInfo(_clusters[clusters[i]].points)
                         }
                     };
@@ -1235,6 +1242,7 @@
                     config: _getConfigInfo(),
                     data: {
                         depot: _getDepotInfo(),
+                        area: [TotalArea],
                         points: _getClusterPointsInfo(worsepoint[reSolveIteration][cluster_index])
                     }
                 };
@@ -1247,7 +1255,7 @@
     });
 
     $('#collect_cost').on('click', function (event) {
-        $('#total-count-result').append(TotalCost + '<br/>');
+        $('#total-count-result').append(TotalCost.toFixed(3) + '<br/>');
     });
 
     $('#clean_all_connections_button').click(function () {
@@ -1309,7 +1317,7 @@
         $.ajax({
             url: "../api/clusterize.php",
             type: "POST",
-            data: 'params=' + JSON.stringify({cluster_count: $("#vehicle_count").val(), points: _hot.getData()}),
+            data: 'params=' + JSON.stringify({cluster_count: $("#vehicle_count").val(), points: _hot.getData(), depot:_default_depot_coords}),
             dataType: "json",
             success: function (result) {
                 if (result.clusters) {
@@ -1321,6 +1329,7 @@
                     $("#general_console").text("Error: " + JSON.stringify(result));
                 }
                 worsepoint = result.worsepoint;
+                TotalArea = result.area;
             },
             error: function (request, status, error) {
                 $("#general_console").text('Technical error ' + request.status + ':' + error);
